@@ -14,6 +14,8 @@ public func configure(_ app: Application) async throws {
     ), as: .mongo)
 
     app.migrations.add(CreateTodo())
+    app.migrations.add(CreateCustomer())
+    app.migrations.add(CreateAddress())
 
     app.views.use(.leaf)
 
