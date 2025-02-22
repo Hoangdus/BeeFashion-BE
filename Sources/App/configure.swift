@@ -11,7 +11,11 @@ public func configure(_ app: Application) async throws {
 
     try app.databases.use(DatabaseConfigurationFactory.mongo(
         connectionString: Environment.get("DATABASE_URL") ?? "mongodb://localhost:27017/vapor_database"
-), as: .mongo)
+    ), as: .mongo)
+
+    app.migrations.add(CreateTodo())
+    app.migrations.add(CreateCustomer())
+    app.migrations.add(CreateAddress())
 
 //    app.migrations.add(CreateTodo())
     app.migrations.add(CreateSize())
