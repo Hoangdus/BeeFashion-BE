@@ -17,6 +17,13 @@ public func configure(_ app: Application) async throws {
     app.migrations.add(CreateCustomer())
     app.migrations.add(CreateAddress())
 
+//    app.migrations.add(CreateTodo())
+    app.migrations.add(CreateSize())
+    app.migrations.add(CreateBrand())
+    app.migrations.add(CreateCategory())
+    app.migrations.add(CreateProduct())
+    app.migrations.add(CreateProductDetail())
+    
     app.views.use(.leaf)
 
 

@@ -36,6 +36,11 @@ func routes(_ app: Application) throws {
         return customer.toDTO()
     }
 
+    try app.register(collection: SizeController())
+    try app.register(collection: BrandController())
+    try app.register(collection: CategoryController())
+    try app.register(collection: ProductController())
+    try app.register(collection: ProductDetailController())
     try app.register(collection: TodoController())
     try app.register(collection: CustomerController())
     try app.register(collection: AddressController())

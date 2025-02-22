@@ -1,0 +1,22 @@
+//
+//  CreateBrand.swift
+//
+//
+//  Created by HoangDus on 20/02/2025.
+//
+
+import Fluent
+
+struct CreateBrand: AsyncMigration {
+    func prepare(on database: Database) async throws {
+        try await database.schema("brands")
+            .id()
+            .field("name", .string, .required)
+            .create()
+    }
+
+    func revert(on database: Database) async throws {
+        try await database.schema("brands").delete()
+    }
+}
+
