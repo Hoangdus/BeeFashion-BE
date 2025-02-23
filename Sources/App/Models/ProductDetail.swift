@@ -21,6 +21,9 @@ final class ProductDetail: Model, @unchecked Sendable{
     @Field(key: "quantity")
     var quantity: Int
     
+	@OptionalField(key: "images")
+	var images: [String]?
+	
     @Parent(key: "product_id")
     var product: Product
     
@@ -36,23 +39,24 @@ final class ProductDetail: Model, @unchecked Sendable{
     @Timestamp(key: "updated_at", on: .update)
     var updateAt: Date?
     
-    init() {
-        
-    }
-    
-    init(id: UUID? = nil, price: Int, quantity: Int, productId: Product.IDValue, sizeId: Size.IDValue, brandId: Brand.IDValue, createAt: Date? = nil, updateAt: Date? = nil) {
-        self.id = id
-        self.price = price
-        self.quantity = quantity
-        self.$product.id = productId
-        self.$size.id = sizeId
-        self.$brand.id = brandId
-        self.createAt = createAt
-        self.updateAt = updateAt
-    }
-    
+	init() {
+		
+	}
+	
+	init(id: UUID? = nil, price: Int, quantity: Int, images: [String], productId: Product.IDValue, sizeId: Size.IDValue, brandId: Brand.IDValue, createAt: Date? = nil, updateAt: Date? = nil) {
+		self.id = id
+		self.price = price
+		self.quantity = quantity
+		self.images = images
+		self.$product.id = productId
+		self.$size.id = sizeId
+		self.$brand.id = brandId
+		self.createAt = createAt
+		self.updateAt = updateAt
+	}
+	
     func toDTO() -> ProductDetailDTO{
-        return ProductDetailDTO(price: self.price, quantity: self.quantity, productId: self.$product.id, sizeId: self.$size.id, brandId: self.$brand.id)
+		return ProductDetailDTO(price: self.price, quantity: self.quantity, productId: self.$product.id, sizeId: self.$size.id, brandId: self.$brand.id, images: self.images ?? [])
     }
     
 }
