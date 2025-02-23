@@ -42,6 +42,30 @@ struct ProductDetailController: RouteCollection {
     func create(req: Request) async throws -> ProductDetailDTO {
         let productDetail = try req.content.decode(ProductDetailDTO.self).toModel()
 
+		struct Input: Content {
+			var images: [File]
+		}
+		
+		let input = try req.content.decode(Input.self)
+			
+		let formatter = DateFormatter()
+		formatter.dateFormat = "dd-MM-yyyy-HH:mm:ss"
+		let prefix = formatter.string(from: .init())
+		
+		var imageFileNamesWithUrl: [String] = []
+		
+		for (_, value) in input.images.enumerated() {
+			let isImage = ["png", "jpeg", "jpg", "gif"].contains(value.extension?.lowercased())
+			if (!isImage){
+				throw Abort(.badRequest)
+			}
+			
+			let imageFileName = "image-\(prefix)-\(value.filename)"
+			imageFileNamesWithUrl.append("\(Environment.get("IMAGE_URL") ?? "http://127.0.0.1:8080/images/")\(imageFileName)")
+			try await req.fileio.writeFile(value.data, at: "Public/images/\(imageFileName)")
+		}
+		
+		productDetail.images = imageFileNamesWithUrl
         try await productDetail.save(on: req.db)
         return productDetail.toDTO()
     }

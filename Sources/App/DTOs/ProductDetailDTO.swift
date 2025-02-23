@@ -14,12 +14,12 @@ struct ProductDetailDTO: Content{
     var productId: Product.IDValue
     var sizeId: Size.IDValue
     var brandId: Brand.IDValue
-    var images: String = ""
+    var images: [String]?
     var color: String = ""
     var managerId: String = ""
     
     func toModel() -> ProductDetail{
-        let model = ProductDetail(price: self.price, quantity: self.quantity, productId: self.productId, sizeId: self.sizeId, brandId: self.brandId)
+		let model = ProductDetail(price: self.price, quantity: self.quantity, images: [], productId: self.productId, sizeId: self.sizeId, brandId: self.brandId)
         return model
     }
 }
