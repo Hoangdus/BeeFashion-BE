@@ -18,6 +18,8 @@ public func configure(_ app: Application) async throws {
     app.migrations.add(CreateTodo())
     app.migrations.add(CreateCustomer())
     app.migrations.add(CreateAddress())
+    app.migrations.add(CreateManager())
+    app.migrations.add(CreateRole())
 
 //    app.migrations.add(CreateTodo())
     app.migrations.add(CreateSize())
