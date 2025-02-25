@@ -24,7 +24,6 @@ final class Customer: Model, @unchecked Sendable {
     @Field(key: "email")
     var email: String
     
-    
     @Field(key: "date_of_birth")
     var dateOfBirth: String?
     
