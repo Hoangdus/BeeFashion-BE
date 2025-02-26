@@ -12,6 +12,8 @@ struct ProductDTO: Content {
     var id: UUID?
     var name: String
     var image: String?
+	var price: Int?
+	var totalQuantity: Int? 
     var categoryId: Category.IDValue
     
     func toModel() -> Product {

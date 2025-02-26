@@ -18,8 +18,8 @@ final class Product: Model, @unchecked Sendable{
     @Field(key: "name")
     var name: String
 
-    @Children(for: \.$product)
-    var productDetails: [ProductDetail]
+    @OptionalChild(for: \.$product)
+    var productDetail: ProductDetail?
     
     @Field(key: "image")
     var image: String

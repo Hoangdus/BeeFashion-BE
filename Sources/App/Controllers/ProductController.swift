@@ -15,37 +15,39 @@ struct ProductController: RouteCollection {
         products.get(use: self.index)
         products.post(use: self.create)
         
-		products.group("images"){ product in
-			product.post(use: uploadImages)
-		}
-        
+//		products.group("images"){ product in
+//			product.post(use: uploadImages)
+//		}
+
         products.group(":productID") { product in
             product.delete(use: self.delete)
         }
     }
 
-    @Sendable
-	func uploadImages(req: Request) async throws -> HTTPStatus {
-		struct Input: Content {
-			var files: [File]
-		}
-		
-		let input = try req.content.decode(Input.self)
-			
-		let formatter = DateFormatter()
-		formatter.dateFormat = "dd-MM-yyyy HH:mm:ss"
-		let prefix = formatter.string(from: .init())
-		
-		for (_, value) in input.files.enumerated() {
-			let imageFileName = "image \(prefix) \(value.filename)"
-			try await req.fileio.writeFile(value.data, at: "Public/images/\(imageFileName)")
-		}
-		
-		return .ok
-	}
+//    @Sendable
+//	func uploadImages(req: Request) async throws -> HTTPStatus {
+//		struct Input: Content {
+//			var files: [File]
+//		}
+//		
+//		let input = try req.content.decode(Input.self)
+//			
+//		let formatter = DateFormatter()
+//		formatter.dateFormat = "dd-MM-yyyy HH:mm:ss"
+//		let prefix = formatter.string(from: .init())
+//		
+//		for (_, value) in input.files.enumerated() {
+//			let imageFileName = "image \(prefix) \(value.filename)"
+//			try await req.fileio.writeFile(value.data, at: "Public/images/\(imageFileName)")
+//		}
+//		
+//		return .ok
+//	}
     
     @Sendable
     func index(req: Request) async throws -> [ProductDTO] {
+		
+		
         try await Product.query(on: req.db).all().map { $0.toDTO() }
     }
 
