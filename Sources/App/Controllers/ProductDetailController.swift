@@ -35,13 +35,24 @@ struct ProductDetailController: RouteCollection {
 
     @Sendable
     func index(req: Request) async throws -> [ProductDetailDTO] {
-        try await ProductDetail.query(on: req.db).all().map { $0.toDTO() }
+		let productDetails = try await ProductDetail.query(on: req.db).with(\.$sizes).all()
+		let productDetailDTOs = productDetails.map{$0.toDTO()}
+		
+		return productDetailDTOs
     }
 
     @Sendable
-    func create(req: Request) async throws -> ProductDetailDTO {
-        let productDetail = try req.content.decode(ProductDetailDTO.self).toModel()
-
+    func create(req: Request) async throws -> HTTPStatus {
+		let productDetailDTO = try req.content.decode(ProductDetailDTO.self)
+		
+		var sizes: [Size] = []
+		for sizeId in productDetailDTO.sizeIds ?? [] {
+			guard let size = try await Size.find(sizeId, on: req.db) else { throw Abort(.badRequest) }
+			sizes.append(size)
+		}
+		
+		let productDetail = productDetailDTO.toModel()
+		
 		struct Input: Content {
 			var images: [File]
 		}
@@ -67,7 +78,10 @@ struct ProductDetailController: RouteCollection {
 		
 		productDetail.images = imageFileNamesWithUrl
         try await productDetail.save(on: req.db)
-        return productDetail.toDTO()
+//        return productDetail.toDTO()
+		try await productDetail.$sizes.attach(sizes, on: req.db)
+		
+		return .ok
     }
 
     @Sendable

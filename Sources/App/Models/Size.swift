@@ -18,6 +18,9 @@ final class Size: Model, @unchecked Sendable {
     @Field(key: "name")
     var name: String
 
+	@Siblings(through: ProductDetailSize.self, from: \.$size, to: \.$productDetail)
+	var productDetails: [ProductDetail]
+	
     @Timestamp(key: "create_at", on: .create)
     var createAt: Date?
     

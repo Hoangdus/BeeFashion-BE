@@ -19,16 +19,19 @@ final class ProductDetail: Model, @unchecked Sendable{
     var price: Int
     
     @Field(key: "quantity")
-    var quantity: Int
+    var quantities: [Int]
     
+	@Field(key: "description")
+	var description: String
+	
 	@OptionalField(key: "images")
 	var images: [String]?
 	
     @Parent(key: "product_id")
     var product: Product
     
-    @Parent(key: "size_id")
-    var size: Size
+	@Siblings(through: ProductDetailSize.self, from: \.$productDetail, to: \.$size)
+	public var sizes: [Size]
     
     @Parent(key: "brand_id")
     var brand: Brand
@@ -43,20 +46,20 @@ final class ProductDetail: Model, @unchecked Sendable{
 		
 	}
 	
-	init(id: UUID? = nil, price: Int, quantity: Int, images: [String], productId: Product.IDValue, sizeId: Size.IDValue, brandId: Brand.IDValue, createAt: Date? = nil, updateAt: Date? = nil) {
+	init(id: UUID? = nil, price: Int, quantities: [Int], description: String, images: [String]? = nil, productId: Product.IDValue, brandId: Brand.IDValue, createAt: Date? = nil, updateAt: Date? = nil) {
 		self.id = id
 		self.price = price
-		self.quantity = quantity
+		self.description = description
+		self.quantities = quantities
 		self.images = images
 		self.$product.id = productId
-		self.$size.id = sizeId
 		self.$brand.id = brandId
 		self.createAt = createAt
 		self.updateAt = updateAt
 	}
 	
     func toDTO() -> ProductDetailDTO{
-		return ProductDetailDTO(price: self.price, quantity: self.quantity, productId: self.$product.id, sizeId: self.$size.id, brandId: self.$brand.id, images: self.images ?? [])
+		return ProductDetailDTO(price: self.price, quantities: self.quantities, description: self.description, sizes: self.$sizes.value, productId: self.$product.id, brandId: self.$brand.id, images: self.images)
     }
     
 }
