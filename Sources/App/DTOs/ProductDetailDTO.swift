@@ -13,7 +13,7 @@ struct ProductDetailDTO: Content{
     var quantities: [Int]
 	var description: String
 	var sizeIds: [Size.IDValue]?
-	var sizes: [Size]?
+	var sizes: [SizeDTO]?
     var productId: Product.IDValue
     var brandId: Brand.IDValue
     var images: [String]?
