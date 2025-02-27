@@ -10,15 +10,14 @@ import Vapor
 
 struct SizeDTO: Content {
     var id: UUID?
-    var name: String?
+    var name: String
     
     func toModel() -> Size {
         let model = Size()
         
         model.id = self.id
-        if let name = self.name {
-            model.name = name
-        }
+		model.name = name
+        
         return model
     }
 }

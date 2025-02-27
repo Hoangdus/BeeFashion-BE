@@ -36,6 +36,6 @@ final class Category: Model, @unchecked Sendable{
     }
     
     func toDTO() -> CategoryDTO{
-        return CategoryDTO(name: self.name)
+		return CategoryDTO(id: self.id, name: self.name)
     }
 }

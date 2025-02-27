@@ -46,9 +46,19 @@ struct ProductController: RouteCollection {
     
     @Sendable
     func index(req: Request) async throws -> [ProductDTO] {
+		let products = try await Product.query(on: req.db).with(\.$productDetail).all()
+		var productDTOs: [ProductDTO] = []
 		
+		// add child properties to parent
+		for product in products{
+			let productDetail = product.productDetail
+			var productDTO = product.toDTO()
+			productDTO.quantities = productDetail?.quantities
+			productDTO.price = productDetail?.price
+			productDTOs.append(productDTO)
+		}
 		
-        try await Product.query(on: req.db).all().map { $0.toDTO() }
+		return productDTOs
     }
 
     @Sendable

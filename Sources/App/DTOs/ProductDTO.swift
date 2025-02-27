@@ -13,7 +13,8 @@ struct ProductDTO: Content {
     var name: String
     var image: String?
 	var price: Int?
-	var totalQuantity: Int? 
+	var productDetail: ProductDetail?
+	var quantities: [Int]?
     var categoryId: Category.IDValue
     
     func toModel() -> Product {
