@@ -23,14 +23,14 @@ struct ProductDetailController: RouteCollection {
     }
     
     @Sendable
-    func getByProductId(req: Request) async throws -> [ProductDetailDTO]{
-        guard let uuidString = req.parameters.get("productId") else { throw Abort(.badRequest) }
-        let productUUID = UUID(uuidString: uuidString)
-        
-        let productDetails = try await ProductDetail.query(on: req.db).filter(\.$product.$id == productUUID!).all()
-        return productDetails.compactMap(){
-            productDetail in productDetail.toDTO()
-        }
+    func getByProductId(req: Request) async throws -> ProductDetailDTO{
+		guard let productId: UUID = req.parameters.get("productId") else { throw Abort(.badRequest) }
+		guard let productDetail = try await ProductDetail.query(on: req.db).with(\.$sizes).filter(\.$product.$id == productId).first() else { throw Abort(.notFound) }
+		
+		let productSizes = productDetail.sizes
+		var productDetailDTO = productDetail.toDTO()
+		productDetailDTO.sizes = productSizes.map{ $0.toDTO() }
+		return productDetailDTO
     }
 
     @Sendable
