@@ -12,6 +12,8 @@ struct CreateSize: AsyncMigration {
         try await database.schema("sizes")
             .id()
             .field("name", .string, .required)
+			.field("created_at", .datetime)
+			.field("updated_at", .datetime)
             .create()
     }
 

@@ -35,7 +35,16 @@ final class Customer: Model, @unchecked Sendable {
     
     @Field(key: "image")
     var image: String?
-    
+  
+	  @Siblings(through: Favorite.self, from: \.$customer, to: \.$product)
+	  var favProducts: [Product]
+	
+	  @Siblings(through: Cart.self, from: \.$customer, to: \.$product)
+	  var cartProducts: [Product]
+	
+	  @Children(for: \.$customer)
+	  var addresses: [Address]
+  
     @Timestamp(key: "created_at", on: .create)
     var createdAt: Date?
     

@@ -15,8 +15,8 @@ final class Address: Model, @unchecked Sendable {
     @ID(key: .id)
     var id: UUID?
     
-    @Field(key: "customer_id")
-    var customerId: UUID
+    @Parent(key: "customer_id")
+    var customer: Customer
     
     @Field(key: "province")
     var province: String
@@ -38,9 +38,9 @@ final class Address: Model, @unchecked Sendable {
     
     init() {}
     
-    init(id: UUID? = nil, customerId: UUID, province: String, district: String, ward: String, detail: String, createdAt: Date? = nil, updatedAt: Date? = nil) {
+	init(id: UUID? = nil, customerId: Customer.IDValue, province: String, district: String, ward: String, detail: String, createdAt: Date? = nil, updatedAt: Date? = nil) {
         self.id = id
-        self.customerId = customerId
+		self.$customer.id = customerId
         self.province = province
         self.district = district
         self.ward = ward

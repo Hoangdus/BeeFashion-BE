@@ -12,6 +12,9 @@ struct ProductController: RouteCollection {
     func boot(routes: RoutesBuilder) throws {
         let products = routes.grouped("products")
 
+		products.group(":customerId"){
+			$0.get(use: self.index)
+		}
         products.get(use: self.index)
         products.post(use: self.create)
         
@@ -46,6 +49,7 @@ struct ProductController: RouteCollection {
     
     @Sendable
     func index(req: Request) async throws -> [ProductDTO] {
+		let customer = try await Customer.find(req.parameters.get("customerId"), on: req.db)
 		let products = try await Product.query(on: req.db).with(\.$productDetail).all()
 		var productDTOs: [ProductDTO] = []
 		
@@ -55,6 +59,9 @@ struct ProductController: RouteCollection {
 			var productDTO = product.toDTO()
 			productDTO.quantities = productDetail?.quantities
 			productDTO.price = productDetail?.price
+			if(customer != nil){
+				productDTO.isFavByCurrentUser = try await product.$customers.isAttached(to: customer!, on: req.db)
+			}
 			productDTOs.append(productDTO)
 		}
 		

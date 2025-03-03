@@ -27,6 +27,9 @@ final class Product: Model, @unchecked Sendable{
     @Parent(key: "category_id")
     var category: Category
     
+	@Siblings(through: Favorite.self, from: \.$product, to: \.$customer)
+	var customers: [Customer]
+	
     @Timestamp(key: "create_at", on: .create)
     var createAt: Date?
     
