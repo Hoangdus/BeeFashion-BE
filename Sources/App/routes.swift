@@ -10,8 +10,9 @@ func routes(_ app: Application) throws {
         "Hello, world!"
     }
     
+    
     // customer
-    app.post("auth", "register") { req async throws -> Response in
+    app.post("auth", "register") { req async throws -> CustomerDTO in
         let registerDTO = try req.content.decode(RegisterDTO.self)
         
         // Check existing customer
@@ -22,11 +23,9 @@ func routes(_ app: Application) throws {
         
         // create a new customer
         let customer = Customer(fullName: registerDTO.fullName ,email: registerDTO.email, password: registerDTO.password)
+        
         try await customer.save(on: req.db)
-        
-        let response = ["message": "Register successfully"]
-        
-        return Response(status: .ok, body: .init(data: try JSONEncoder().encode(response)))
+        return customer.toDTO()
     }
     
     app.post("auth", "login") {req async throws -> CustomerDTO in

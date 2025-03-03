@@ -21,16 +21,32 @@ struct CustomerController: RouteCollection {
             throw Abort(.notFound)
         }
         
-        let updateData = try req.content.decode(CustomerDTO.self)
+        let updateData = try req.content.decode(UpdateCustomerRequest.self)
+        
+        if let image = updateData.image {
+            let isImage = ["png", "jpeg", "jpg", "gif"].contains(image.extension?.lowercased())
+            if !isImage {
+                throw Abort(.badRequest, reason: "Invalid image format")
+            }
+            
+            let formatter = DateFormatter()
+            formatter.dateFormat = "dd-MM-yyyy-HH:mm:ss"
+            let prefix = formatter.string(from: Date())
+            
+            let imageFileName = "image-\(prefix)-\(image.filename)"
+            try await req.fileio.writeFile(image.data, at: "Public/images/\(imageFileName)")
+            
+            customer.image = "\(Environment.get("IMAGE_URL") ?? "http://127.0.0.1:8080/images/")\(imageFileName)"
+        }
         
         customer.fullName = updateData.fullName ?? customer.fullName
         customer.email = updateData.email ?? customer.email
-        customer.phone = updateData.phone
-        customer.dateOfBirth = updateData.dateOfBirth
-        customer.gender = updateData.gender
+        customer.phone = updateData.phone ?? customer.phone
+        customer.dateOfBirth = updateData.dateOfBirth ?? customer.dateOfBirth
+        customer.gender = updateData.gender ?? customer.gender
         
         try await customer.save(on: req.db)
-        return updateData
+        return customer.toDTO()
     }
     
     
