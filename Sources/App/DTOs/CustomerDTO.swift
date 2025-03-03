@@ -15,6 +15,7 @@ struct CustomerDTO: Content {
     var email: String?
     var dateOfBirth: String?
     var gender: String?
+    var image: String?
     
     func toModel() -> Customer {
         let model = Customer()
@@ -25,6 +26,7 @@ struct CustomerDTO: Content {
         model.email = self.email ?? ""
         model.dateOfBirth = self.dateOfBirth
         model.gender = self.gender
+        model.image = self.image ?? ""
         
         return model
     }
@@ -41,3 +43,11 @@ struct LoginDTO: Content {
     var password: String
 }
 
+struct UpdateCustomerRequest: Content {
+    var fullName: String?
+    var email: String?
+    var phone: String?
+    var dateOfBirth: String?
+    var gender: String?
+    var image: File?
+}

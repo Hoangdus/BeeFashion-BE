@@ -33,15 +33,18 @@ final class Customer: Model, @unchecked Sendable {
     @Field(key: "password")
     var password: String
     
-	@Siblings(through: Favorite.self, from: \.$customer, to: \.$product)
-	var favProducts: [Product]
+    @Field(key: "image")
+    var image: String?
+  
+	  @Siblings(through: Favorite.self, from: \.$customer, to: \.$product)
+	  var favProducts: [Product]
 	
-	@Siblings(through: Cart.self, from: \.$customer, to: \.$product)
-	var cartProducts: [Product]
+	  @Siblings(through: Cart.self, from: \.$customer, to: \.$product)
+	  var cartProducts: [Product]
 	
-	@Children(for: \.$customer)
-	var addresses: [Address]
-	
+	  @Children(for: \.$customer)
+	  var addresses: [Address]
+  
     @Timestamp(key: "created_at", on: .create)
     var createdAt: Date?
     
@@ -50,7 +53,7 @@ final class Customer: Model, @unchecked Sendable {
     
     init() {}
     
-    init(id: UUID? = nil, fullName: String, phone: String? = nil, email: String, dateOfBirth: String? = nil, gender: String? = nil, password: String, createdAt: Date? = nil, updatedAt: Date? = nil) {
+    init(id: UUID? = nil, fullName: String, phone: String? = nil, email: String, dateOfBirth: String? = nil, gender: String? = nil, password: String, image: String? = nil, createdAt: Date? = nil, updatedAt: Date? = nil) {
         self.id = id
         self.fullName = fullName
         self.phone = phone
@@ -58,13 +61,14 @@ final class Customer: Model, @unchecked Sendable {
         self.dateOfBirth = dateOfBirth
         self.gender = gender
         self.password = password
+        self.image = image
         self.createdAt = createdAt
         self.updatedAt = updatedAt
     }
     
     func toDTO() -> CustomerDTO {
         .init(
-			id: self.id, fullName: self.fullName, phone: self.phone, email: self.email, dateOfBirth: self.dateOfBirth, gender: self.gender
+            id: self.id, fullName: self.fullName, phone: self.phone, email: self.email, dateOfBirth: self.dateOfBirth, gender: self.gender, image: self.image
         )
     }
     

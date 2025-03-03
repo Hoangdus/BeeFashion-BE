@@ -17,6 +17,7 @@ struct CreateCustomer: Migration {
             .field("date_of_birth", .string)
             .field("gender", .string)
             .field("password", .string, .required)
+            .field("avatar", .string)
             .field("created_at", .datetime)
             .field("updated_at", .datetime)
             .unique(on: "email")
