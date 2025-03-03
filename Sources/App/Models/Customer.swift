@@ -33,6 +33,15 @@ final class Customer: Model, @unchecked Sendable {
     @Field(key: "password")
     var password: String
     
+	@Siblings(through: Favorite.self, from: \.$customer, to: \.$product)
+	var favProducts: [Product]
+	
+	@Siblings(through: Cart.self, from: \.$customer, to: \.$product)
+	var cartProducts: [Product]
+	
+	@Children(for: \.$customer)
+	var addresses: [Address]
+	
     @Timestamp(key: "created_at", on: .create)
     var createdAt: Date?
     
@@ -55,7 +64,7 @@ final class Customer: Model, @unchecked Sendable {
     
     func toDTO() -> CustomerDTO {
         .init(
-            id: self.id, fullName: self.fullName, phone: self.phone, email: self.email, dateOfBirth: self.dateOfBirth, gender: self.gender
+			id: self.id, fullName: self.fullName, phone: self.phone, email: self.email, dateOfBirth: self.dateOfBirth, gender: self.gender
         )
     }
     

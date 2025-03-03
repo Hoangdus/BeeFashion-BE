@@ -12,11 +12,14 @@ import FluentMongoDriver
 struct AddressController: RouteCollection {
     func boot(routes: RoutesBuilder) throws {
         let addressRoutes = routes.grouped("addresses")
- 
-        addressRoutes.get("by-customer",":customerId", use: getAllAddressByCustomerID) // by customer_id
-        addressRoutes.post("create", ":customerId", use: createAddress)
-        addressRoutes.group(":id") { address in
-            address.get(use: getAddressByID)
+		
+		addressRoutes.group(":customerId"){ address in
+			address.get(use: getAllAddressByCustomerID)
+			address.post(use: createAddress)
+		}
+		
+        addressRoutes.group(":customerId", ":id") { address in
+//            address.get(use: getAddressByID)
             address.put(use: updateAddress)
             address.delete(use: deleteAddress)
         }
@@ -31,20 +34,20 @@ struct AddressController: RouteCollection {
 //        }
         
         let addresses = try await Address.query(on: req.db)
-            .filter(\.$customerId == customerID)
+			.filter(\.$customer.$id == customerID)
                 .all()
                 .map { $0.toDTO() }
         
         return addresses
     }
     
-    @Sendable func getAddressByID(req: Request) async throws -> AddressDTO {
-        guard let address = try await Address.find(req.parameters.get("id"), on: req.db) else {
-            throw Abort(.notFound)
-        }
-        
-        return address.toDTO()
-    }
+//    @Sendable func getAddressByID(req: Request) async throws -> AddressDTO {
+//        guard let address = try await Address.find(req.parameters.get("id"), on: req.db) else {
+//            throw Abort(.notFound)
+//        }
+//        
+//        return address.toDTO()
+//    }
     
     @Sendable func createAddress(req: Request) async throws -> AddressDTO {
         guard let customerId = req.parameters.get("customerId", as: UUID.self) else {
@@ -64,6 +67,14 @@ struct AddressController: RouteCollection {
     }
     
     @Sendable func deleteAddress(req: Request) async throws -> HTTPStatus {
+		guard let customerId = req.parameters.get("customerId", as: UUID.self) else {
+			throw Abort(.badRequest, reason: "Invalid customer ID")
+		}
+		
+		guard try await Customer.find(customerId, on: req.db) != nil else {
+			throw Abort(.notFound, reason: "User not found")
+		}
+		
         guard let deleteAddress = try await Address.find(req.parameters.get("id", as: UUID.self), on: req.db) else {
             throw Abort(.notFound)
         }
@@ -73,7 +84,16 @@ struct AddressController: RouteCollection {
     }
     
     @Sendable func updateAddress(req: Request) async throws -> AddressDTO {
-        guard let address = try await Address.find(req.parameters.get("id", as: UUID.self), on: req.db) else {
+		guard let customerId = req.parameters.get("customerId", as: UUID.self) else {
+			throw Abort(.badRequest, reason: "Invalid customer ID")
+		}
+		
+		guard try await Customer.find(customerId, on: req.db) != nil else {
+			throw Abort(.notFound, reason: "User not found")
+		}
+		
+		
+		guard let address = try await Address.find(req.parameters.get("id", as: UUID.self), on: req.db) else {
             throw Abort(.badRequest, reason: "ID not found")
         }
         
