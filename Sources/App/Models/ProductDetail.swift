@@ -36,17 +36,20 @@ final class ProductDetail: Model, @unchecked Sendable{
     @Parent(key: "brand_id")
     var brand: Brand
     
-    @Timestamp(key: "create_at", on: .create)
-    var createAt: Date?
-    
-    @Timestamp(key: "updated_at", on: .update)
-    var updateAt: Date?
+	@Timestamp(key: "created_at", on: .create)
+	var createdAt: Date?
+	
+	@Timestamp(key: "updated_at", on: .update)
+	var updatedAt: Date?
+	
+	@Timestamp(key: "deleted_at", on: .delete)
+	var deletedAt: Date?
     
 	init() {
 		
 	}
 	
-	init(id: UUID? = nil, price: Int, quantities: [Int], description: String, images: [String]? = nil, productId: Product.IDValue, brandId: Brand.IDValue, createAt: Date? = nil, updateAt: Date? = nil) {
+	init(id: UUID? = nil, price: Int, quantities: [Int], description: String, images: [String]? = nil, productId: Product.IDValue, brandId: Brand.IDValue, createdAt: Date? = nil, updatedAt: Date? = nil) {
 		self.id = id
 		self.price = price
 		self.description = description
@@ -54,8 +57,8 @@ final class ProductDetail: Model, @unchecked Sendable{
 		self.images = images
 		self.$product.id = productId
 		self.$brand.id = brandId
-		self.createAt = createAt
-		self.updateAt = updateAt
+		self.createdAt = createdAt
+		self.updatedAt = updatedAt
 	}
 	
     func toDTO() -> ProductDetailDTO{

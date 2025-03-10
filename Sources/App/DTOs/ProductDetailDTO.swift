@@ -19,6 +19,7 @@ struct ProductDetailDTO: Content{
     var images: [String]?
     var color: String = ""
     var managerId: String = ""
+	var deletedAt: Date?
     
     func toModel() -> ProductDetail{
 		let model = ProductDetail(price: self.price, quantities: self.quantities, description: self.description, productId: self.productId, brandId: self.brandId)

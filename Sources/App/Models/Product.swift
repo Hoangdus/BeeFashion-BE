@@ -30,24 +30,30 @@ final class Product: Model, @unchecked Sendable{
 	@Siblings(through: Favorite.self, from: \.$product, to: \.$customer)
 	var customers: [Customer]
 	
-    @Timestamp(key: "create_at", on: .create)
-    var createAt: Date?
+    @Timestamp(key: "created_at", on: .create)
+    var createdAt: Date?
     
     @Timestamp(key: "updated_at", on: .update)
-    var updateAt: Date?
+    var updatedAt: Date?
+	
+	@Timestamp(key: "deleted_at", on: .delete)
+	var deletedAt: Date?
     
     init() {
         
     }
     
-    init(id: UUID? = nil, name: String, image: String, categoryId: Category.IDValue) {
+    init(id: UUID? = nil, name: String, image: String, categoryId: Category.IDValue, createdAt: Date? = nil, updatedAt: Date? = nil, deletedAt: Date? = nil) {
         self.id = id
         self.name = name
         self.image = image
         self.$category.id = categoryId
+		self.createdAt = createdAt
+		self.updatedAt = updatedAt
+		self.deletedAt = deletedAt
     }
     
     func toDTO() -> ProductDTO{
-        return ProductDTO(id: self.id, name: self.name, image: self.image, categoryId: self.$category.id)
+		return ProductDTO(id: self.id, name: self.name, image: self.image, categoryId: self.$category.id, deletedAt: self.deletedAt)
     }
 }

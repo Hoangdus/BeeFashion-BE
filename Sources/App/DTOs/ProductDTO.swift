@@ -17,6 +17,7 @@ struct ProductDTO: Content {
 	var productDetail: ProductDetail?
 	var quantities: [Int]?
     var categoryId: Category.IDValue
+	var deletedAt: Date?
     
     func toModel() -> Product {
         let model = Product(name: self.name, image: "", categoryId: self.categoryId)

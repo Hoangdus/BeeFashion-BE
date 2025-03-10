@@ -11,18 +11,21 @@ import Vapor
 struct ProductController: RouteCollection {
     func boot(routes: RoutesBuilder) throws {
         let products = routes.grouped("products")
-
+		let manageRoute = routes.grouped("admin", "products")
+		
 		products.group(":customerId"){
 			$0.get(use: self.index)
 		}
         products.get(use: self.index)
-        products.post(use: self.create)
         
 //		products.group("images"){ product in
 //			product.post(use: uploadImages)
 //		}
 
-        products.group(":productID") { product in
+		manageRoute.get(use: self.getAll)
+		manageRoute.post(use: self.create)
+        manageRoute.group(":productID") { product in
+			product.patch(use: self.restore)
             product.delete(use: self.delete)
         }
     }
@@ -56,17 +59,37 @@ struct ProductController: RouteCollection {
 		// add child properties to parent
 		for product in products{
 			let productDetail = product.productDetail
-			var productDTO = product.toDTO()
-			productDTO.quantities = productDetail?.quantities
-			productDTO.price = productDetail?.price
-			if(customer != nil){
-				productDTO.isFavByCurrentUser = try await product.$customers.isAttached(to: customer!, on: req.db)
+			if (productDetail != nil){
+				var productDTO = product.toDTO()
+				productDTO.quantities = productDetail?.quantities
+				productDTO.price = productDetail?.price
+				if(customer != nil){
+					productDTO.isFavByCurrentUser = try await product.$customers.isAttached(to: customer!, on: req.db)
+				}
+				productDTOs.append(productDTO)
 			}
-			productDTOs.append(productDTO)
 		}
 		
 		return productDTOs
     }
+	
+	@Sendable
+	func getAll(req: Request) async throws -> [ProductDTO] {
+		let products = try await Product.query(on: req.db).withDeleted().with(\.$productDetail).all()
+		var productDTOs: [ProductDTO] = []
+		
+		// add child properties to parent
+		for product in products{
+			let productDetail = product.productDetail
+			var productDTO = product.toDTO()
+			productDTO.quantities = productDetail?.quantities
+			productDTO.price = productDetail?.price
+			productDTOs.append(productDTO)
+		}
+		
+		return productDTOs
+	}
+
 
     @Sendable
     func create(req: Request) async throws -> ProductDTO {
@@ -96,6 +119,15 @@ struct ProductController: RouteCollection {
         return product.toDTO()
     }
 
+	@Sendable
+	func restore(req: Request) async throws -> HTTPStatus {
+		guard let productID: UUID = req.parameters.get("productID") else { throw Abort(.badRequest) }
+		guard let product = try await Product.query(on: req.db).withDeleted().filter(\.$id == productID).first() else { throw Abort(.notFound) }
+		
+		try await product.restore(on: req.db)
+		return .noContent
+	}
+	
     @Sendable
     func delete(req: Request) async throws -> HTTPStatus {
         guard let product = try await Product.find(req.parameters.get("productID"), on: req.db) else {
