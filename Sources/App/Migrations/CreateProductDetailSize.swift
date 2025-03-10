@@ -14,8 +14,8 @@ struct CreateProductDetailSize: AsyncMigration {
 			.field("product_detail_id", .uuid, .required, .references("product_details", "id"))
 			.field("size_id", .uuid, .required, .references("sizes", "id"))
 			.unique(on: "product_detail_id", "size_id")
-			.field("create_at", .date)
-			.field("update_at", .date)
+			.field("created_at", .date)
+			.field("updated_at", .date)
 			.create()
 	}
 

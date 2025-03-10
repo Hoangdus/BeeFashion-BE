@@ -11,6 +11,7 @@ import Vapor
 struct BrandDTO: Content {
     var id: UUID?
     var name: String?
+	var deletedAt: Date?
     
     func toModel() -> Brand {
         let model = Brand()

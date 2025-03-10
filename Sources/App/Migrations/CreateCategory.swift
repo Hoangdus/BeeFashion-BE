@@ -12,8 +12,9 @@ struct CreateCategory: AsyncMigration {
         try await database.schema("categories")
             .id()
             .field("name", .string, .required)
-            .field("create_at", .date)
-            .field("update_at", .date)
+            .field("created_at", .date)
+            .field("updated_at", .date)
+			.field("deleted_at", .date)
             .create()
     }
 

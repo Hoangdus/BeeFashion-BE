@@ -21,24 +21,28 @@ final class Size: Model, @unchecked Sendable {
 	@Siblings(through: ProductDetailSize.self, from: \.$size, to: \.$productDetail)
 	var productDetails: [ProductDetail]
 	
-    @Timestamp(key: "create_at", on: .create)
-    var createAt: Date?
-    
-    @Timestamp(key: "updated_at", on: .update)
-    var updateAt: Date?
+	@Timestamp(key: "created_at", on: .create)
+	var createdAt: Date?
+	
+	@Timestamp(key: "updated_at", on: .update)
+	var updatedAt: Date?
+	
+	@Timestamp(key: "deleted_at", on: .delete)
+	var deletedAt: Date?
     
     init() {
         
     }
     
-    init(id: UUID? = nil, name: String, createAt: Date? = nil, updateAt: Date? = nil) {
+    init(id: UUID? = nil, name: String, createdAt: Date? = nil, updatedAt: Date? = nil) {
         self.id = id
         self.name = name
-        self.createAt = createAt
-        self.updateAt = updateAt
+		self.createdAt = createdAt
+		self.updatedAt = updatedAt
+		self.deletedAt = deletedAt
     }
     
     func toDTO() -> SizeDTO {
-        return SizeDTO(id: self.id, name: self.name)
+		return SizeDTO(id: self.id, name: self.name, deletedAt: self.deletedAt)
     }
 }
