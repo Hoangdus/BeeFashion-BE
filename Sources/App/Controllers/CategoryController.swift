@@ -11,10 +11,14 @@ import Vapor
 struct CategoryController: RouteCollection {
     func boot(routes: RoutesBuilder) throws {
         let categories = routes.grouped("categories")
-
+		let manageCategories = routes.grouped("admin", "categories")
+		
         categories.get(use: self.index)
-        categories.post(use: self.create)
-        categories.group(":categoryID") { category in
+		
+		manageCategories.get(use: self.getAll)
+        manageCategories.post(use: self.create)
+        manageCategories.group(":categoryID") { category in
+			category.patch(use: self.restore)
             category.delete(use: self.delete)
         }
     }
@@ -23,6 +27,11 @@ struct CategoryController: RouteCollection {
     func index(req: Request) async throws -> [CategoryDTO] {
         try await Category.query(on: req.db).all().map { $0.toDTO() }
     }
+	
+	@Sendable
+	func getAll(req: Request) async throws -> [CategoryDTO] {
+		try await Category.query(on: req.db).withDeleted().all().map { $0.toDTO() }
+	}
 
     @Sendable
     func create(req: Request) async throws -> CategoryDTO {
@@ -32,6 +41,17 @@ struct CategoryController: RouteCollection {
         return category.toDTO()
     }
 
+	@Sendable
+	func restore(req: Request) async throws -> HTTPStatus {
+		guard let categoryID: UUID = req.parameters.get("categoryID") else { throw Abort(.badRequest) }
+		guard let category = try await Category.query(on: req.db).withDeleted().filter(\.$id == categoryID).first() else {
+			throw Abort(.notFound)
+		}
+
+		try await category.restore(on: req.db)
+		return .noContent
+	}
+	
     @Sendable
     func delete(req: Request) async throws -> HTTPStatus {
         guard let category = try await Category.find(req.parameters.get("categoryID"), on: req.db) else {

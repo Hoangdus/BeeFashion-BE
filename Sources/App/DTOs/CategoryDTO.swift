@@ -11,6 +11,7 @@ import Vapor
 struct CategoryDTO: Content{
     var id: UUID?
     var name: String
+	var deletedAt: Date?
     
     func toModel() -> Category{
         let model = Category()

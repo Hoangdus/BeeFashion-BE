@@ -14,8 +14,8 @@ struct CreateFavorite: AsyncMigration {
 			.field("product_id", .uuid, .required, .references("products", "id"))
 			.field("customer_id", .uuid, .required, .references("customers", "id"))
 			.unique(on: "product_id", "customer_id")
-			.field("create_at", .date)
-			.field("update_at", .date)
+			.field("created_at", .date)
+			.field("updated_at", .date)
 			.create()
 	}
 

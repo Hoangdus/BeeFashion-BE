@@ -14,8 +14,9 @@ struct CreateProduct: AsyncMigration {
             .field("name", .string, .required)
             .field("image", .string, .required)
             .field("category_id", .uuid, .references("categories", "id"))
-            .field("create_at", .date)
-            .field("update_at", .date)
+			.field("created_at", .date)
+			.field("updated_at", .date)
+			.field("deleted_at", .date)
             .create()
     }
 

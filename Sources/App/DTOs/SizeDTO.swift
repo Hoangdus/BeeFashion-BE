@@ -11,6 +11,7 @@ import Vapor
 struct SizeDTO: Content {
     var id: UUID?
     var name: String
+	var deletedAt: Date?
     
     func toModel() -> Size {
         let model = Size()

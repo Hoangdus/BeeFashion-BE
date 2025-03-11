@@ -12,8 +12,9 @@ struct CreateBrand: AsyncMigration {
         try await database.schema("brands")
             .id()
             .field("name", .string, .required)
-			.field("created_at", .datetime)
-			.field("updated_at", .datetime)
+			.field("created_at", .date)
+			.field("updated_at", .date)
+			.field("deleted_at", .date)
             .create()
     }
 
