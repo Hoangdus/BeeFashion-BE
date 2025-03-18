@@ -14,6 +14,7 @@ struct CreateCart: AsyncMigration {
 			.field("quantity", .int, .required)
 			.field("product_id", .uuid, .required, .references("products", "id"))
 			.field("customer_id", .uuid, .required, .references("customers", "id"))
+			.field("size_id", .uuid, .required, .references("sizes", "id"))
 			.field("created_at", .date)
 			.field("updated_at", .date)
 			.create()
