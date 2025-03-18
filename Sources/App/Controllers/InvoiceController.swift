@@ -27,23 +27,27 @@ struct InvoiceController: RouteCollection {
 		var invoiceDTOs: [InvoiceDTO] = []
 		
 		for invoice in invoices{
-			let productIDs = invoice.invoiceItems.map{ $0.$product.$id.wrappedValue }
-			let products = try await Product.query(on: req.db).filter(\.$id ~~ productIDs).with(\.$productDetail).all()
-			var productDTOs: [ProductDTO] = []
+			let invoiceItems = invoice.invoiceItems
+			var invoiceItemDTOs: [InvoiceItemDTO] = []
 			
-			for product in products{
-				let productDetail = product.productDetail
-				if (productDetail != nil){
-					var productDTO = product.toDTO()
-					productDTO.quantities = productDetail?.quantities
-					productDTO.price = productDetail?.price
-					productDTOs.append(productDTO)
+			for invoiceItem in invoiceItems { 
+				var invoiceItemDTO = invoiceItem.toDTO()
+				let product = try await Product.query(on: req.db).filter(\.$id == invoiceItem.$product.id).with(\.$productDetail).first()
+				if (product != nil){
+					let productDetail = product!.productDetail
+					if (productDetail != nil){
+						var productDTO = product!.toDTO()
+						productDTO.quantities = productDetail?.quantities
+						productDTO.price = productDetail?.price
+						invoiceItemDTO.productDTO = productDTO
+						invoiceItemDTOs.append(invoiceItemDTO)
+					}
 				}
 			}
 			
 			var invoiceDTO = invoice.toDTO()
-			invoiceDTO.products = productDTOs
 			invoiceDTO.invoiceItems = nil
+			invoiceDTO.invoiceItemDTOs = invoiceItemDTOs
 			invoiceDTOs.append(invoiceDTO)
 		}
 		

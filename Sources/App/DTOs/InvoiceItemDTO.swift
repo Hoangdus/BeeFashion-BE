@@ -11,11 +11,13 @@ import Vapor
 struct InvoiceItemDTO: Content {
 	var id: UUID?
 	var productID: UUID
-//	var invoiceID: UUID?
+	var sizeID: UUID
+	var productDTO: ProductDTO?
+	var invoiceID: UUID?
 	var quantity: Int
 	
 	func toModel() -> InvoiceItem {
-		return InvoiceItem(productID: self.productID, quantity: self.quantity)
+		return InvoiceItem(productID: self.productID, sizeID: self.sizeID, quantity: self.quantity)
 	}
 }
 

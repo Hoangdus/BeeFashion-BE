@@ -14,7 +14,7 @@ struct InvoiceDTO: Content {
 	var addressID: UUID
 	var total: Int?
 	var paidStatus: Bool = false
-	var products: [ProductDTO]?
+//	var products: [ProductDTO]?
 	var invoiceItemDTOs: [InvoiceItemDTO]?
 	var invoiceItems: [InvoiceItem]?
 	var status: InvoiceStatus?

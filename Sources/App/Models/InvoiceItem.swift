@@ -21,6 +21,9 @@ final class InvoiceItem: Model, @unchecked Sendable {
 	@OptionalParent(key: "invoice_id")
 	var invoice: Invoice?
 	
+	@Parent(key: "size_id")
+	var size: Size
+	
 	@Field(key: "quantity")
 	var quantity: Int
 	
@@ -34,9 +37,10 @@ final class InvoiceItem: Model, @unchecked Sendable {
 		
 	}
 	
-	init(id: UUID? = nil, productID: Product.IDValue, invoiceID: Invoice.IDValue? = nil, quantity: Int, createdAt: Date? = nil, updatedAt: Date? = nil) {
+	init(id: UUID? = nil, productID: Product.IDValue, sizeID: Size.IDValue, invoiceID: Invoice.IDValue? = nil, quantity: Int, createdAt: Date? = nil, updatedAt: Date? = nil) {
 		self.id = id
 		self.$product.id = productID
+		self.$size.id = sizeID
 		self.$invoice.id = invoiceID
 		self.quantity = quantity
 		self.createdAt = createdAt
@@ -44,7 +48,7 @@ final class InvoiceItem: Model, @unchecked Sendable {
 	}
 	
 	func toDTO() -> InvoiceItemDTO {
-		return InvoiceItemDTO(productID: self.$product.id, quantity: self.quantity)
+		return InvoiceItemDTO(productID: self.$product.id, sizeID: self.$size.id, quantity: self.quantity)
 	}
 }
 
