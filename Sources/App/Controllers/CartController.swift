@@ -24,27 +24,31 @@ struct CartController: RouteCollection {
 	}
 
 	@Sendable
-	func index(req: Request) async throws -> [ProductDTO] {
+	func index(req: Request) async throws -> [CartDTO] {
 		guard let customerId: UUID = req.parameters.get("customerId") else { throw Abort(.badRequest) }
 		
 		guard let customer = try await Customer.query(on: req.db).with(\.$cartProducts).filter(\.$id == customerId).first() else {
 			throw Abort(.notFound)
 		}
-		let cartProducts = customer.cartProducts
-		var productDTOs: [ProductDTO] = []
 		
-		for cartProduct in cartProducts{
-			let productDetail = try await ProductDetail.query(on: req.db).filter(\.$product.$id == cartProduct.id!).first()
-			if (productDetail != nil){
-				var productDTO = cartProduct.toDTO()
+		let carts = try await Cart.query(on: req.db).filter(\.$customer.$id == customerId).all()
+		var cartDTOs: [CartDTO] = []
+		
+		for cart in carts {
+			let product = try await Product.query(on: req.db).with(\.$productDetail).filter(\.$id == cart.$product.id).first()
+			let productDetail = product?.productDetail
+			var cartDTO = cart.toDTO()
+			if (product != nil || productDetail != nil){
+				var productDTO = product!.toDTO()
 				productDTO.quantities = productDetail!.quantities
 				productDTO.price = productDetail!.price
-				productDTO.isFavByCurrentUser = try await cartProduct.$customers.isAttached(to: customer, on: req.db)
-				productDTOs.append(productDTO)
+				productDTO.isFavByCurrentUser = try await product!.$customers.isAttached(to: customer, on: req.db)
+				cartDTO.productDTO = productDTO
+				cartDTOs.append(cartDTO)
 			}
 		}
 		
-		return productDTOs
+		return cartDTOs
 	}
 
 	@Sendable
@@ -58,13 +62,16 @@ struct CartController: RouteCollection {
 		guard let customer = try await Customer.find(customerId, on: req.db) else { throw Abort(.notFound) }
 		
 		if(try await customer.$cartProducts.isAttached(to: product, on: req.db)){
-			let cartItem = try await Cart.query(on: req.db).filter(\.$product.$id == productId).filter(\.$customer.$id == customerId).first()
-			cartItem!.quantity += cartDTO.quantity
-			try await cartItem?.save(on: req.db)
-			return .ok
+			let cartItem = try await Cart.query(on: req.db).filter(\.$product.$id == productId).filter(\.$customer.$id == customerId).filter(\.$size.$id == cartDTO.sizeID).first()
+			if(cartItem != nil){
+				cartItem!.quantity += cartDTO.quantity
+				try await cartItem?.save(on: req.db)
+				return .ok
+			}
 		}
 		
 		try await customer.$cartProducts.attach(product, on: req.db){
+			$0.$size.id = cartDTO.sizeID
 			$0.quantity = cartDTO.quantity
 		}
 		return .ok
@@ -81,14 +88,16 @@ struct CartController: RouteCollection {
 		guard let customer = try await Customer.find(customerId, on: req.db) else { throw Abort(.notFound) }
 		
 		if(try await customer.$cartProducts.isAttached(to: product, on: req.db)){
-			let cartItem = try await Cart.query(on: req.db).filter(\.$product.$id == productId).filter(\.$customer.$id == customerId).first()
-			cartItem!.quantity += cartDTO.quantity
-			if(cartItem!.quantity <= 0){
-				try await customer.$cartProducts.detach(product, on: req.db)
-				throw Abort(.ok, reason: "item removed")
+			let cartItem = try await Cart.query(on: req.db).filter(\.$product.$id == productId).filter(\.$customer.$id == customerId).filter(\.$size.$id == cartDTO.sizeID).first()
+			if(cartItem != nil){
+				cartItem!.quantity += cartDTO.quantity
+				if(cartItem!.quantity <= 0){
+					try await customer.$cartProducts.detach(product, on: req.db)
+					throw Abort(.ok, reason: "item removed")
+				}
+				try await cartItem?.save(on: req.db)
+				return cartDTO
 			}
-			try await cartItem?.save(on: req.db)
-			return cartDTO
 		}
 		
 		throw Abort(.notFound)
