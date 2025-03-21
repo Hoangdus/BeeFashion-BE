@@ -32,6 +32,7 @@ struct InvoiceController: RouteCollection {
 			
 			for invoiceItem in invoiceItems { 
 				var invoiceItemDTO = invoiceItem.toDTO()
+				let sizeDTO = try await Size.query(on: req.db).filter(\.$id == invoiceItem.$size.id).first()?.toDTO()
 				let product = try await Product.query(on: req.db).filter(\.$id == invoiceItem.$product.id).with(\.$productDetail).first()
 				if (product != nil){
 					let productDetail = product!.productDetail
@@ -39,7 +40,8 @@ struct InvoiceController: RouteCollection {
 						var productDTO = product!.toDTO()
 						productDTO.quantities = productDetail?.quantities
 						productDTO.price = productDetail?.price
-						invoiceItemDTO.productDTO = productDTO
+						invoiceItemDTO.product = productDTO
+						invoiceItemDTO.size = sizeDTO
 						invoiceItemDTOs.append(invoiceItemDTO)
 					}
 				}

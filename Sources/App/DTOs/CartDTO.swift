@@ -14,7 +14,8 @@ struct CartDTO: Content {
 	var sizeID: Size.IDValue
 	var productId: Product.IDValue?
 	var customerId: Customer.IDValue?
-	var productDTO: ProductDTO?
+	var product: ProductDTO?
+	var size: SizeDTO?
 	
 	func toModel() -> Cart {
 		let model = Cart(id: self.id, customerId: self.customerId!, productId: self.productId!, sizeID: self.sizeID, quantity: self.quantity)

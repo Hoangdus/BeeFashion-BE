@@ -12,7 +12,8 @@ struct InvoiceItemDTO: Content {
 	var id: UUID?
 	var productID: UUID
 	var sizeID: UUID
-	var productDTO: ProductDTO?
+	var product: ProductDTO?
+	var size: SizeDTO?
 	var invoiceID: UUID?
 	var quantity: Int
 	

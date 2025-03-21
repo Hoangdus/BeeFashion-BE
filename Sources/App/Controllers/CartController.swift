@@ -35,6 +35,7 @@ struct CartController: RouteCollection {
 		var cartDTOs: [CartDTO] = []
 		
 		for cart in carts {
+			let sizeDTO = try await Size.query(on: req.db).filter(\.$id == cart.$size.id).first()?.toDTO()
 			let product = try await Product.query(on: req.db).with(\.$productDetail).filter(\.$id == cart.$product.id).first()
 			let productDetail = product?.productDetail
 			var cartDTO = cart.toDTO()
@@ -43,7 +44,8 @@ struct CartController: RouteCollection {
 				productDTO.quantities = productDetail!.quantities
 				productDTO.price = productDetail!.price
 				productDTO.isFavByCurrentUser = try await product!.$customers.isAttached(to: customer, on: req.db)
-				cartDTO.productDTO = productDTO
+				cartDTO.product = productDTO
+				cartDTO.size = sizeDTO
 				cartDTOs.append(cartDTO)
 			}
 		}
