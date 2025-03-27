@@ -10,15 +10,19 @@ import Vapor
 
 struct AddressDTO: Content, @unchecked Sendable {
     var id: UUID?
+	var name: String
+	var phoneNumber: String
     var province: String
     var district: String
     var ward: String
     var detail: String
     
-    func toModel(customerId: UUID) -> Address {
+    func toModel(customerID: UUID) -> Address {
         return Address(
             id: self.id,
-            customerId: customerId,
+			customerID: customerID,
+			name: self.name,
+			phoneNumber: self.phoneNumber,
             province: self.province,
             district: self.district,
             ward: self.ward,

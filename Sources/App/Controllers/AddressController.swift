@@ -13,12 +13,12 @@ struct AddressController: RouteCollection {
     func boot(routes: RoutesBuilder) throws {
         let addressRoutes = routes.grouped("addresses")
 		
-		addressRoutes.group(":customerId"){ address in
+		addressRoutes.group(":customerID"){ address in
 			address.get(use: getAllAddressByCustomerID)
 			address.post(use: createAddress)
 		}
 		
-        addressRoutes.group(":customerId", ":id") { address in
+        addressRoutes.group(":customerID", ":id") { address in
 //            address.get(use: getAddressByID)
             address.put(use: updateAddress)
             address.delete(use: deleteAddress)
@@ -26,7 +26,7 @@ struct AddressController: RouteCollection {
     }
     
     @Sendable func getAllAddressByCustomerID(req: Request) async throws -> [AddressDTO] {
-        guard let customerID = req.parameters.get("customerId", as: UUID.self) else {
+        guard let customerID = req.parameters.get("customerID", as: UUID.self) else {
                 throw Abort(.badRequest, reason: "Invalid customer ID")
             }
 //        let addresses = try await Address.query(on: req.db).all().map {
@@ -50,28 +50,28 @@ struct AddressController: RouteCollection {
 //    }
     
     @Sendable func createAddress(req: Request) async throws -> AddressDTO {
-        guard let customerId = req.parameters.get("customerId", as: UUID.self) else {
+        guard let customerID = req.parameters.get("customerID", as: UUID.self) else {
             throw Abort(.badRequest, reason: "Invalid customer ID")
         }
             
         // check existing customer
-        guard try await Customer.find(customerId, on: req.db) != nil else {
+        guard try await Customer.find(customerID, on: req.db) != nil else {
             throw Abort(.notFound, reason: "User not found")
         }
         
         let addressDTO = try req.content.decode(AddressDTO.self)
-        let address = addressDTO.toModel(customerId: customerId)
+        let address = addressDTO.toModel(customerID: customerID)
         
         try await address.save(on: req.db)
         return address.toDTO()
     }
     
     @Sendable func deleteAddress(req: Request) async throws -> HTTPStatus {
-		guard let customerId = req.parameters.get("customerId", as: UUID.self) else {
+		guard let customerID = req.parameters.get("customerID", as: UUID.self) else {
 			throw Abort(.badRequest, reason: "Invalid customer ID")
 		}
 		
-		guard try await Customer.find(customerId, on: req.db) != nil else {
+		guard try await Customer.find(customerID, on: req.db) != nil else {
 			throw Abort(.notFound, reason: "User not found")
 		}
 		
@@ -84,11 +84,11 @@ struct AddressController: RouteCollection {
     }
     
     @Sendable func updateAddress(req: Request) async throws -> AddressDTO {
-		guard let customerId = req.parameters.get("customerId", as: UUID.self) else {
+		guard let customerID = req.parameters.get("customerID", as: UUID.self) else {
 			throw Abort(.badRequest, reason: "Invalid customer ID")
 		}
 		
-		guard try await Customer.find(customerId, on: req.db) != nil else {
+		guard try await Customer.find(customerID, on: req.db) != nil else {
 			throw Abort(.notFound, reason: "User not found")
 		}
 		
@@ -99,6 +99,8 @@ struct AddressController: RouteCollection {
         
         let updateData = try req.content.decode(AddressDTO.self)
         
+		address.name = updateData.name
+		address.phoneNumber = updateData.phoneNumber
         address.province = updateData.province
         address.district = updateData.district
         address.ward = updateData.ward
