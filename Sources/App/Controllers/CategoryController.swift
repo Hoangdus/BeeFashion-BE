@@ -18,6 +18,7 @@ struct CategoryController: RouteCollection {
 		manageCategories.get(use: self.getAll)
         manageCategories.post(use: self.create)
         manageCategories.group(":categoryID") { category in
+			category.put(use: self.update)
 			category.patch(use: self.restore)
             category.delete(use: self.delete)
         }
@@ -41,6 +42,18 @@ struct CategoryController: RouteCollection {
         return category.toDTO()
     }
 
+	@Sendable
+	func update(req: Request) async throws -> CategoryDTO {
+		let newCategoryData = try req.content.decode(CategoryDTO.self)
+
+		guard let category = try await Category.find(req.parameters.get("categoryID"), on: req.db) else { throw Abort(.notFound) }
+		
+		category.name = newCategoryData.name
+		
+		try await category.save(on: req.db)
+		return category.toDTO()
+	}
+	
 	@Sendable
 	func restore(req: Request) async throws -> HTTPStatus {
 		guard let categoryID: UUID = req.parameters.get("categoryID") else { throw Abort(.badRequest) }

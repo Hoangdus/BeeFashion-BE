@@ -13,7 +13,7 @@ struct ProductDTO: Content {
     var name: String
     var image: String?
 	var price: Int?
-	var isFavByCurrentUser = false
+	var isFavByCurrentUser: Bool? = false
 	var productDetail: ProductDetail?
 	var quantities: [Int]?
     var categoryId: Category.IDValue
