@@ -18,6 +18,7 @@ struct BrandController: RouteCollection {
 		manageBrands.get(use: self.getAll)
         manageBrands.post(use: self.create)
         manageBrands.group(":brandID") { brand in
+			brand.put(use: self.update)
 			brand.patch(use: self.restore)
             brand.delete(use: self.delete)
         }
@@ -40,6 +41,18 @@ struct BrandController: RouteCollection {
         try await brand.save(on: req.db)
         return brand.toDTO()
     }
+	
+	@Sendable
+	func update(req: Request) async throws -> BrandDTO {
+		let newBrandData = try req.content.decode(BrandDTO.self)
+
+		guard let brand = try await Brand.find(req.parameters.get("brandID"), on: req.db) else { throw Abort(.notFound) }
+		
+		brand.name = newBrandData.name
+		
+		try await brand.save(on: req.db)
+		return brand.toDTO()
+	}
 
 	@Sendable
 	func restore(req: Request) async throws -> HTTPStatus {

@@ -31,6 +31,9 @@ public func configure(_ app: Application) async throws {
 	app.migrations.add(CreateCart())
 	app.migrations.add(CreateFavorite())
 	
+	app.migrations.add(CreateInvoice())
+	app.migrations.add(CreateInvoiceItem())
+	
     app.views.use(.leaf)
 
 

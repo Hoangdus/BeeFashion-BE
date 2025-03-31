@@ -10,16 +10,15 @@ import Vapor
 
 struct BrandDTO: Content {
     var id: UUID?
-    var name: String?
+    var name: String
 	var deletedAt: Date?
     
     func toModel() -> Brand {
         let model = Brand()
         
         model.id = self.id
-        if let name = self.name {
-            model.name = name
-        }
+		model.name = self.name
+        
         return model
     }
 }

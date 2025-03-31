@@ -10,6 +10,7 @@ import Fluent
 import struct Foundation.UUID
 
 final class Address: Model, @unchecked Sendable {
+	
     static let schema = "addresses"
     
     @ID(key: .id)
@@ -18,6 +19,12 @@ final class Address: Model, @unchecked Sendable {
     @Parent(key: "customer_id")
     var customer: Customer
     
+	@Field(key: "name")
+	var name: String
+	
+	@Field(key: "phone_number")
+	var phoneNumber: String
+	
     @Field(key: "province")
     var province: String
     
@@ -35,23 +42,27 @@ final class Address: Model, @unchecked Sendable {
     
     @Timestamp(key: "updated_at", on: .update)
     var updatedAt: Date?
-    
-    init() {}
-    
-	init(id: UUID? = nil, customerId: Customer.IDValue, province: String, district: String, ward: String, detail: String, createdAt: Date? = nil, updatedAt: Date? = nil) {
-        self.id = id
-		self.$customer.id = customerId
-        self.province = province
-        self.district = district
-        self.ward = ward
-        self.detail = detail
-        self.createdAt = createdAt
-        self.updatedAt = updatedAt
-    }
+	
+	init() {
+		
+	}
+	
+	init(id: UUID? = nil, customerID: Customer.IDValue, name: String, phoneNumber: String, province: String, district: String, ward: String, detail: String, createdAt: Date? = nil, updatedAt: Date? = nil) {
+		self.id = id
+		self.$customer.id = customerID
+		self.name = name
+		self.phoneNumber = phoneNumber
+		self.province = province
+		self.district = district
+		self.ward = ward
+		self.detail = detail
+		self.createdAt = createdAt
+		self.updatedAt = updatedAt
+	}
     
     func toDTO() -> AddressDTO {
         .init(
-            id: self.id, province: self.province, district: self.district, ward: self.ward, detail: self.detail
+			id: self.id, name: self.name, phoneNumber: self.phoneNumber, province: self.province, district: self.district, ward: self.ward, detail: self.detail
         )
     }
     

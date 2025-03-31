@@ -11,13 +11,16 @@ import Vapor
 struct ProductDetailController: RouteCollection {
     func boot(routes: RoutesBuilder) throws {
         let productDetails = routes.grouped("productdetails")
-
-        productDetails.get(use: self.index)
-        productDetails.post(use: self.create)
+		let manageRoute = routes.grouped("admin", "productdetails")
+		
         productDetails.group("getByProductID", ":productId"){ productId in
             productId.get(use: self.getByProductId)
         }
-        productDetails.group(":productDetailID") { productDetail in
+		
+		manageRoute.get(use: self.index)
+		manageRoute.post(use: self.create)
+        manageRoute.group(":productDetailID") { productDetail in
+			productDetail.put(use: self.update)
             productDetail.delete(use: self.delete)
         }
     }
@@ -90,6 +93,59 @@ struct ProductDetailController: RouteCollection {
 		
 		return .ok
     }
+	
+	@Sendable
+	func update(req: Request) async throws -> HTTPStatus {
+		let newProductDetailDTOData = try req.content.decode(ProductDetailDTO.self)
+		
+		guard let productDetail = try await ProductDetail.find(req.parameters.get("productDetailID"), on: req.db) else {
+			throw Abort(.notFound)
+		}
+		
+		let _ = productDetail.images //TODO delete old images
+		
+		var sizes: [Size] = []
+		for sizeId in newProductDetailDTOData.sizeIds ?? [] {
+			guard let size = try await Size.find(sizeId, on: req.db) else { throw Abort(.badRequest) }
+			sizes.append(size)
+		}
+		
+		let newProductDetail = newProductDetailDTOData.toModel()
+		
+		struct Input: Content {
+			var images: [File]
+		}
+		
+		let input = try req.content.decode(Input.self)
+			
+		let formatter = DateFormatter()
+		formatter.dateFormat = "dd-MM-yyyy-HH:mm:ss"
+		let prefix = formatter.string(from: .init())
+		
+		var imageFileNamesWithUrl: [String] = []
+		
+		for (_, value) in input.images.enumerated() {
+			let isImage = ["png", "jpeg", "jpg", "gif"].contains(value.extension?.lowercased())
+			if (!isImage){
+				throw Abort(.badRequest)
+			}
+			
+			let imageFileName = "image-\(prefix)-\(value.filename)"
+			imageFileNamesWithUrl.append("\(Environment.get("IMAGE_URL") ?? "http://127.0.0.1:8080/images/")\(imageFileName)")
+			try await req.fileio.writeFile(value.data, at: "Public/images/\(imageFileName)")
+		}
+		
+		productDetail.price = newProductDetail.price
+		productDetail.quantities = newProductDetail.quantities
+		productDetail.description = newProductDetail.description
+		productDetail.images = imageFileNamesWithUrl
+		try await productDetail.$sizes.detachAll(on: req.db)
+		try await productDetail.$sizes.attach(sizes, on: req.db)
+		productDetail.$brand.id = newProductDetail.$brand.id
+		
+		try await productDetail.save(on: req.db)
+		return .ok
+	}
 
     @Sendable
     func delete(req: Request) async throws -> HTTPStatus {

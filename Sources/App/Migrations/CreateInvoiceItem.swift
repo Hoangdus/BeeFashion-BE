@@ -1,27 +1,26 @@
 //
-//  CreateCart.swift
+//  CreateInvoiceItem.swift
 //
 //
-//  Created by HoangDus on 01/03/2025.
+//  Created by HoangDus on 13/03/2025.
 //
 
 import Fluent
 
-struct CreateCart: AsyncMigration {
+struct CreateInvoiceItem: AsyncMigration {
 	func prepare(on database: Database) async throws {
-		try await database.schema("carts")
+		try await database.schema("invoice_items")
 			.id()
-			.field("quantity", .int, .required)
 			.field("product_id", .uuid, .required, .references("products", "id"))
-			.field("customer_id", .uuid, .required, .references("customers", "id"))
 			.field("size_id", .uuid, .required, .references("sizes", "id"))
+			.field("quantity", .int, .required)
 			.field("created_at", .date)
 			.field("updated_at", .date)
 			.create()
 	}
 
 	func revert(on database: Database) async throws {
-		try await database.schema("carts").delete()
+		try await database.schema("invoice_items").delete()
 	}
 }
 

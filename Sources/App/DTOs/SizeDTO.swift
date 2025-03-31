@@ -17,7 +17,7 @@ struct SizeDTO: Content {
         let model = Size()
         
         model.id = self.id
-		model.name = name
+		model.name = self.name
         
         return model
     }

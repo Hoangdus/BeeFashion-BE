@@ -21,6 +21,9 @@ final class Cart: Model, @unchecked Sendable {
 	@Parent(key: "product_id")
 	var product: Product
 	
+	@Parent(key: "size_id")
+	var size: Size
+	
 	@Field(key: "quantity")
 	var quantity: Int
 	
@@ -34,12 +37,17 @@ final class Cart: Model, @unchecked Sendable {
 		
 	}
 	
-	init(id: UUID? = nil, customerId: Customer.IDValue, productId: Product.IDValue, quantity: Int, createdAt: Date? = nil, updatedAt: Date? = nil) {
+	init(id: UUID? = nil, customerId: Customer.IDValue, productId: Product.IDValue, sizeID: Size.IDValue, quantity: Int, createdAt: Date? = nil, updatedAt: Date? = nil) {
 		self.id = id
 		self.$customer.id = customerId
 		self.$product.id = productId
+		self.$size.id = sizeID
 		self.quantity = quantity
 		self.createdAt = createdAt
 		self.updatedAt = updatedAt
+	}
+	
+	func toDTO() -> CartDTO{
+		return CartDTO(id: self.id, quantity: self.quantity, sizeID: self.$size.id, productId: self.$product.id, customerId: self.$customer.id)
 	}
 }
