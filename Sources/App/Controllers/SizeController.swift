@@ -18,6 +18,7 @@ struct SizeController: RouteCollection {
 		manageSizes.get(use: self.getAll)
         manageSizes.post(use: self.create)
 		manageSizes.group(":sizeID") { size in
+			size.put(use: self.update)
 			size.patch(use: self.restore)
             size.delete(use: self.delete)
         }
@@ -41,6 +42,18 @@ struct SizeController: RouteCollection {
         return size.toDTO()
     }
 
+	@Sendable
+	func update(req: Request) async throws -> SizeDTO {
+		let newSizeData = try req.content.decode(SizeDTO.self)
+		
+		guard let size = try await Size.find(req.parameters.get("sizeID"), on: req.db) else { throw Abort(.notFound) }
+
+		size.name = newSizeData.name
+		
+		try await size.save(on: req.db)
+		return size.toDTO()
+	}
+	
 	@Sendable
 	func restore(req: Request) async throws -> HTTPStatus {
 		guard let sizeID: UUID = req.parameters.get("sizeID") else { throw Abort(.badRequest) }

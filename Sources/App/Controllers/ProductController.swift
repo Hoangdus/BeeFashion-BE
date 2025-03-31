@@ -25,6 +25,7 @@ struct ProductController: RouteCollection {
 		manageRoute.get(use: self.getAll)
 		manageRoute.post(use: self.create)
         manageRoute.group(":productID") { product in
+			product.put(use: self.update)
 			product.patch(use: self.restore)
             product.delete(use: self.delete)
         }
@@ -118,6 +119,40 @@ struct ProductController: RouteCollection {
         try await product.save(on: req.db)
         return product.toDTO()
     }
+	
+	@Sendable
+	func update(req: Request) async throws -> ProductDTO {
+		let newProductData = try req.content.decode(ProductDTO.self).toModel()
+		guard let productID: UUID = req.parameters.get("productID") else { throw Abort(.badRequest) }
+		guard let product = try await Product.query(on: req.db).with(\.$category).filter(\.$id == productID).first() else { throw Abort(.notFound) }
+		
+		let _ = product.image //TODO delete old image
+		
+		struct Input: Content {
+			var image: File
+		}
+		
+		let input = try req.content.decode(Input.self)
+		
+		let isImage = ["png", "jpeg", "jpg", "gif"].contains(input.image.extension?.lowercased())
+		if (!isImage){
+			throw Abort(.badRequest)
+		}
+		
+		let formatter = DateFormatter()
+		formatter.dateFormat = "dd-MM-yyyy-HH:mm:ss"
+		let prefix = formatter.string(from: .init())
+		
+		let imageFileName = "image-\(prefix)-\(input.image.filename)"
+		try await req.fileio.writeFile(input.image.data, at: "Public/images/\(imageFileName)")
+		
+		product.name = newProductData.name
+		product.image = "\(Environment.get("IMAGE_URL") ?? "http://127.0.0.1:8080/images/")\(imageFileName)"
+		product.$category.id = newProductData.$category.id
+		
+		try await product.save(on: req.db)
+		return product.toDTO()
+	}
 
 	@Sendable
 	func restore(req: Request) async throws -> HTTPStatus {
