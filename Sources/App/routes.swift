@@ -81,4 +81,5 @@ func routes(_ app: Application) throws {
     try app.register(collection: AddressController())
     try app.register(collection: RoleController())
 	try app.register(collection: InvoiceController())
+    try app.register(collection: ManagerController())
 }
