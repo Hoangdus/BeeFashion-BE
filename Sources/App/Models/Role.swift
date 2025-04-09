@@ -25,16 +25,20 @@ final class Role: Model, @unchecked Sendable {
     @Timestamp(key: "updated_at", on: .update)
     var updatedAt: Date?
     
+    @Timestamp(key: "deleted_at", on: .update)
+    var deletedAt: Date?
+    
     init() {}
     
-    init(id: UUID? = nil, roleName: String, createdAt: Date? = nil, updatedAt: Date? = nil) {
+    init(id: UUID? = nil, roleName: String, createdAt: Date? = nil, updatedAt: Date? = nil, deletedAt: Date? = nil) {
         self.id = id
         self.roleName = roleName
         self.createdAt = createdAt
         self.updatedAt = updatedAt
+        self.deletedAt = deletedAt
     }
     
     func toDTO() -> RoleDTO{
-        .init(id: self.id, roleName: self.roleName)
+        .init(id: self.id, roleName: self.roleName, deletedAt: self.deletedAt)
     }
 }
