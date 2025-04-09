@@ -62,7 +62,7 @@ final class ProductDetail: Model, @unchecked Sendable{
 	}
 	
     func toDTO() -> ProductDetailDTO{
-		return ProductDetailDTO(price: self.price, quantities: self.quantities, description: self.description, productId: self.$product.id, brandId: self.$brand.id, images: self.images)
+        return ProductDetailDTO(id: self.id, price: self.price, quantities: self.quantities, description: self.description, productId: self.$product.id, brandId: self.$brand.id, images: self.images)
     }
     
 }

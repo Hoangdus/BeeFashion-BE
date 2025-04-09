@@ -11,6 +11,7 @@ import Vapor
 struct RoleDTO: Content {
     var id: UUID?
     var roleName: String
+    var deletedAt: Date?
     
     func toModel() -> Role {
         .init(

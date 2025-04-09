@@ -12,7 +12,9 @@ import FluentMongoDriver
 struct RoleController: RouteCollection {
     func boot(routes: RoutesBuilder) throws {
         let roleRoutes = routes.grouped("roles")
+        let managerRoles = routes.grouped("admin", "roles")
         roleRoutes.post(use: createRole)
+        roleRoutes.get(use: getAll)
     
     }
     
@@ -28,6 +30,11 @@ struct RoleController: RouteCollection {
         } catch let error as DatabaseError where error.isConstraintFailure {
             throw Abort(.conflict, reason: "A role with this name already exists")
         }
+    }
+    
+    @Sendable
+    func getAll(req: Request) async throws -> [RoleDTO] {
+        try await Role.query(on: req.db).withDeleted().all().map { $0.toDTO() }
     }
     
 }

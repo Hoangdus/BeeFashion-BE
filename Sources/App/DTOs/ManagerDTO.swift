@@ -14,6 +14,7 @@ struct ManagerDTO: Content {
     var email: String?
     var name: String?
     var phone: String?
+    var deletedAt: Date?
     
     func toModel() -> Manager {
         let model = Manager()

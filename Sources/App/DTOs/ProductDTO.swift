@@ -10,17 +10,17 @@ import Vapor
 
 struct ProductDTO: Content {
     var id: UUID?
-    var name: String
+    var name: String?
     var image: String?
 	var price: Int?
 	var isFavByCurrentUser: Bool? = false
 	var productDetail: ProductDetail?
 	var quantities: [Int]?
-    var categoryId: Category.IDValue
+    var categoryId: Category.IDValue?
 	var deletedAt: Date?
     
     func toModel() -> Product {
-        let model = Product(name: self.name, image: "", categoryId: self.categoryId)
+        let model = Product(name: self.name ?? "", image: "", categoryId: self.categoryId ?? UUID())
         
         return model
     }

@@ -1,0 +1,28 @@
+.id-column {
+    max-width: 100px; /* Giới hạn chiều rộng */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Hiển thị dấu ba chấm khi quá dài */
+    cursor: pointer;
+}
+
+.copy-feedback {
+    position: absolute;
+    background: #28a745;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.swal2-title-small {
+    font-size: 1.2em !important; /* Giảm kích thước chữ tiêu đề (mặc định ~1.625em) */
+    margin: 0.5em !important; /* Giảm margin */
+}
+
+.swal2-popup-small {
+    font-size: 0.9em !important; /* Giảm kích thước chữ toàn bộ popup */
+}

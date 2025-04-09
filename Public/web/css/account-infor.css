@@ -1,0 +1,120 @@
+#userRole.admin {
+    color: #28a745; /* Màu xanh cho Admin */
+}
+  
+#userRole.manager {
+    color: #dc3545; /* Màu đỏ cho Manager */
+}
+  
+.card {
+    background-color: #f8f9fa;
+    border: none;
+    border-radius: 8px;
+    box-shadow: 0 10px 5px rgba(0, 0, 0, 0.05);
+}
+  
+.fs-16 {
+    font-size: 16px; /* Giảm kích thước chữ trong card */
+}
+  
+.gap-2 {
+    gap: 0.5rem; /* Giảm khoảng cách giữa các card */
+}
+  
+  /* Đảm bảo chữ không xuống dòng và căn giữa theo chiều dọc */
+.user-info {
+    white-space: nowrap; /* Ngăn chữ xuống dòng */
+    overflow: hidden; /* Ẩn phần chữ vượt quá nếu quá dài */
+    text-overflow: ellipsis; /* Thêm dấu ... nếu chữ bị cắt */
+}
+  
+  /* Căn giữa toàn bộ row theo chiều dọc */
+.align-items-center {
+    align-items: center;
+}
+
+.table-responsive {
+    overflow-x: auto;
+}
+  
+.table th,
+.table td {
+    vertical-align: middle; /* Căn giữa nội dung theo chiều dọc */
+}
+  
+.table img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+  
+.table .btn {
+    padding: 0.25rem 0.5rem; /* Nút nhỏ hơn */
+    font-size: 0.875rem;
+}
+
+.id-column {
+    max-width: 100px; /* Giới hạn chiều rộng */
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Hiển thị dấu ba chấm khi quá dài */
+    cursor: pointer;
+  }
+
+.copy-feedback {
+    position: absolute;
+    background: #28a745;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    z-index: 1000;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.swal2-title-small {
+    font-size: 1.2em !important; /* Giảm kích thước chữ tiêu đề (mặc định ~1.625em) */
+    margin: 0.5em !important; /* Giảm margin */
+}
+
+.swal2-popup-small {
+    font-size: 0.9em !important; /* Giảm kích thước chữ toàn bộ popup */
+}
+
+.align-items-center {
+    align-items: center;
+  }
+  
+  .table-responsive {
+    overflow-x: auto;
+  }
+  
+  .table th,
+  .table td {
+    vertical-align: middle;
+  }
+  
+  .table img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 4px;
+  }
+  
+  .table .btn {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+  }
+  
+  .table-light {
+    background-color: #f8f9fa;
+  }
+  
+  #imagePreview img {
+    width: 100px;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 4px;
+  }

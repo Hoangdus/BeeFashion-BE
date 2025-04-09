@@ -36,9 +36,12 @@ final class Manager: Model, @unchecked Sendable {
     @Timestamp(key: "updated_at", on: .update)
     var updatedAt: Date?
     
+    @Timestamp(key: "deleted_at", on: .delete)
+    var deletedAt: Date?
+    
     init() {}
     
-    init(id: UUID? = nil, roleID: UUID ,name: String, phone: String, email: String, password: String, createdAt: Date? = nil, updatedAt: Date? = nil) {
+    init(id: UUID? = nil, roleID: UUID ,name: String, phone: String, email: String, password: String, createdAt: Date? = nil, updatedAt: Date? = nil, deletedAt: Date? = nil) {
         self.id = id
         self.roleID = roleID
         self.name = name
@@ -47,11 +50,12 @@ final class Manager: Model, @unchecked Sendable {
         self.password = password
         self.createdAt = createdAt
         self.updatedAt = updatedAt
+        self.deletedAt = deletedAt
     }
     
     func toDTO() -> ManagerDTO {
         .init(
-            id: self.id, role_id: self.roleID, email: self.email, name: self.name, phone: self.phone
+            id: self.id, role_id: self.roleID, email: self.email, name: self.name, phone: self.phone, deletedAt: self.deletedAt
         )
     }
     

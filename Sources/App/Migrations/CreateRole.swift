@@ -14,6 +14,7 @@ struct CreateRole: Migration {
             .field("role_name", .string, .required)
             .field("created_at", .datetime)
             .field("updated_at", .datetime)
+            .field("deleted_at", .datetime)
             .unique(on: "role_name")
             .create()
     }
