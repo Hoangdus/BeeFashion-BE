@@ -18,6 +18,7 @@ struct CreateManager: Migration {
             .field("password", .string, .required)
             .field("create_at", .datetime)
             .field("updated_at", .datetime)
+            .field("deleted_at", .date)
             .unique(on: "email")
             .create()
     }
