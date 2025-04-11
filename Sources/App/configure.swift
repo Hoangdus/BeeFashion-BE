@@ -9,7 +9,17 @@ public func configure(_ app: Application) async throws {
     // uncomment to serve files from /Public folder
     app.middleware.use(FileMiddleware(publicDirectory: app.directory.publicDirectory))
     
+//    let corsConfiguration = CORSMiddleware.Configuration(
+//        allowedOrigin: .originBased, // Cho phép từ bất kỳ origin nào gửi request tới
+//        allowedMethods: [.GET, .POST, .PUT, .OPTIONS, .DELETE, .PATCH],
+//        allowedHeaders: [.accept, .authorization, .contentType, .origin, .xRequestedWith]
+//    )
+//    
+//    let cors = CORSMiddleware(configuration: corsConfiguration)
+    
     app.routes.defaultMaxBodySize = "10mb"
+    
+//    app.http.server.configuration.port = 9000
     
     try app.databases.use(DatabaseConfigurationFactory.mongo(
         connectionString: Environment.get("DATABASE_URL") ?? "mongodb://localhost:27017/vapor_database"
