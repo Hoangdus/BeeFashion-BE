@@ -24,7 +24,7 @@ $(document).ready(function () {
 
   async function fetchCategories() {
     try {
-      const response = await fetch("http://127.0.0.1:8080/categories");
+      const response = await fetch(`${BASE_URL}/categories`);
       if (!response.ok) throw new Error("Không thể lấy danh mục");
       const categories = await response.json();
       const categorySelect = $("#editCategoryId");
@@ -42,7 +42,7 @@ $(document).ready(function () {
 
   async function fetchBrands() {
     try {
-      const response = await fetch("http://127.0.0.1:8080/brands");
+      const response = await fetch(`${BASE_URL}/brands`);
       if (!response.ok) throw new Error("Không thể lấy thương hiệu");
       const brands = await response.json();
       const brandSelect = $("#editBrandId");
@@ -60,7 +60,7 @@ $(document).ready(function () {
 
   async function fetchSizes() {
     try {
-      const response = await fetch("http://127.0.0.1:8080/admin/sizes");
+      const response = await fetch(`${BASE_URL}/admin/sizes`);
       if (!response.ok) throw new Error("Không thể lấy kích thước");
       allSizes = await response.json();
       return allSizes;
@@ -73,9 +73,7 @@ $(document).ready(function () {
   async function loadProduct() {
     if (!productId) return;
     try {
-      const productResponse = await fetch(
-        `http://127.0.0.1:8080/admin/products`
-      );
+      const productResponse = await fetch(`${BASE_URL}/admin/products`);
       if (!productResponse.ok)
         throw new Error(`Không thể tải danh sách sản phẩm`);
       const products = await productResponse.json();
@@ -85,7 +83,7 @@ $(document).ready(function () {
 
       try {
         const detailResponse = await fetch(
-          `http://127.0.0.1:8080/productdetails/getByProductID/${productId}`
+          `${BASE_URL}/productdetails/getByProductID/${productId}`
         );
         if (detailResponse.ok) {
           originalProductDetail = await detailResponse.json();
@@ -425,7 +423,7 @@ $(document).ready(function () {
       if (productFormData.keys().next().value) {
         console.log("Gửi yêu cầu PUT tới /admin/products/", productId);
         const productResponse = await fetch(
-          `http://127.0.0.1:8080/admin/products/${productId}`,
+          `${BASE_URL}/admin/products/${productId}`,
           {
             method: "PUT",
             body: productFormData,
@@ -446,7 +444,7 @@ $(document).ready(function () {
           console.log("Không có ProductDetail hiện tại, tạo mới...");
           detailFormData.append("productId", productId);
           const detailResponse = await fetch(
-            `http://127.0.0.1:8080/admin/productdetails`,
+            `${BASE_URL}/admin/productdetails`,
             {
               method: "POST",
               body: detailFormData,
@@ -462,7 +460,7 @@ $(document).ready(function () {
             originalProductDetail.id
           );
           const detailResponse = await fetch(
-            `http://127.0.0.1:8080/admin/productdetails/${originalProductDetail.id}`,
+            `${BASE_URL}/admin/productdetails/${originalProductDetail.id}`,
             {
               method: "PUT",
               body: detailFormData,

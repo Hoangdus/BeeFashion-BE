@@ -33,7 +33,7 @@ $(document).ready(function () {
   async function fetchSizes() {
     try {
       console.log("Đang gọi API...");
-      const response = await fetch("http://127.0.0.1:8080/admin/sizes");
+      const response = await fetch(`${BASE_URL}/admin/sizes`);
       console.log("Response status:", response.status);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -71,7 +71,7 @@ $(document).ready(function () {
     };
 
     try {
-      const response = await fetch("http://127.0.0.1:8080/admin/sizes", {
+      const response = await fetch(`${BASE_URL}/admin/sizes`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -163,16 +163,13 @@ $(document).ready(function () {
     };
 
     try {
-      const response = await fetch(
-        `http://127.0.0.1:8080/admin/sizes/${sizeId}`,
-        {
-          method: "PUT",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(sizeData),
-        }
-      );
+      const response = await fetch(`${BASE_URL}/admin/sizes/${sizeId}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(sizeData),
+      });
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -277,7 +274,7 @@ $(document).ready(function () {
         }
 
         try {
-          const url = `http://127.0.0.1:8080/admin/sizes/${sizeId}`;
+          const url = `${BASE_URL}/admin/sizes/${sizeId}`;
           const method = isChecked ? "PATCH" : "DELETE";
           const response = await fetch(url, { method });
           if (!response.ok)

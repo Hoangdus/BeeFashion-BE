@@ -33,7 +33,7 @@ $(document).ready(function () {
   async function fetchProducts() {
     try {
       console.log("Đang gọi API...");
-      const response = await fetch("http://127.0.0.1:8080/admin/products");
+      const response = await fetch(`${BASE_URL}/admin/products`);
       console.log("Response status:", response.status);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -54,7 +54,7 @@ $(document).ready(function () {
   // Hàm lấy danh sách danh mục từ API
   async function fetchCategories() {
     try {
-      const response = await fetch("http://127.0.0.1:8080/categories");
+      const response = await fetch(`${BASE_URL}/categories`);
       if (!response.ok) throw new Error("Không thể lấy danh mục");
       const categories = await response.json();
       const categorySelect = $("#categoryId");
@@ -73,7 +73,7 @@ $(document).ready(function () {
   // Hàm lấy danh sách brands từ API
   async function fetchBrands() {
     try {
-      const response = await fetch("http://127.0.0.1:8080/brands");
+      const response = await fetch(`${BASE_URL}/brands`);
       if (!response.ok) throw new Error("Không thể lấy danh sách thương hiệu");
       const brands = await response.json();
       const brandSelect = $("#brandId");
@@ -155,7 +155,7 @@ $(document).ready(function () {
     formData.append("isFavByCurrentUser", "false");
 
     try {
-      const response = await fetch("http://127.0.0.1:8080/admin/products", {
+      const response = await fetch(`${BASE_URL}/admin/products`, {
         method: "POST",
         body: formData,
       });
@@ -167,14 +167,6 @@ $(document).ready(function () {
       const newProduct = await response.json();
       console.log("Thêm mới thành công:", newProduct);
       const productId = newProduct.id;
-
-      // data default productDetail
-      //   const productDetailFormData = new FormData();
-      //   productDetailFormData.append("productId", productId); // Bắt buộc
-      //   productDetailFormData.append("price", 0); // Trống (mặc định)
-      //   productDetailFormData.append("quantities", "[]");
-      //   productDetailFormData.append("description", ""); // Trống (chuỗi rỗng)
-      //   productDetailFormData.append("brandId", brandId); // Dùng brandId từ form
 
       const productDetailData = {
         productId: productId,
@@ -188,7 +180,7 @@ $(document).ready(function () {
       };
 
       const productDetailResponse = await fetch(
-        "http://127.0.0.1:8080/admin/productdetails",
+        `${BASE_URL}/admin/productdetails`,
         {
           method: "POST",
           headers: {
@@ -357,7 +349,7 @@ $(document).ready(function () {
         }
 
         try {
-          const url = `http://127.0.0.1:8080/admin/products/${productId}`;
+          const url = `${BASE_URL}/admin/products/${productId}`;
           const method = isChecked ? "PATCH" : "DELETE";
           const response = await fetch(url, { method });
           if (!response.ok)

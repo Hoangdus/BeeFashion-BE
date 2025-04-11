@@ -49,7 +49,7 @@ $(document).ready(function () {
   async function fetchAccounts() {
     try {
       console.log("Đang gọi API danh sách tài khoản...");
-      const response = await fetch("http://127.0.0.1:8080/admin/managers");
+      const response = await fetch(`${BASE_URL}/admin/managers`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -67,7 +67,7 @@ $(document).ready(function () {
   // Hàm lấy danh sách roles từ API
   async function fetchRoles() {
     try {
-      const response = await fetch("http://127.0.0.1:8080/roles"); // Adjust this endpoint
+      const response = await fetch(`${BASE_URL}/roles`); // Adjust this endpoint
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -152,7 +152,7 @@ $(document).ready(function () {
 
     try {
       const response = await fetch(
-        "http://127.0.0.1:8080/auth/register_manager",
+        `${BASE_URL}/auth/register_manager`,
         {
           method: "POST",
           headers: {
@@ -288,7 +288,7 @@ $(document).ready(function () {
         }
 
         try {
-          const url = `http://127.0.0.1:8080/admin/managers/${accountId}`;
+          const url = `${BASE_URL}/admin/managers/${accountId}`;
           const method = isChecked ? "PATCH" : "DELETE";
           const response = await fetch(url, { method });
           if (!response.ok)

@@ -33,7 +33,7 @@ $(document).ready(function () {
   async function fetchBrands() {
     try {
       console.log("Đang gọi API...");
-      const response = await fetch("http://127.0.0.1:8080/admin/brands");
+      const response = await fetch(`${BASE_URL}/admin/brands`);
       console.log("Response status:", response.status);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -50,12 +50,6 @@ $(document).ready(function () {
       );
     }
   }
-
-  //   // Hiển thị modal khi nhấn nút "Thêm mới"
-  //   $(document).on("click", "#addBrandBtn", function () {
-  //     console.log("Add button clicked!");
-  //     $("#addBrandModal").modal("show");
-  //   });
 
   $(document).ready(function () {
     console.log("Document ready! jQuery version:", $().jquery);
@@ -103,7 +97,7 @@ $(document).ready(function () {
     };
 
     try {
-      const response = await fetch("http://127.0.0.1:8080/brands", {
+      const response = await fetch(`${BASE_URL}/brands`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -167,13 +161,10 @@ $(document).ready(function () {
     // }
 
     try {
-      const response = await fetch(
-        `http://127.0.0.1:8080/admin/brands/${brandId}`,
-        {
-          method: "PUT",
-          body: formData,
-        }
-      );
+      const response = await fetch(`${BASE_URL}/admin/brands/${brandId}`, {
+        method: "PUT",
+        body: formData,
+      });
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -304,7 +295,7 @@ $(document).ready(function () {
         }
 
         try {
-          const url = `http://127.0.0.1:8080/admin/brands/${brandId}`;
+          const url = `${BASE_URL}/admin/brands/${brandId}`;
           const method = isChecked ? "PATCH" : "DELETE";
           const response = await fetch(url, { method });
           if (!response.ok)

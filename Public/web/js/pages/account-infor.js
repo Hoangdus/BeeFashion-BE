@@ -3,6 +3,8 @@ $(document).ready(function () {
     localStorage.getItem("user") || sessionStorage.getItem("user")
   );
 
+  console.log(BASE_URL);
+
   const adminRoleId = "748D8888-4088-440D-BA90-AFEA1D31B3E8";
   const managerRoleId = "9AC80862-F9B7-44FF-9DE7-4F02DF2F037A";
 
@@ -54,7 +56,7 @@ $(document).ready(function () {
   async function fetchProducts() {
     try {
       console.log("Đang gọi API...");
-      const response = await fetch("http://127.0.0.1:8080/admin/products");
+      const response = await fetch(`${BASE_URL}/admin/products`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -64,7 +66,7 @@ $(document).ready(function () {
       // Lấy chi tiết sản phẩm và lọc theo managerId
       const productDetailsPromises = allProducts.map(async (product) => {
         const detailResponse = await fetch(
-          `http://127.0.0.1:8080/productdetails/getByProductID/${product.id}`
+          `${BASE_URL}/productdetails/getByProductID/${product.id}`
         );
         if (!detailResponse.ok) {
           console.error(`Lỗi khi lấy chi tiết sản phẩm ${product.id}`);
@@ -102,7 +104,7 @@ $(document).ready(function () {
   // Hàm lấy danh sách danh mục từ API
   async function fetchCategories() {
     try {
-      const response = await fetch("http://127.0.0.1:8080/categories");
+      const response = await fetch(`${BASE_URL}/categories`);
       if (!response.ok) throw new Error("Không thể lấy danh mục");
       const categories = await response.json();
       const categorySelect = $("#categoryId");
@@ -121,7 +123,7 @@ $(document).ready(function () {
   // Hàm lấy danh sách brands từ API
   async function fetchBrands() {
     try {
-      const response = await fetch("http://127.0.0.1:8080/brands");
+      const response = await fetch(`${BASE_URL}/brands`);
       if (!response.ok) throw new Error("Không thể lấy danh sách thương hiệu");
       const brands = await response.json();
       const brandSelect = $("#brandId");
@@ -181,7 +183,7 @@ $(document).ready(function () {
     formData.append("isFavByCurrentUser", "false");
 
     try {
-      const response = await fetch("http://127.0.0.1:8080/admin/products", {
+      const response = await fetch(`${BASE_URL}/admin/products`, {
         method: "POST",
         body: formData,
       });
@@ -201,14 +203,11 @@ $(document).ready(function () {
         managerId: currentUserId,
       };
 
-      const productDetailResponse = await fetch(
-        "http://127.0.0.1:8080/productdetails",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(productDetailData),
-        }
-      );
+      const productDetailResponse = await fetch(`${BASE_URL}/productdetails`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(productDetailData),
+      });
       if (!productDetailResponse.ok)
         throw new Error(`HTTP error! status: ${productDetailResponse.status}`);
 
@@ -329,7 +328,7 @@ $(document).ready(function () {
         if (result.isConfirmed) {
           try {
             const response = await fetch(
-              `http://127.0.0.1:8080/admin/products/${productId}`,
+              `${BASE_URL}/admin/products/${productId}`,
               { method: "DELETE" }
             );
             if (!response.ok)
@@ -367,7 +366,7 @@ $(document).ready(function () {
         try {
           const method = isChecked ? "PATCH" : "DELETE";
           const response = await fetch(
-            `http://127.0.0.1:8080/admin/products/${productId}`,
+            `${BASE_URL}/admin/products/${productId}`,
             { method }
           );
           if (!response.ok)

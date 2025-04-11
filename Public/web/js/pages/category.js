@@ -33,7 +33,7 @@ $(document).ready(function () {
   async function fetchCategories() {
     try {
       console.log("Đang gọi API...");
-      const response = await fetch("http://127.0.0.1:8080/admin/categories");
+      const response = await fetch(`${BASE_URL}/admin/categories`);
       console.log("Response status:", response.status);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -71,7 +71,7 @@ $(document).ready(function () {
     };
 
     try {
-      const response = await fetch("http://127.0.0.1:8080/categories", {
+      const response = await fetch(`${BASE_URL}/categories`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -161,7 +161,7 @@ $(document).ready(function () {
 
     try {
       const response = await fetch(
-        `http://127.0.0.1:8080/admin/categories/${categoryId}`,
+        `${BASE_URL}/admin/categories/${categoryId}`,
         {
           method: "PUT", // Sử dụng PUT để cập nhật toàn bộ
           headers: {
@@ -275,7 +275,7 @@ $(document).ready(function () {
         }
 
         try {
-          const url = `http://127.0.0.1:8080/admin/categories/${categoryId}`;
+          const url = `${BASE_URL}/admin/categories/${categoryId}`;
           const method = isChecked ? "PATCH" : "DELETE";
           const response = await fetch(url, { method });
           if (!response.ok)

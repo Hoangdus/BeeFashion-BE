@@ -6,7 +6,7 @@ async function handleLogin(event) {
   const rememberMe = document.getElementById("rememberMe").checked;
 
   try {
-    const response = await fetch("/auth/login_manager", {
+    const response = await fetch(`${BASE_URL}/auth/login_manager`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
