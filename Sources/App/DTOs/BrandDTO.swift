@@ -12,7 +12,8 @@ struct BrandDTO: Content {
     var id: UUID?
     var name: String
 	var deletedAt: Date?
-    
+	var createdAt: Date?
+	
     func toModel() -> Brand {
         let model = Brand()
         

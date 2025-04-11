@@ -43,6 +43,6 @@ final class Size: Model, @unchecked Sendable {
     }
     
     func toDTO() -> SizeDTO {
-		return SizeDTO(id: self.id, name: self.name, deletedAt: self.deletedAt)
+		return SizeDTO(id: self.id, name: self.name, deletedAt: self.deletedAt, createdAt: self.createdAt)
     }
 }

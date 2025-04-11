@@ -28,7 +28,7 @@ struct ProductDetailController: RouteCollection {
     @Sendable
     func getByProductId(req: Request) async throws -> ProductDetailDTO {
         guard let productId: UUID = req.parameters.get("productId") else { throw Abort(.badRequest) }
-        guard let productDetail = try await ProductDetail.query(on: req.db).with(\.$sizes).filter(\.$product.$id == productId).first() else { throw Abort(.notFound) }
+		guard let productDetail = try await ProductDetail.query(on: req.db).withDeleted().with(\.$sizes).filter(\.$product.$id == productId).first() else { throw Abort(.notFound) }
         
         let productSizes = productDetail.sizes
         var productDetailDTO = productDetail.toDTO()
@@ -38,7 +38,7 @@ struct ProductDetailController: RouteCollection {
     
     @Sendable
     func index(req: Request) async throws -> [ProductDetailDTO] {
-        let productDetails = try await ProductDetail.query(on: req.db).with(\.$sizes).all()
+		let productDetails = try await ProductDetail.query(on: req.db).withDeleted().with(\.$sizes).all()
         var productDetailDTOs: [ProductDetailDTO] = []
         
         for productDetail in productDetails{
@@ -57,7 +57,7 @@ struct ProductDetailController: RouteCollection {
         
         var sizes: [Size] = []
         for sizeId in productDetailDTO.sizeIds ?? [] {
-            guard let size = try await Size.find(sizeId, on: req.db) else { throw Abort(.badRequest) }
+			guard let size = try await Size.find(sizeId, on: req.db) else { throw Abort(.notFound, reason: "sizeID \(sizeId) not found") }
             sizes.append(size)
         }
         

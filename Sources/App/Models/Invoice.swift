@@ -67,6 +67,6 @@ final class Invoice: Model, Content, @unchecked Sendable {
 	}
 	
 	func toDTO() -> InvoiceDTO{
-		return InvoiceDTO(id: self.id, customerID: self.$customer.id, addressID: self.$address.id, total: self.total, paidStatus: self.paidStatus, invoiceItems: self.$invoiceItems.value ?? [], status: self.status, paymentMethod: self.paymentMethod)
+		return InvoiceDTO(id: self.id, customerID: self.$customer.id, addressID: self.$address.id, total: self.total, paidStatus: self.paidStatus, invoiceItems: self.$invoiceItems.value ?? [], status: self.status, paymentMethod: self.paymentMethod, createdAt: self.createdAt)
 	}
 }

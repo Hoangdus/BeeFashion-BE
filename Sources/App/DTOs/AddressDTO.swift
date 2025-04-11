@@ -16,7 +16,8 @@ struct AddressDTO: Content, @unchecked Sendable {
     var district: String
     var ward: String
     var detail: String
-    
+	var createdAt: Date?
+	
     func toModel(customerID: UUID) -> Address {
         return Address(
             id: self.id,

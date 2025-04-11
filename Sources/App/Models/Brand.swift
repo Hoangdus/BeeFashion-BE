@@ -40,6 +40,6 @@ final class Brand: Model, @unchecked Sendable {
 	}
     
     func toDTO() -> BrandDTO {
-		return BrandDTO(id: self.id, name: self.name, deletedAt: self.deletedAt)
+		return BrandDTO(id: self.id, name: self.name, deletedAt: self.deletedAt, createdAt: self.createdAt)
     }
 }

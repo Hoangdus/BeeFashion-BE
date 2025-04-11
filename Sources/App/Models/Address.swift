@@ -62,7 +62,7 @@ final class Address: Model, @unchecked Sendable {
     
     func toDTO() -> AddressDTO {
         .init(
-			id: self.id, name: self.name, phoneNumber: self.phoneNumber, province: self.province, district: self.district, ward: self.ward, detail: self.detail
+			id: self.id, name: self.name, phoneNumber: self.phoneNumber, province: self.province, district: self.district, ward: self.ward, detail: self.detail, createdAt: self.createdAt
         )
     }
     

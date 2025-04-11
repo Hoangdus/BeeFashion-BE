@@ -18,6 +18,9 @@ final class Product: Model, @unchecked Sendable{
     @Field(key: "name")
     var name: String
 
+	@Field(key: "normalized_name")
+	var normalizedName: String
+	
     @OptionalChild(for: \.$product)
     var productDetail: ProductDetail?
     
@@ -27,6 +30,9 @@ final class Product: Model, @unchecked Sendable{
     @Parent(key: "category_id")
     var category: Category
     
+	@Parent(key: "manager_id")
+	var manager: Manager
+	
 	@Siblings(through: Favorite.self, from: \.$product, to: \.$customer)
 	var customers: [Customer]
 	
@@ -39,21 +45,23 @@ final class Product: Model, @unchecked Sendable{
 	@Timestamp(key: "deleted_at", on: .delete)
 	var deletedAt: Date?
     
-    init() {
-        
-    }
-    
-    init(id: UUID? = nil, name: String, image: String, categoryId: Category.IDValue, createdAt: Date? = nil, updatedAt: Date? = nil, deletedAt: Date? = nil) {
-        self.id = id
-        self.name = name
-        self.image = image
-        self.$category.id = categoryId
+	init() {
+		
+	}
+	
+	init(id: UUID? = nil, name: String, normalizedName: String, image: String, categoryID: Category.IDValue, managerID: Manager.IDValue, createdAt: Date? = nil, updatedAt: Date? = nil, deletedAt: Date? = nil) {
+		self.id = id
+		self.name = name
+		self.normalizedName = normalizedName
+		self.image = image
+		self.$category.id = categoryID
+		self.$manager.id = managerID
 		self.createdAt = createdAt
 		self.updatedAt = updatedAt
 		self.deletedAt = deletedAt
-    }
+	}
     
     func toDTO() -> ProductDTO{
-		return ProductDTO(id: self.id, name: self.name, image: self.image, categoryId: self.$category.id, deletedAt: self.deletedAt)
+		return ProductDTO(id: self.id, name: self.name, image: self.image, categoryId: self.$category.id, deletedAt: self.deletedAt, createdAt: self.createdAt)
     }
 }
