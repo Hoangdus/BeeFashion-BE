@@ -17,11 +17,13 @@ struct ProductDTO: Content {
 	var productDetail: ProductDetail?
 	var quantities: [Int]?
     var categoryId: Category.IDValue?
+	var managerID: Manager.IDValue?
+	var manager: ManagerDTO?
 	var deletedAt: Date?
-    
-    func toModel() -> Product {
-        let model = Product(name: self.name ?? "", image: "", categoryId: self.categoryId ?? UUID())
-        
+	var createdAt: Date?
+
+	func toModel(normalizedName: String) -> Product {
+		let model = Product(name: self.name ?? "", normalizedName: normalizedName, image: "", categoryID: self.categoryId ?? UUID(), managerID: self.managerID ?? UUID())
         return model
     }
 }

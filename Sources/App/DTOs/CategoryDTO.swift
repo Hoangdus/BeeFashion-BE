@@ -12,7 +12,8 @@ struct CategoryDTO: Content{
     var id: UUID?
     var name: String
 	var deletedAt: Date?
-    
+	var createdAt: Date?
+	
     func toModel() -> Category{
         let model = Category()
         

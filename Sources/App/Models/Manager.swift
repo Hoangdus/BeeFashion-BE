@@ -30,6 +30,9 @@ final class Manager: Model, @unchecked Sendable {
     @Field(key: "password")
     var password: String
     
+	@Children(for: \.$manager)
+	var products: [Product]
+	
     @Timestamp(key: "created_at", on: .create)
     var createdAt: Date?
     

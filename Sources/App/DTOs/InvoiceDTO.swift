@@ -19,6 +19,7 @@ struct InvoiceDTO: Content {
 	var invoiceItems: [InvoiceItem]?
 	var status: InvoiceStatus?
 	var paymentMethod: PaymentMethod
+	var createdAt: Date?
 	
 	func toModel() -> Invoice {
 		return Invoice(customerID: self.customerID, addressID: self.addressID, total: self.total, paidStatus: self.paidStatus, status: self.status ?? .pending, paymentMethod: self.paymentMethod)

@@ -6,7 +6,12 @@
 //
 
 import Fluent
+import FluentMongoDriver
 import Vapor
+
+struct QueryParam: Content{
+	let name: String?
+}
 
 struct ProductController: RouteCollection {
     func boot(routes: RoutesBuilder) throws {
@@ -76,15 +81,17 @@ struct ProductController: RouteCollection {
     
     @Sendable
     func getAll(req: Request) async throws -> [ProductDTO] {
-        let products = try await Product.query(on: req.db).withDeleted().with(\.$productDetail).all()
+		let products = try await Product.query(on: req.db).withDeleted().with(\.$productDetail).with(\.$manager).all()
         var productDTOs: [ProductDTO] = []
         
         // add child properties to parent
         for product in products{
             let productDetail = product.productDetail
+			let manager = product.manager.toDTO()
             var productDTO = product.toDTO()
             productDTO.quantities = productDetail?.quantities
             productDTO.price = productDetail?.price
+			productDTO.manager = manager
             productDTOs.append(productDTO)
         }
         
@@ -94,9 +101,15 @@ struct ProductController: RouteCollection {
     
     @Sendable
     func create(req: Request) async throws -> ProductDTO {
-        let product = try req.content.decode(ProductDTO.self).toModel()
+        let productDTO = try req.content.decode(ProductDTO.self)
+		let normalizedProductName = productDTO.name?.folding(options: .diacriticInsensitive, locale: .none).lowercased()
+		let product = productDTO.toModel(normalizedName: normalizedProductName!)
         
-        struct Input: Content {
+		guard let manager = try await Manager.find(productDTO.managerID, on: req.db) else {
+			throw Abort(.notFound, reason: "manager not found")
+		}
+		
+		struct Input: Content {
             var image: File
         }
         
@@ -115,25 +128,25 @@ struct ProductController: RouteCollection {
         try await req.fileio.writeFile(input.image.data, at: "Public/images/\(imageFileName)")
         
         product.image = "\(Environment.get("IMAGE_URL") ?? "http://127.0.0.1:8080/images/")\(imageFileName)"
-        
-        try await product.save(on: req.db)
+									
+		try await manager.$products.create(product, on: req.db)
         return product.toDTO()
     }
     
     @Sendable
     func update(req: Request) async throws -> ProductDTO {
-        let newProductData = try req.content.decode(ProductDTO.self)
+		struct Input: Content {
+			var image: File?
+		}
+		let input = try req.content.decode(Input.self)
+		
+		let newProductDataDTO = try req.content.decode(ProductDTO.self)
+		
         guard let productID: UUID = req.parameters.get("productID") else { throw Abort(.badRequest) }
         guard let product = try await Product.query(on: req.db).with(\.$category).filter(\.$id == productID).first() else { throw Abort(.notFound) }
         
+		var imageUrl = product.image
 //        let _ = product.image //TODO delete old image
-        var imageUrl = product.image
-        
-        struct Input: Content {
-            var image: File?
-        }
-        
-        let input = try req.content.decode(Input.self)
         
         if let newImage = input.image {
             let isImage = ["png", "jpeg", "jpg", "gif"].contains(newImage.extension?.lowercased())
@@ -154,10 +167,13 @@ struct ProductController: RouteCollection {
 //        product.image = imageUrl
 //        product.$category.id = newProductData.$category.id
         
-        if let name = newProductData.name {
+        if let name = newProductDataDTO.name {
             product.name = name
+			let normalizedProductName = name.folding(options: .diacriticInsensitive, locale: .none).lowercased()
+			product.normalizedName = normalizedProductName
         }
-        if let categoryID = newProductData.categoryId {
+		
+        if let categoryID = newProductDataDTO.categoryId {
             product.$category.id = categoryID
         }
         product.image = imageUrl
