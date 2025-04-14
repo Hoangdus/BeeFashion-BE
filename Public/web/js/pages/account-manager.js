@@ -151,18 +151,15 @@ $(document).ready(function () {
     };
 
     try {
-      const response = await fetch(
-        `${BASE_URL}/auth/register_manager`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            // Add authorization header if needed
-            // 'Authorization': 'Bearer ' + user.token
-          },
-          body: JSON.stringify(formData),
-        }
-      );
+      const response = await fetch(`${BASE_URL}/auth/register_manager`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          // Add authorization header if needed
+          // 'Authorization': 'Bearer ' + user.token
+        },
+        body: JSON.stringify(formData),
+      });
 
       if (!response.ok) {
         if (response.status === 409) {
@@ -227,11 +224,11 @@ $(document).ready(function () {
                 </div>
             </td>
             <td>
-              <button class="btn btn-sm btn-primary me-1 edit-account-btn" title="Sửa" data-id="${accountId}">
+              <button class="btn btn-sm btn-primary me-1 edit-account-btn" title="Update" data-id="${accountId}">
                 <i class="mdi mdi-pencil"></i>
               </button>
-              <button class="btn btn-sm btn-danger delete-account-btn" title="Xóa" data-id="${accountId}">
-                <i class="mdi mdi-trash-can"></i>
+              <button class="btn btn-sm btn-success" title="View info">
+                <i class="mdi mdi-eye"></i>
               </button>
             </td>
           </tr>

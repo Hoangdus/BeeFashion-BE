@@ -2,7 +2,12 @@ $(document).ready(function () {
   const user = JSON.parse(
     localStorage.getItem("user") || sessionStorage.getItem("user")
   );
-  const managerRoleId = "9AC80862-F9B7-44FF-9DE7-4F02DF2F037A"; // ID của role Manager
+
+  // console.log(user);
+
+  const managerRoleId = "9AC80862-F9B7-44FF-9DE7-4F02DF2F037A";
+  let availableSizes = [];
+  let isFetchingSizes = false;
 
   if (!user) {
     Swal.fire({
@@ -73,10 +78,10 @@ $(document).ready(function () {
   // Hàm lấy danh sách brands từ API
   async function fetchBrands() {
     try {
-      const response = await fetch(`${BASE_URL}/brands`);
+      const response = await fetch(`${BASE_URL}/admin/brands`);
       if (!response.ok) throw new Error("Không thể lấy danh sách thương hiệu");
       const brands = await response.json();
-      const brandSelect = $("#brandId");
+      const brandSelect = $("#detailBrandId");
       brandSelect.empty();
       brandSelect.append('<option value="">Chọn thương hiệu</option>');
       brands.forEach((brand) => {
@@ -89,28 +94,60 @@ $(document).ready(function () {
     }
   }
 
+  async function fetchSizes() {
+    try {
+      const response = await fetch(`${BASE_URL}/admin/sizes`);
+      if (!response.ok) throw new Error("Không thể lấy danh sách kích thước");
+      availableSizes = await response.json(); // Lưu vào availableSizes
+      console.log("Sizes loaded:", availableSizes);
+    } catch (error) {
+      console.error("Lỗi khi lấy sizes:", error);
+      availableSizes = []; // Đặt lại để tránh lỗi tiếp theo
+    }
+  }
+
+  function populateSizeRow() {
+    const sizeSelectOptions = availableSizes
+      .map((size) => `<option value="${size.id}">${size.name}</option>`)
+      .join("");
+    return `
+      <tr>
+        <td>
+          <select class="form-select size-select" required>
+            <option value="">Chọn kích thước</option>
+            ${sizeSelectOptions}
+          </select>
+        </td>
+        <td>
+          <input type="number" class="form-control quantity-input" min="0" required />
+        </td>
+        <td>
+          <button type="button" class="btn btn-danger btn-sm remove-size-btn">
+            <i class="mdi mdi-delete"></i>
+          </button>
+        </td>
+      </tr>
+    `;
+  }
+
   // Hiển thị modal và lấy danh mục khi nhấn nút "Thêm mới"
   $(document).on("click", "#addProductBtn", function () {
-    console.log("Add button clicked!");
+    // console.log("Add button clicked!");
     fetchCategories(); // Lấy danh mục khi mở modal
-    fetchBrands(); // Lấy brands khi mở modal
+    // fetchBrands(); // Lấy brands khi mở modal
     $("#addProductModal").modal("show");
-    console.log("Modal show called!");
+    // console.log("Add Product Modal called!");
   });
 
-  // Preview ảnh khi chọn file
   $("#productImage").on("change", function (e) {
     const file = e.target.files[0];
     const previewContainer = $("#imagePreview");
     previewContainer.empty();
-
     if (file) {
       const reader = new FileReader();
       reader.onload = function (event) {
         const img = $(
-          '<img src="' +
-            event.target.result +
-            '" alt="Preview" style="width: 100px; height: 100px; object-fit: cover; margin: 5px;">'
+          `<img src="${event.target.result}" alt="Preview" style="width: 100px; height: 100px; object-fit: cover; margin: 5px;">`
         );
         previewContainer.append(img);
       };
@@ -118,13 +155,41 @@ $(document).ready(function () {
     }
   });
 
+  $("#detailImages").on("change", function (e) {
+    const files = e.target.files;
+    const previewContainer = $("#detailImagePreview");
+    previewContainer.empty();
+    if (files && files.length > 0) {
+      Array.from(files).forEach((file) => {
+        const reader = new FileReader();
+        reader.onload = function (event) {
+          const img = $(
+            `<img src="${event.target.result}" alt="Preview" style="width: 100px; height: 100px; object-fit: cover; margin: 5px;">`
+          );
+          previewContainer.append(img);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+  });
+
+  $("#addSizeBtn").on("click", function () {
+    $("#sizesTableBody").append(populateSizeRow());
+  });
+
+  $(document).on("click", ".remove-size-btn", function () {
+    $(this).closest("tr").remove();
+  });
+
   // Xử lý khi nhấn nút "Lưu" trong modal
   $("#saveProductBtn").on("click", async function () {
-    const productName = $("#productName").val().trim();
+    const productName = $("#productName").val();
     // const productPrice = parseFloat($("#productPrice").val());
     const categoryId = $("#categoryId").val();
     const productImage = $("#productImage")[0].files[0];
-    const brandId = $("#brandId").val();
+    // const brandId = $("#brandId").val();
+    const managerId = user.id;
+    // const normalizedName = "";
 
     if (!productName) {
       alert("Vui lòng nhập tên sản phẩm!");
@@ -134,6 +199,10 @@ $(document).ready(function () {
     //   alert("Vui lòng nhập giá sản phẩm hợp lệ!");
     //   return;
     // }
+    if (!managerId) {
+      alert("Lỗi khi gán Id tài khoản hiện tại!");
+      return;
+    }
     if (!categoryId) {
       alert("Vui lòng chọn danh mục!");
       return;
@@ -142,17 +211,18 @@ $(document).ready(function () {
       alert("Vui lòng chọn ảnh sản phẩm!");
       return;
     }
-    if (!brandId) {
-      alert("Vui lòng chọn thương hiệu!");
-      return;
-    }
+    // if (!brandId) {
+    //   alert("Vui lòng chọn thương hiệu!");
+    //   return;
+    // }
 
     const formData = new FormData();
     formData.append("name", productName);
     // formData.append("price", productPrice);
     formData.append("categoryId", categoryId);
     formData.append("image", productImage);
-    formData.append("isFavByCurrentUser", "false");
+    formData.append("normalizedName", "");
+    formData.append("managerID", managerId);
 
     try {
       const response = await fetch(`${BASE_URL}/admin/products`, {
@@ -165,50 +235,149 @@ $(document).ready(function () {
       }
 
       const newProduct = await response.json();
-      console.log("Thêm mới thành công:", newProduct);
       const productId = newProduct.id;
 
-      const productDetailData = {
-        productId: productId,
-        price: 0,
-        quantities: [],
-        description: "",
-        brandId: brandId,
-        images: [],
-        color: "",
-        managerId: "",
-      };
+      await Swal.fire({
+        icon: "info",
+        title: "Thông báo",
+        text: "Vui lòng hoàn tất thông tin chi tiết sản phẩm!",
+        timer: 2000,
+        showConfirmButton: false,
+      });
 
-      const productDetailResponse = await fetch(
-        `${BASE_URL}/admin/productdetails`,
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(productDetailData),
-        }
-      );
-
-      console.log(productDetailResponse);
-
-      if (!productDetailResponse.ok) {
-        console.error("Response status:", productDetailResponse.status);
-        console.error("Response text:", await productDetailResponse.text());
-        throw new Error(
-          `HTTP error creating product detail! status: ${productDetailResponse.status}`
-        );
+      $("#productId").val(productId);
+      // $("#detailBrandId").val(brandId);
+      fetchBrands();
+      fetchSizes();
+      $("#sizesTableBody").empty();
+      // $("#sizesTableBody").append(populateSizeRow());
+      if (availableSizes.length > 0) {
+        $("#sizesTableBody").append(populateSizeRow());
       }
-      console.log("Thêm mới ProductDetail thành công");
-
-      // Đóng modal và làm mới bảng
-      $("#addProductModal").modal("hide");
-      $("#addProductForm")[0].reset();
-      $("#imagePreview").empty();
-      await fetchProducts();
+      $("#addProductDetailModal").modal("show");
+      // await fetchProducts();
     } catch (error) {
       console.error("Lỗi khi thêm mới:", error);
       alert("Có lỗi xảy ra khi thêm sản phẩm: " + error.message);
+    }
+  });
+
+  $("#saveProductDetailBtn").on("click", async function () {
+    const productId = $("#productId").val();
+    const brandId = $("#detailBrandId").val();
+    const price = parseInt($("#productPrice").val());
+    const description = $("#description").val().trim();
+    // const color = $("#color").val().trim();
+    const images = $("#detailImages")[0].files;
+
+    // Thu thập sizeIds và quantities từ bảng
+    const sizeRows = $("#sizesTableBody tr");
+    const sizeIds = [];
+    const quantities = [];
+
+    sizeRows.each(function () {
+      const sizeId = $(this).find(".size-select").val();
+      const quantity = parseInt($(this).find(".quantity-input").val());
+      if (sizeId && !isNaN(quantity) && quantity >= 0 && sizeId !== "") {
+        sizeIds.push(sizeId);
+        quantities.push(quantity);
+      }
+    });
+
+    if (!productId) {
+      Swal.fire({
+        icon: "error",
+        title: "Lỗi",
+        text: "ID sản phẩm không hợp lệ!",
+      });
+      return;
+    }
+    if (!brandId) {
+      Swal.fire({
+        icon: "warning",
+        title: "Lỗi",
+        text: "Vui lòng chọn thương hiệu!",
+      });
+      return;
+    }
+    if (isNaN(price) || price < 0) {
+      Swal.fire({
+        icon: "warning",
+        title: "Lỗi",
+        text: "Vui lòng nhập giá sản phẩm hợp lệ!",
+      });
+      return;
+    }
+    if (sizeIds.length === 0 || quantities.length === 0) {
+      Swal.fire({
+        icon: "warning",
+        title: "Lỗi",
+        text: "Vui lòng thêm ít nhất một kích thước và số lượng hợp lệ!",
+      });
+      return;
+    }
+    if (sizeIds.length !== quantities.length) {
+      Swal.fire({
+        icon: "error",
+        title: "Lỗi",
+        text: "Số lượng kích thước và số lượng không khớp!",
+      });
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("productId", productId);
+    formData.append("brandId", brandId);
+    formData.append("price", price);
+    // formData.append("quantities", JSON.stringify(quantities));
+    formData.append("description", description);
+    formData.append("color", "");
+    // formData.append("sizeIds", JSON.stringify(sizeIds));
+    sizeIds.forEach((id, index) => {
+      formData.append(`sizeIds[${index}]`, id);
+    });
+    quantities.forEach((qty, index) => {
+      formData.append(`quantities[${index}]`, qty);
+    });
+    Array.from(images).forEach((file, index) => {
+      formData.append(`images[${index}]`, file);
+    });
+
+    try {
+      const response = await fetch(`${BASE_URL}/admin/productdetails`, {
+        method: "POST",
+        body: formData,
+      });
+      if (!response.ok) {
+        let errorMessage = `HTTP error! status: ${response.status}`;
+        try {
+          const errorData = await response.json();
+          errorMessage += ` - ${errorData.reason || "Không có chi tiết lỗi"}`;
+        } catch (e) {
+          // Không parse được JSON
+        }
+        throw new Error(errorMessage);
+      }
+      console.log("Thêm chi tiết sản phẩm thành công");
+
+      // Đóng cả hai modal
+      $("#addProductDetailModal").modal("hide");
+      $("#addProductModal").modal("hide");
+      $("#addProductForm")[0].reset();
+      $("#addProductDetailForm")[0].reset();
+      $("#imagePreview").empty();
+      $("#detailImagePreview").empty();
+      await fetchProducts();
+      Swal.fire({
+        icon: "success",
+        title: "Thành công",
+        text: "Thêm sản phẩm và chi tiết thành công!",
+        timer: 1500,
+        showConfirmButton: false,
+      });
+    } catch (error) {
+      console.error("Lỗi khi thêm chi tiết sản phẩm:", error);
+      alert("Có lỗi xảy ra khi thêm chi tiết sản phẩm: " + error.message);
     }
   });
 
@@ -284,11 +453,11 @@ $(document).ready(function () {
                     </div>
                 </td>
                 <td>
-                  <button class="btn btn-sm btn-primary me-1 edit-product-btn" title="Sửa" data-id="${productId}">
+                  <button class="btn btn-sm btn-primary me-1 edit-product-btn" title="Update" data-id="${productId}">
                     <i class="mdi mdi-pencil"></i>
                   </button>
-                  <button class="btn btn-sm btn-danger" title="Xóa">
-                    <i class="mdi mdi-trash-can"></i>
+                  <button class="btn btn-sm btn-success" title="View info">
+                    <i class="mdi mdi-eye"></i>
                   </button>
                 </td>
               </tr>

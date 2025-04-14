@@ -621,19 +621,6 @@
                       required
                     >
                       <option value="">Chọn danh mục</option>
-                      <!-- Lấy danh sách danh mục từ API -->
-                    </select>
-                  </div>
-                  <div class="mb-3">
-                    <label for="brandId" class="form-label">Thương hiệu</label>
-                    <select
-                      class="form-select"
-                      id="brandId"
-                      name="brandId"
-                      required
-                    >
-                      <option value="">Chọn thương hiệu</option>
-                      <!-- Lấy danh sách brands từ API -->
                     </select>
                   </div>
                   <div class="mb-3">
@@ -664,6 +651,122 @@
                   type="button"
                   class="btn btn-primary"
                   id="saveProductBtn"
+                >
+                  Lưu
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal thêm chi tiết sản phẩm -->
+        <div
+          class="modal fade"
+          id="addProductDetailModal"
+          tabindex="-1"
+          aria-labelledby="addProductDetailModalLabel"
+          aria-hidden="true"
+        >
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="addProductDetailModalLabel">
+                  Thêm chi tiết sản phẩm
+                </h5>
+                <button
+                  type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                ></button>
+              </div>
+              <div class="modal-body">
+                <form id="addProductDetailForm" enctype="multipart/form-data">
+                  <input type="hidden" id="productId" name="productId" />
+                  <div class="mb-3">
+                    <label for="detailBrandId" class="form-label"
+                      >Thương hiệu</label
+                    >
+                    <select
+                      class="form-select"
+                      id="detailBrandId"
+                      name="brandId"
+                      required
+                    >
+                      <option value="">Chọn thương hiệu</option>
+                    </select>
+                  </div>
+                  <div class="mb-3">
+                    <label for="productPrice" class="form-label">Giá</label>
+                    <input
+                      type="number"
+                      class="form-control"
+                      id="productPrice"
+                      name="price"
+                      placeholder="Nhập giá sản phẩm"
+                      required
+                    />
+                  </div>
+                  <div class="mb-3">
+                    <label class="form-label">Kích thước và số lượng</label>
+                    <table class="table table-bordered sizes-table">
+                      <thead>
+                        <tr>
+                          <th>Size</th>
+                          <th>Số lượng</th>
+                          <th>Hành động</th>
+                        </tr>
+                      </thead>
+                      <tbody id="sizesTableBody"></tbody>
+                    </table>
+                    <button
+                      type="button"
+                      class="btn btn-success btn-sm mt-2"
+                      id="addSizeBtn"
+                    >
+                      <i class="mdi mdi-plus"></i> Thêm kích thước
+                    </button>
+                  </div>
+                  <div class="mb-3">
+                    <label for="description" class="form-label">Mô tả</label>
+                    <textarea
+                      class="form-control"
+                      id="description"
+                      name="description"
+                      placeholder="Nhập mô tả sản phẩm"
+                    ></textarea>
+                  </div>
+                  <div class="mb-3">
+                    <label for="detailImages" class="form-label"
+                      >Ảnh chi tiết</label
+                    >
+                    <input
+                      type="file"
+                      class="form-control"
+                      id="detailImages"
+                      name="images"
+                      accept="image/png,image/jpeg,image/jpg,image/gif"
+                      multiple
+                    />
+                  </div>
+                  <div
+                    id="detailImagePreview"
+                    class="d-flex flex-wrap gap-2"
+                  ></div>
+                </form>
+              </div>
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  data-bs-dismiss="modal"
+                >
+                  Đóng
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  id="saveProductDetailBtn"
                 >
                   Lưu
                 </button>

@@ -222,11 +222,11 @@ $(document).ready(function () {
                         </div>
                       </td>
                       <td>
-                          <button class="btn btn-sm btn-primary me-1" title="Sửa">
+                          <button class="btn btn-sm btn-primary me-1" title="Update">
                             <i class="mdi mdi-pencil"></i>
                           </button>
-                          <button class="btn btn-sm btn-danger" title="Xóa">
-                              <i class="mdi mdi-trash-can"></i>
+                          <button class="btn btn-sm btn-success" title="View info">
+                            <i class="mdi mdi-eye"></i>
                           </button>
                       </td>
                   </tr>
