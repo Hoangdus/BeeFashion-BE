@@ -632,6 +632,56 @@
           </div>
         </div>
 
+        <!-- Modal xem chi tiết sản phẩm -->
+        <div
+          class="modal fade"
+          id="viewCategoryDetailModal"
+          tabindex="-1"
+          aria-labelledby="viewCategoryDetailModalLabel"
+          aria-hidden="true"
+        >
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="viewCategoryDetailModalLabel">
+                  Chi tiết danh mục
+                </h5>
+                <button
+                  type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                ></button>
+              </div>
+              <div class="modal-body">
+                <div class="row">
+                  <p><strong>ID:</strong> <span id="viewCategoryId"></span></p>
+                  <p>
+                    <strong>Tên danh mục:</strong>
+                    <span id="viewCategoryName"></span>
+                  </p>
+                  <p>
+                    <strong>Trạng thái:</strong>
+                    <span id="viewStatus"></span>
+                  </p>
+                  <p>
+                    <strong>Ngày tạo:</strong> <span id="viewCreatedAt"></span>
+                  </p>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  data-bs-dismiss="modal"
+                >
+                  Đóng
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Modal sửa category -->
         <div
           class="modal fade"
