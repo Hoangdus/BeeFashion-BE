@@ -687,6 +687,55 @@
           </div>
         </div>
 
+        <!-- Modal xem chi tiết Size -->
+        <div
+          class="modal fade"
+          id="viewSizeDetailModal"
+          tabindex="-1"
+          aria-labelledby="viewSizeDetailModalLabel"
+          aria-hidden="true"
+        >
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="viewSizeDetailModalLabel">
+                  Chi tiết kích cỡ
+                </h5>
+                <button
+                  type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                ></button>
+              </div>
+              <div class="modal-body">
+                <div class="row">
+                  <p><strong>ID:</strong> <span id="viewSizeId"></span></p>
+                  <p>
+                    <strong>Tên kích cỡ:</strong>
+                    <span id="viewSizeName"></span>
+                  </p>
+                  <p>
+                    <strong>Trạng thái:</strong> <span id="viewStatus"></span>
+                  </p>
+                  <p>
+                    <strong>Ngày tạo:</strong> <span id="viewCreatedAt"></span>
+                  </p>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  data-bs-dismiss="modal"
+                >
+                  Đóng
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Footer Start -->
         <footer class="footer">
           <div class="container-fluid">

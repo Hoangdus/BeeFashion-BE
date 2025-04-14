@@ -386,13 +386,6 @@
                 </div>
               </li>
 
-              <!-- <li>
-                                <a href="landing.html" target="_blank">
-                                    <i data-feather="globe"></i>
-                                    <span> Landing </span>
-                                </a>
-                            </li> -->
-
               <li class="menu-title">Pages</li>
 
               <li>
@@ -769,6 +762,92 @@
                   id="saveProductDetailBtn"
                 >
                   Lưu
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal xem chi tiết sản phẩm -->
+        <div
+          class="modal fade"
+          id="viewProductDetailModal"
+          tabindex="-1"
+          aria-labelledby="viewProductDetailModalLabel"
+          aria-hidden="true"
+        >
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="viewProductDetailModalLabel">
+                  Chi tiết sản phẩm
+                </h5>
+                <button
+                  type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                ></button>
+              </div>
+              <div class="modal-body">
+                <div class="row">
+                  <div class="col-md-6">
+                    <h6 class="title-detail">Thông tin cơ bản</h6>
+                    <p><strong>ID:</strong> <span id="viewProductId"></span></p>
+                    <p>
+                      <strong>Tên sản phẩm:</strong>
+                      <span id="viewProductName"></span>
+                    </p>
+                    <p>
+                      <strong>Danh mục:</strong> <span id="viewCategory"></span>
+                    </p>
+                    <p>
+                      <strong>Thương hiệu:</strong> <span id="viewBrand"></span>
+                    </p>
+                    <p><strong>Giá:</strong> <span id="viewPrice"></span></p>
+                    <p>
+                      <strong>Trạng thái:</strong> <span id="viewStatus"></span>
+                    </p>
+                  </div>
+                  <div class="col-md-6">
+                    <h6>Ảnh sản phẩm</h6>
+                    <div
+                      id="viewProductImages"
+                      class="d-flex flex-wrap gap-2"
+                    ></div>
+                  </div>
+                </div>
+                <hr />
+                <h6 class="title-detail">Thông tin chi tiết</h6>
+                <p>
+                  <strong>Mô tả:</strong> <span id="viewDescription"></span>
+                </p>
+                <h6>Kích thước và số lượng</h6>
+                <table class="table table-bordered">
+                  <thead>
+                    <tr>
+                      <th>Kích thước</th>
+                      <th>Số lượng</th>
+                    </tr>
+                  </thead>
+                  <tbody id="viewSizesTable"></tbody>
+                </table>
+                <hr />
+                <h6 class="title-detail">Thông tin người tạo</h6>
+                <p>
+                  <strong>Người tạo:</strong> <span id="viewManager"></span>
+                </p>
+                <p>
+                  <strong>Ngày tạo:</strong> <span id="viewCreatedAt"></span>
+                </p>
+              </div>
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  data-bs-dismiss="modal"
+                >
+                  Đóng
                 </button>
               </div>
             </div>

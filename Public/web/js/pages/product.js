@@ -2,12 +2,8 @@ $(document).ready(function () {
   const user = JSON.parse(
     localStorage.getItem("user") || sessionStorage.getItem("user")
   );
-
-  // console.log(user);
-
   const managerRoleId = "9AC80862-F9B7-44FF-9DE7-4F02DF2F037A";
   let availableSizes = [];
-  let isFetchingSizes = false;
 
   if (!user) {
     Swal.fire({
@@ -106,6 +102,60 @@ $(document).ready(function () {
     }
   }
 
+  // Hàm lấy chi tiết sản phẩm từ API productdetails
+  async function fetchProductDetails(productId) {
+    try {
+      const response = await fetch(
+        `${BASE_URL}/productdetails/getByProductID/${productId}`
+      );
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
+      return data;
+    } catch (error) {
+      console.error("Lỗi khi lấy chi tiết sản phẩm:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Lỗi",
+        text: "Không thể tải chi tiết sản phẩm: " + error.message,
+      });
+      return null;
+    }
+  }
+
+  // Hàm lấy tên danh mục
+  async function fetchCategoryName(categoryId) {
+    try {
+      const response = await fetch(
+        `${BASE_URL}/admin/categories/${categoryId}`
+      );
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const category = await response.json();
+      return category.name || "Không xác định";
+    } catch (error) {
+      console.error("Lỗi khi lấy danh mục:", error);
+      return "Không xác định";
+    }
+  }
+
+  // Hàm lấy tên thương hiệu
+  async function fetchBrandName(brandId) {
+    try {
+      const response = await fetch(`${BASE_URL}/admin/brands/${brandId}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const brand = await response.json();
+      return brand.name || "Không xác định";
+    } catch (error) {
+      console.error("Lỗi khi lấy thương hiệu:", error);
+      return "Không xác định";
+    }
+  }
+
   function populateSizeRow() {
     const sizeSelectOptions = availableSizes
       .map((size) => `<option value="${size.id}">${size.name}</option>`)
@@ -132,11 +182,8 @@ $(document).ready(function () {
 
   // Hiển thị modal và lấy danh mục khi nhấn nút "Thêm mới"
   $(document).on("click", "#addProductBtn", function () {
-    // console.log("Add button clicked!");
-    fetchCategories(); // Lấy danh mục khi mở modal
-    // fetchBrands(); // Lấy brands khi mở modal
+    fetchCategories();
     $("#addProductModal").modal("show");
-    // console.log("Add Product Modal called!");
   });
 
   $("#productImage").on("change", function (e) {
@@ -381,6 +428,87 @@ $(document).ready(function () {
     }
   });
 
+  // Hàm hiển thị chi tiết sản phẩm trong modal
+  async function showProductDetails(productId) {
+    const product = products.find((p) => p.id === productId);
+    if (!product) {
+      Swal.fire({
+        icon: "error",
+        title: "Lỗi",
+        text: "Không tìm thấy sản phẩm!",
+      });
+      return;
+    }
+
+    // Lấy chi tiết sản phẩm
+    const details = await fetchProductDetails(productId);
+
+    // Lấy tên danh mục
+    const categoryName = await fetchCategoryName(product.categoryId);
+
+    // Lấy tên thương hiệu (nếu có chi tiết sản phẩm)
+    const brandName = details
+      ? await fetchBrandName(details.brandId)
+      : "Không xác định";
+
+    // Điền thông tin vào modal
+    $("#viewProductId").text(product.id);
+    $("#viewProductName").text(product.name || "Không có tên");
+    $("#viewCategory").text(categoryName);
+    $("#viewBrand").text(brandName);
+    $("#viewPrice").text(details ? formatPrice(details.price) : "Chưa có giá");
+    $("#viewStatus").text(product.deletedAt ? "Ẩn" : "Hiển thị");
+    $("#viewDescription").text(details?.description || "Không có mô tả");
+    $("#viewManager").text(product.manager?.name || "Không xác định");
+    $("#viewCreatedAt").text(
+      new Date(product.createdAt).toLocaleString("vi-VN") || "Không xác định"
+    );
+
+    // Hiển thị ảnh
+    const imageContainer = $("#viewProductImages");
+    imageContainer.empty();
+
+    // Ảnh chính
+    if (product.image) {
+      imageContainer.append(
+        `<img src="${product.image}" alt="Main Image" style="width: 100px; height: 100px; object-fit: cover; margin: 5px;">`
+      );
+    }
+
+    // Ảnh chi tiết
+    if (details?.images && details.images.length > 0) {
+      details.images.forEach((img) => {
+        imageContainer.append(
+          `<img src="${img}" alt="Detail Image" style="width: 100px; height: 100px; object-fit: cover; margin: 5px;">`
+        );
+      });
+    }
+
+    // Hiển thị kích thước và số lượng
+    const sizesTable = $("#viewSizesTable");
+    sizesTable.empty();
+    if (details?.sizes && details.sizes.length > 0 && details.quantities) {
+      details.sizes.forEach((size, index) => {
+        const quantity = details.quantities[index] || 0;
+        sizesTable.append(`
+              <tr>
+                  <td>${size.name || "Không xác định"}</td>
+                  <td>${quantity}</td>
+              </tr>
+          `);
+      });
+    } else {
+      sizesTable.append(`
+          <tr>
+              <td colspan="2">Không có thông tin kích thước</td>
+          </tr>
+      `);
+    }
+
+    // Hiển thị modal
+    $("#viewProductDetailModal").modal("show");
+  }
+
   // Cập nhật số lượng hiển thị khi thay đổi select
   $("#pageSizeSelect").on("change", function () {
     pageSize = parseInt($(this).val());
@@ -456,8 +584,8 @@ $(document).ready(function () {
                   <button class="btn btn-sm btn-primary me-1 edit-product-btn" title="Update" data-id="${productId}">
                     <i class="mdi mdi-pencil"></i>
                   </button>
-                  <button class="btn btn-sm btn-success" title="View info">
-                    <i class="mdi mdi-eye"></i>
+                  <button class="btn btn-sm btn-success me-1 view-product-btn" title="View info" data-id="${productId}">
+                        <i class="mdi mdi-eye"></i>
                   </button>
                 </td>
               </tr>
@@ -466,6 +594,12 @@ $(document).ready(function () {
       } catch (error) {
         console.error("Lỗi khi thêm sản phẩm:", product.id, error);
       }
+    });
+
+    // Thêm sự kiện cho nút View (ngoài vòng lặp forEach)
+    $(document).on("click", ".view-product-btn", function () {
+      const productId = $(this).data("id");
+      showProductDetails(productId);
     });
 
     // Khởi tạo tooltip
@@ -499,17 +633,17 @@ $(document).ready(function () {
         if (
           !(
             await Swal.fire({
-              title: `Bạn có chắc muốn ${action} sản phẩm này?`, // Rút gọn title
+              title: `Bạn có chắc muốn ${action} sản phẩm này?`,
               icon: "warning",
               showCancelButton: true,
               confirmButtonText: "OK",
               cancelButtonText: "Hủy",
-              width: "350px", // Giảm chiều rộng (mặc định ~500px)
-              padding: "1em", // Giảm padding để nhỏ gọn
-              buttonsStyling: true, // Giữ kiểu nút mặc định
+              width: "350px",
+              padding: "1em",
+              buttonsStyling: true, 
               customClass: {
-                title: "swal2-title-small", // Class tùy chỉnh cho title
-                popup: "swal2-popup-small", // Class tùy chỉnh cho popup
+                title: "swal2-title-small",
+                popup: "swal2-popup-small",
               },
             })
           ).isConfirmed
@@ -528,7 +662,7 @@ $(document).ready(function () {
               isChecked ? "hiện" : "ẩn"
             }`
           );
-          await fetchProducts(); // Làm mới bảng
+          await fetchProducts();
         } catch (error) {
           console.error("Lỗi khi cập nhật trạng thái:", error);
           alert("Có lỗi xảy ra: " + error.message);

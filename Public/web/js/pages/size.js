@@ -51,6 +51,19 @@ $(document).ready(function () {
     }
   }
 
+  async function fetchSizeByID(sizeId) {
+    try {
+      const response = await fetch(`${BASE_URL}/admin/sizes/${sizeId}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const size = await response.json();
+      return size;
+    } catch (error) {
+      console.error("Lỗi khi lấy sizes:", error);
+    }
+  }
+
   // Hiển thị modal khi nhấn nút "Thêm mới"
   $(document).on("click", "#addSizeBtn", function () {
     console.log("Add button clicked!");
@@ -94,6 +107,28 @@ $(document).ready(function () {
       alert("Có lỗi xảy ra khi thêm kích thước: " + error.message);
     }
   });
+
+  async function showSizeDetails(sizeId) {
+    const size = sizes.find((size) => size.id === sizeId);
+    if (!size) {
+      Swal.fire({
+        icon: "error",
+        title: "Lỗi",
+        text: "Không tìm thấy size!",
+      });
+      return;
+    }
+
+    const sizeInfo = await fetchSizeByID(sizeId);
+
+    $("#viewSizeId").text(sizeInfo.id);
+    $("#viewSizeName").text(sizeInfo.name);
+    $("#viewCreatedAt").text(
+      new Date(sizeInfo.createdAt).toLocaleString("vi-VN") || "Không xác định"
+    );
+    $("#viewStatus").text(sizeInfo.deletedAt ? "Ẩn" : "Hiển thị");
+    $("#viewSizeDetailModal").modal("show");
+  }
 
   // Cập nhật số lượng hiển thị khi thay đổi select
   $("#pageSizeSelect").on("change", function () {
@@ -226,13 +261,19 @@ $(document).ready(function () {
                           <button class="btn btn-sm btn-primary me-1" title="Update">
                             <i class="mdi mdi-pencil"></i>
                           </button>
-                          <button class="btn btn-sm btn-success" title="View info">
+                          <button class="btn btn-sm btn-success me-1 view-size-btn" title="View info" data-id="${sizeId}">
                             <i class="mdi mdi-eye"></i>
                           </button>
                       </td>
                   </tr>
               `;
       tableBody.append(row);
+    });
+
+    // Thêm sự kiện cho nút View (ngoài vòng lặp forEach)
+    $(document).on("click", ".view-size-btn", function () {
+      const sizeId = $(this).data("id");
+      showSizeDetails(sizeId);
     });
 
     $('[data-bs-toggle="tooltip"]').tooltip();
