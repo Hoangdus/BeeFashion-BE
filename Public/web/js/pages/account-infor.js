@@ -282,11 +282,11 @@ $(document).ready(function () {
             </td>
             <td>${product.createdAt || "N/A"}</td>
             <td>
-              <button class="btn btn-sm btn-primary me-1 edit-product-btn" title="Sửa" data-id="${productId}">
+              <button class="btn btn-sm btn-primary me-1 edit-product-btn" title="Update" data-id="${productId}">
                 <i class="mdi mdi-pencil"></i>
               </button>
-              <button class="btn btn-sm btn-danger delete-btn" title="Xóa" data-id="${productId}">
-                <i class="mdi mdi-trash-can"></i>
+              <button class="btn btn-sm btn-success" title="View info">
+                <i class="mdi mdi-eye"></i>
               </button>
             </td>
           </tr>

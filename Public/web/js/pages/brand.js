@@ -241,11 +241,11 @@ $(document).ready(function () {
                         <td>
                             <button class="btn btn-sm btn-primary edit-brand-btn" data-id="${
                               brand.id
-                            }" title="Sửa">
+                            }" title="Update">
                               <i class="mdi mdi-pencil"></i>
                             </button>
-                            <button class="btn btn-sm btn-danger" title="Xóa">
-                                <i class="mdi mdi-trash-can"></i>
+                            <button class="btn btn-sm btn-success" title="View info">
+                              <i class="mdi mdi-eye"></i>
                             </button>
                         </td>
                     </tr>

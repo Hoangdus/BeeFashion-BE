@@ -1,11 +1,99 @@
-.id-column {
-    max-width: 100px; /* Giới hạn chiều rộng */
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis; /* Hiển thị dấu ba chấm khi quá dài */
-    cursor: pointer;
+/* Kiểu cho container modal */
+.modal.fade.show {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    flex-direction: row;
+    pointer-events: none; /* Chỉ cho phép tương tác với nội dung modal */
 }
 
+/* Kiểu cho modal dialog */
+.modal-dialog {
+    pointer-events: auto; /* Đảm bảo nội dung modal có thể tương tác */
+    margin: 1rem auto; /* Căn giữa modal */
+    max-width: 600px; /* Chiều rộng cố định cho cả hai modal */
+    width: 90%; /* Responsive cho màn hình nhỏ */
+}
+
+/* Điều chỉnh riêng cho từng modal */
+#addProductModal,
+#addProductDetailModal {
+    transform: none; /* Xóa lệch trái/phải để căn giữa */
+}
+
+/* Kiểu cho nội dung modal */
+.modal-content {
+    border-radius: 8px; /* Bo góc cho giao diện hiện đại */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15); /* Bóng đổ nhẹ */
+    padding: 1rem; /* Thêm khoảng cách bên trong */
+}
+
+/* Tiêu đề modal */
+.modal-header {
+    padding: 1rem 1.5rem; /* Khoảng cách đồng nhất */
+    border-bottom: 1px solid #e9ecef; /* Đường viền nhẹ */
+}
+
+/* Phần thân modal */
+.modal-body {
+    padding: 1.5rem; /* Tăng khoảng cách cho nội dung */
+}
+
+/* Chân modal */
+.modal-footer {
+    padding: 1rem 1.5rem; /* Khoảng cách đồng nhất */
+    border-top: 1px solid #e9ecef; /* Đường viền nhẹ */
+}
+
+/* Các phần tử form trong modal */
+.modal-body .form-control,
+.modal-body .form-select {
+    font-size: 0.95rem; /* Kích thước chữ nhỏ hơn */
+}
+
+/* Đảm bảo bảng trong addProductDetailModal responsive */
+.sizes-table {
+    font-size: 0.9rem; /* Chữ nhỏ hơn cho bảng */
+    width: 100%; /* Chiều rộng đầy đủ */
+}
+
+/* Kiểu cho phần xem trước hình ảnh */
+#imagePreview,
+#detailImagePreview {
+    max-height: 150px; /* Giới hạn chiều cao */
+    overflow-y: auto; /* Cuộn nếu có nhiều hình */
+}
+
+/* Điều chỉnh responsive */
+@media (max-width: 576px) {
+    .modal-dialog {
+        max-width: 95%; /* Tăng chiều rộng trên màn hình nhỏ */
+    }
+    .modal-content {
+        padding: 0.5rem; /* Giảm padding trên màn hình nhỏ */
+    }
+    .modal-body {
+        padding: 1rem; /* Điều chỉnh khoảng cách */
+    }
+}
+
+/* Tùy chỉnh SweetAlert2 (nếu dùng với modal) */
+.swal2-title-small {
+    font-size: 1.2em !important;
+    margin: 0.5em !important;
+}
+.swal2-popup-small {
+    font-size: 0.9em !important;
+}
+
+/* Giữ lại các kiểu hiện có */
+.id-column {
+    max-width: 100px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+}
 .copy-feedback {
     position: absolute;
     background: #28a745;
@@ -16,13 +104,4 @@
     z-index: 1000;
     opacity: 0;
     transition: opacity 0.3s;
-}
-
-.swal2-title-small {
-    font-size: 1.2em !important; /* Giảm kích thước chữ tiêu đề (mặc định ~1.625em) */
-    margin: 0.5em !important; /* Giảm margin */
-}
-
-.swal2-popup-small {
-    font-size: 0.9em !important; /* Giảm kích thước chữ toàn bộ popup */
 }
