@@ -51,6 +51,20 @@ $(document).ready(function () {
     }
   }
 
+  async function getBrandByID(brandId) {
+    try {
+      const response = await fetch(`${BASE_URL}/admin/brands/${brandId}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const brand = await response.json();
+      return brand;
+    } catch (error) {
+      console.error("Lỗi khi lấy thương hiệu:", error);
+      return "Không xác định";
+    }
+  }
+
   $(document).ready(function () {
     console.log("Document ready! jQuery version:", $().jquery);
     console.log("Số nút #addBrandBtn:", $("#addBrandBtn").length);
@@ -97,7 +111,7 @@ $(document).ready(function () {
     };
 
     try {
-      const response = await fetch(`${BASE_URL}/brands`, {
+      const response = await fetch(`${BASE_URL}/admin/brands`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -178,6 +192,29 @@ $(document).ready(function () {
     }
   });
 
+  async function showBrandDetails(brandId) {
+    const brand = brands.find((b) => b.id === brandId);
+    if (!brand) {
+      Swal.fire({
+        icon: "error",
+        title: "Lỗi",
+        text: "Không tìm thấy sản phẩm!",
+      });
+      return;
+    }
+
+    const brandInfo = await getBrandByID(brandId);
+
+    $("#viewBrandId").text(brandInfo.id || "Không có tên");
+    $("#viewBrandName").text(brandInfo.name || "Không có tên");
+    $("#viewStatus").text(brandInfo.deletedAt ? "Ẩn" : "Hiển thị");
+    $("#viewCreatedAt").text(
+      new Date(brandInfo.createdAt).toLocaleString("vi-VN") || "Không xác định"
+    );
+
+    $("#viewBrandDetailModal").modal("show");
+  }
+
   // Cập nhật số lượng hiển thị khi thay đổi select
   $("#pageSizeSelect").on("change", function () {
     pageSize = parseInt($(this).val());
@@ -244,13 +281,18 @@ $(document).ready(function () {
                             }" title="Update">
                               <i class="mdi mdi-pencil"></i>
                             </button>
-                            <button class="btn btn-sm btn-success" title="View info">
+                            <button class="btn btn-sm btn-success me-1 view-brand-btn" title="View info" data-id="${brandId}">
                               <i class="mdi mdi-eye"></i>
                             </button>
                         </td>
                     </tr>
                 `;
       tableBody.append(row);
+    });
+
+    $(document).on("click", ".view-brand-btn", function () {
+      const brandId = $(this).data("id");
+      showBrandDetails(brandId);
     });
 
     // Khởi tạo tooltip
