@@ -11,6 +11,7 @@ import Vapor
 struct InvoiceController: RouteCollection {
 	func boot(routes: RoutesBuilder) throws {
 		let invoices = routes.grouped("invoices")
+        let manageInvoice = routes.grouped("admin","invoices")
 
 		invoices.get(":customerID", use: self.index)
 		invoices.post(use: self.create)
@@ -18,7 +19,44 @@ struct InvoiceController: RouteCollection {
 		invoices.group(":customerID",":invoiceID") { invoice in
 			invoice.delete(use: self.delete)
 		}
+        
+        manageInvoice.get(use: self.getAll)
 	}
+    
+    @Sendable
+    func getAll(req: Request) async throws -> [InvoiceDTO] {
+        let invoices = try await Invoice.query(on: req.db).with(\.$invoiceItems).all()
+        var invoiceDTOs: [InvoiceDTO] = []
+        
+        for invoice in invoices{
+            let invoiceItems = invoice.invoiceItems
+            var invoiceItemDTOs: [InvoiceItemDTO] = []
+            
+            for invoiceItem in invoiceItems {
+                var invoiceItemDTO = invoiceItem.toDTO()
+                let sizeDTO = try await Size.query(on: req.db).filter(\.$id == invoiceItem.$size.id).first()?.toDTO()
+                let product = try await Product.query(on: req.db).filter(\.$id == invoiceItem.$product.id).with(\.$productDetail).first()
+                if (product != nil){
+                    let productDetail = product!.productDetail
+                    if (productDetail != nil){
+                        var productDTO = product!.toDTO()
+                        productDTO.quantities = productDetail?.quantities
+                        productDTO.price = productDetail?.price
+                        invoiceItemDTO.product = productDTO
+                        invoiceItemDTO.size = sizeDTO
+                        invoiceItemDTOs.append(invoiceItemDTO)
+                    }
+                }
+            }
+            
+            var invoiceDTO = invoice.toDTO()
+            invoiceDTO.invoiceItems = nil
+            invoiceDTO.invoiceItemDTOs = invoiceItemDTOs
+            invoiceDTOs.append(invoiceDTO)
+        }
+        
+        return invoiceDTOs
+    }
 
 	@Sendable
 	func index(req: Request) async throws -> [InvoiceDTO] {
@@ -101,5 +139,48 @@ struct InvoiceController: RouteCollection {
 		
 		return .ok
 	}
+    
+    @Sendable
+    func updateStatus(req: Request) async throws -> HTTPStatus {
+        guard let customerID: UUID = req.parameters.get("customerID") else { throw Abort(.badRequest) }
+        guard let invoiceID: UUID = req.parameters.get("invoiceID") else { throw Abort(.badRequest) }
+        
+
+        
+        struct StatusUpdate: Content {
+            let status: InvoiceStatus
+        }
+        
+        let statusUpdate = try req.content.decode(StatusUpdate.self)
+        let newStatus = statusUpdate.status
+        
+        guard let invoice = try await Invoice.query(on: req.db).filter(\.$id == invoiceID).filter(\.$customer.$id == customerID).first() else {
+            throw Abort(.notFound)
+        }
+        
+        guard isValidStatusTransition(from: invoice.status, to: newStatus) else {
+            throw Abort(.badRequest)
+        }
+        
+        invoice.status = newStatus
+        try await invoice.save(on: req.db)
+        
+        return .ok
+    }
+    
+    private func isValidStatusTransition(from current: InvoiceStatus, to new: InvoiceStatus) -> Bool {
+        switch current {
+        case .pending:
+            return [.packing, .cancelled].contains(new)
+        case .packing:
+            return [.intransit, .pendingcancel].contains(new)
+        case .intransit:
+            return [.completed, .returned].contains(new)
+        case .pendingcancel:
+            return [.cancelled].contains(new)
+        case .completed, .returned, .cancelled:
+            return false
+        }
+    }
 }
 
