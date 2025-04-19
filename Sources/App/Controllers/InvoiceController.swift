@@ -8,6 +8,12 @@
 import Fluent
 import Vapor
 
+struct InvoiceFilter: Content{
+	let fromDate: String
+	let toDate: String
+	let status: InvoiceStatus
+}
+
 struct InvoiceController: RouteCollection {
 	func boot(routes: RoutesBuilder) throws {
 		let invoices = routes.grouped("invoices")
@@ -22,12 +28,41 @@ struct InvoiceController: RouteCollection {
         
         manageInvoice.get(use: self.getAll)
 	}
-    
+	
+    // filter
+	// body:{
+	//			"fromDate":"yyyy-mm-dd",
+	// 			"toDate":"yyyy-mm-dd",
+	// 			"status":"cancelled"
+	//		}
+	
+	// no filter
+	// body:{
+	//			"fromDate":"",
+	// 			"toDate":"",
+	// 			"status":""
+	//		}
     @Sendable
     func getAll(req: Request) async throws -> [InvoiceDTO] {
-        let invoices = try await Invoice.query(on: req.db).with(\.$invoiceItems).all()
+		let filter = try req.content.decode(InvoiceFilter.self)
+		
+		var invoices: [Invoice] = []
+		
+		if (!filter.toDate.isEmpty && !filter.fromDate.isEmpty && !filter.status.rawValue.isEmpty){
+			
+			let fromDateISOString: String = "\(filter.fromDate)T00:00:00+00:00"
+			let toDateISOString: String = "\(filter.toDate)T23:59:59+00:00"
+			
+			let fromDate = ISO8601DateFormatter().date(from: fromDateISOString)
+			let toDate = ISO8601DateFormatter().date(from: toDateISOString)
+			
+			invoices = try await Invoice.query(on: req.db).with(\.$invoiceItems).filter(\.$createdAt >= fromDate).filter(\.$createdAt <= toDate).filter(\.$status == filter.status).all()
+		}else{
+			invoices = try await Invoice.query(on: req.db).with(\.$invoiceItems).all()
+		}
+		
         var invoiceDTOs: [InvoiceDTO] = []
-        
+		
         for invoice in invoices{
             let invoiceItems = invoice.invoiceItems
             var invoiceItemDTOs: [InvoiceItemDTO] = []
@@ -96,23 +131,42 @@ struct InvoiceController: RouteCollection {
 
 	@Sendable
 	func create(req: Request) async throws -> HTTPStatus {
-		let invoiceDTO = try req.content.decode(InvoiceDTO.self)
+		var invoiceDTO = try req.content.decode(InvoiceDTO.self)
 		let invoiceItemDTOs = invoiceDTO.invoiceItemDTOs
-		
+	
 		if (invoiceItemDTOs == nil || invoiceItemDTOs!.count == 0) { throw Abort(.badRequest) }
 	
 		guard let _ = try await Customer.query(on: req.db).filter(\.$id == invoiceDTO.customerID).first() else {
-			throw Abort(.notFound)
+			throw Abort(.notFound, reason: "customer not found")
+		}
+		
+		guard let address = try await Address.query(on: req.db).filter(\.$id == invoiceDTO.addressID).first() else {
+			throw Abort(.notFound, reason: "address not found")
 		}
 		
 		var invoiceItems: [InvoiceItem] = []
 		for invoiceItemDTO in invoiceItemDTOs!{
 			guard let _ = try await Product.query(on: req.db).filter(\.$id == invoiceItemDTO.productID).first() else {
-				throw Abort(.notFound)
+				throw Abort(.notFound, reason: "product \(invoiceItemDTO.productID) not found")
 			}
+			
+			//reduce stock
+			guard let productDetail = try await ProductDetail.query(on: req.db).withDeleted().with(\.$sizes).filter(\.$product.$id == invoiceItemDTO.productID).first() else { throw Abort(.notFound) }
+			let sizeIndex = productDetail.sizes.firstIndex{ $0.id == invoiceItemDTO.sizeID }
+			var quantities = productDetail.quantities
+			if(invoiceItemDTO.quantity <= quantities[sizeIndex!]){
+				quantities[sizeIndex!] = quantities[sizeIndex!] - invoiceItemDTO.quantity
+			}else{
+				throw Abort(.badRequest, reason: "not enough stock, only \(quantities[sizeIndex!]) avaliable")
+			}
+			productDetail.quantities = quantities
+			try await productDetail.save(on: req.db)
+			
+			//add invoiceItem to invoice
 			invoiceItems.append(invoiceItemDTO.toModel())
 		}
 		
+		invoiceDTO.fullAddress = "\(address.detail) \(address.ward) \(address.district) \(address.province)"
 		let invoice = invoiceDTO.toModel()
 		try await invoice.create(on: req.db)
 		try await invoice.$invoiceItems.create(invoiceItems, on: req.db)
@@ -125,12 +179,22 @@ struct InvoiceController: RouteCollection {
 		guard let customerID: UUID = req.parameters.get("customerID") else { throw Abort(.badRequest) }
 		guard let invoiceID: UUID = req.parameters.get("invoiceID") else { throw Abort(.badRequest) }
 		
-		guard let invoice = try await Invoice.query(on: req.db).filter(\.$id == invoiceID).filter(\.$customer.$id == customerID).first() else {
+		guard let invoice = try await Invoice.query(on: req.db).with(\.$invoiceItems).filter(\.$id == invoiceID).filter(\.$customer.$id == customerID).first() else {
 			throw Abort(.notFound)
 		}
 		
 		if(invoice.status == InvoiceStatus.pending){
 			invoice.status = InvoiceStatus.cancelled
+			
+			//restore stock when cancel
+			for invoiceItem in invoice.invoiceItems{
+				guard let productDetail = try await ProductDetail.query(on: req.db).withDeleted().with(\.$sizes).filter(\.$product.$id == invoiceItem.$product.id).first() else { throw Abort(.notFound) }
+				let sizeIndex = productDetail.sizes.firstIndex{ $0.id == invoiceItem.$size.id }
+				var quantities = productDetail.quantities
+				quantities[sizeIndex!] = quantities[sizeIndex!] + invoiceItem.quantity
+				productDetail.quantities = quantities
+				try await productDetail.save(on: req.db)
+			}
 		}else if(invoice.status == InvoiceStatus.packing){
 			invoice.status = InvoiceStatus.pendingcancel
 		}
@@ -144,8 +208,6 @@ struct InvoiceController: RouteCollection {
     func updateStatus(req: Request) async throws -> HTTPStatus {
         guard let customerID: UUID = req.parameters.get("customerID") else { throw Abort(.badRequest) }
         guard let invoiceID: UUID = req.parameters.get("invoiceID") else { throw Abort(.badRequest) }
-        
-
         
         struct StatusUpdate: Content {
             let status: InvoiceStatus
