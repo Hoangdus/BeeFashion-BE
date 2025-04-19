@@ -26,8 +26,8 @@ final class Invoice: Model, Content, @unchecked Sendable {
 	@Parent(key: "customer_id")
 	var customer: Customer
 	
-	@Parent(key: "address_id")
-	var address: Address
+	@Field(key: "full_address")
+	var fullAddress: String
 	
 	@Field(key: "total")
 	var total: Int?
@@ -54,10 +54,10 @@ final class Invoice: Model, Content, @unchecked Sendable {
 		
 	}
 	
-	init(id: UUID? = nil, customerID: Customer.IDValue, addressID: Address.IDValue, total: Int?, paidStatus: Bool, status: InvoiceStatus, paymentMethod: PaymentMethod, createdAt: Date? = nil, updatedAt: Date? = nil) {
+	init(id: UUID? = nil, customerID: Customer.IDValue, fullAddress: String, total: Int?, paidStatus: Bool, status: InvoiceStatus, paymentMethod: PaymentMethod, createdAt: Date? = nil, updatedAt: Date? = nil) {
 		self.id = id
 		self.$customer.id = customerID
-		self.$address.id = addressID
+		self.fullAddress = fullAddress
 		self.total = total
 		self.paidStatus = paidStatus
 		self.status = status
@@ -67,6 +67,6 @@ final class Invoice: Model, Content, @unchecked Sendable {
 	}
 	
 	func toDTO() -> InvoiceDTO{
-		return InvoiceDTO(id: self.id, customerID: self.$customer.id, addressID: self.$address.id, total: self.total, paidStatus: self.paidStatus, invoiceItems: self.$invoiceItems.value ?? [], status: self.status, paymentMethod: self.paymentMethod, createdAt: self.createdAt)
+		return InvoiceDTO(id: self.id, customerID: self.$customer.id, addressID: UUID(), fullAddress: self.fullAddress, total: self.total, paidStatus: self.paidStatus, invoiceItems: self.$invoiceItems.value ?? [], status: self.status, paymentMethod: self.paymentMethod, createdAt: self.createdAt)
 	}
 }
