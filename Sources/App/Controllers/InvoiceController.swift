@@ -11,7 +11,7 @@ import Vapor
 struct InvoiceFilter: Content{
 	let fromDate: String
 	let toDate: String
-	let status: InvoiceStatus
+	let status: InvoiceStatus?
 }
 
 struct InvoiceController: RouteCollection {
@@ -33,32 +33,47 @@ struct InvoiceController: RouteCollection {
 	// body:{
 	//			"fromDate":"yyyy-mm-dd",
 	// 			"toDate":"yyyy-mm-dd",
-	// 			"status":"cancelled"
+	// 			"status":"cancelled" (optional)
 	//		}
 	
 	// no filter
 	// body:{
 	//			"fromDate":"",
-	// 			"toDate":"",
-	// 			"status":""
+	// 			"toDate":""
 	//		}
     @Sendable
-    func getAll(req: Request) async throws -> [InvoiceDTO] {
+	func getAll(req: Request) async throws -> [InvoiceDTO] {
 		let filter = try req.content.decode(InvoiceFilter.self)
 		
 		var invoices: [Invoice] = []
 		
-		if (!filter.toDate.isEmpty && !filter.fromDate.isEmpty && !filter.status.rawValue.isEmpty){
-			
-			let fromDateISOString: String = "\(filter.fromDate)T00:00:00+00:00"
-			let toDateISOString: String = "\(filter.toDate)T23:59:59+00:00"
-			
-			let fromDate = ISO8601DateFormatter().date(from: fromDateISOString)
-			let toDate = ISO8601DateFormatter().date(from: toDateISOString)
-			
-			invoices = try await Invoice.query(on: req.db).with(\.$invoiceItems).filter(\.$createdAt >= fromDate).filter(\.$createdAt <= toDate).filter(\.$status == filter.status).all()
+		//invoice filter
+		if(filter.status != nil){
+			if (!filter.toDate.isEmpty && !filter.fromDate.isEmpty){
+				
+				let fromDateISOString: String = "\(filter.fromDate)T00:00:00+00:00"
+				let toDateISOString: String = "\(filter.toDate)T23:59:59+00:00"
+				
+				let fromDate = ISO8601DateFormatter().date(from: fromDateISOString)
+				let toDate = ISO8601DateFormatter().date(from: toDateISOString)
+				
+				invoices = try await Invoice.query(on: req.db).with(\.$invoiceItems).filter(\.$createdAt >= fromDate).filter(\.$createdAt <= toDate).filter(\.$status == filter.status!).all()
+			}else{
+				invoices = try await Invoice.query(on: req.db).with(\.$invoiceItems).filter(\.$status == filter.status!).all()
+			}
 		}else{
-			invoices = try await Invoice.query(on: req.db).with(\.$invoiceItems).all()
+			if (!filter.toDate.isEmpty && !filter.fromDate.isEmpty){
+				
+				let fromDateISOString: String = "\(filter.fromDate)T00:00:00+00:00"
+				let toDateISOString: String = "\(filter.toDate)T23:59:59+00:00"
+				
+				let fromDate = ISO8601DateFormatter().date(from: fromDateISOString)
+				let toDate = ISO8601DateFormatter().date(from: toDateISOString)
+				
+				invoices = try await Invoice.query(on: req.db).with(\.$invoiceItems).filter(\.$createdAt >= fromDate).filter(\.$createdAt <= toDate).all()
+			}else{
+				invoices = try await Invoice.query(on: req.db).with(\.$invoiceItems).all()
+			}
 		}
 		
         var invoiceDTOs: [InvoiceDTO] = []
