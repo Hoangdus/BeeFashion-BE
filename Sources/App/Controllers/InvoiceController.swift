@@ -43,7 +43,7 @@ struct InvoiceController: RouteCollection {
 	//		}
     @Sendable
 	func getAll(req: Request) async throws -> [InvoiceDTO] {
-		let filter = try req.content.decode(InvoiceFilter.self)
+		let filter = try req.query.decode(InvoiceFilter.self)
 		
 		var invoices: [Invoice] = []
 		
