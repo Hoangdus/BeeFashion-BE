@@ -23,24 +23,16 @@ struct InvoiceController: RouteCollection {
 		invoices.post(use: self.create)
 		
 		invoices.group(":customerID",":invoiceID") { invoice in
-			invoice.delete(use: self.delete)
+			invoice.delete(use: self.customerCancelInvoice)
+			invoice.patch(use: self.customerCompleteInvoice)
 		}
         
         manageInvoice.get(use: self.getAll)
 	}
 	
-    // filter
-	// body:{
-	//			"fromDate":"yyyy-mm-dd",
-	// 			"toDate":"yyyy-mm-dd",
-	// 			"status":"cancelled" (optional)
-	//		}
-	
-	// no filter
-	// body:{
-	//			"fromDate":"",
-	// 			"toDate":""
-	//		}
+	//filter: {URL}/admin/invoices?fromDate="yyyy-mm-dd"&toDate="yyyy-mm-dd"&status=pending(optional)
+	//no filter: {URL}/admin/invoices?fromDate=&toDate=
+	//return a list of all customers invoice
     @Sendable
 	func getAll(req: Request) async throws -> [InvoiceDTO] {
 		let filter = try req.query.decode(InvoiceFilter.self)
@@ -190,12 +182,12 @@ struct InvoiceController: RouteCollection {
 	}
 
 	@Sendable
-	func delete(req: Request) async throws -> HTTPStatus {
+	func customerCancelInvoice(req: Request) async throws -> HTTPStatus {
 		guard let customerID: UUID = req.parameters.get("customerID") else { throw Abort(.badRequest) }
 		guard let invoiceID: UUID = req.parameters.get("invoiceID") else { throw Abort(.badRequest) }
 		
 		guard let invoice = try await Invoice.query(on: req.db).with(\.$invoiceItems).filter(\.$id == invoiceID).filter(\.$customer.$id == customerID).first() else {
-			throw Abort(.notFound)
+			throw Abort(.notFound, reason: "invoice not found")
 		}
 		
 		if(invoice.status == InvoiceStatus.pending){
@@ -217,6 +209,24 @@ struct InvoiceController: RouteCollection {
 		try await invoice.save(on: req.db)
 		
 		return .ok
+	}
+	
+	@Sendable
+	func customerCompleteInvoice(req: Request) async throws -> HTTPStatus {
+		guard let customerID: UUID = req.parameters.get("customerID") else { throw Abort(.badRequest) }
+		guard let invoiceID: UUID = req.parameters.get("invoiceID") else { throw Abort(.badRequest) }
+		
+		guard let invoice = try await Invoice.query(on: req.db).with(\.$invoiceItems).filter(\.$id == invoiceID).filter(\.$customer.$id == customerID).first() else {
+			throw Abort(.notFound, reason: "invoice not found")
+		}
+		
+		if(invoice.status == InvoiceStatus.intransit){
+			invoice.status = InvoiceStatus.completed
+			try await invoice.save(on: req.db)
+			return .ok
+		}
+		
+		throw Abort(.notAcceptable, reason: "Invoice is \(invoice.status)")
 	}
     
     @Sendable
