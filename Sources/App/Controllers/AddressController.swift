@@ -12,11 +12,14 @@ import FluentMongoDriver
 struct AddressController: RouteCollection {
     func boot(routes: RoutesBuilder) throws {
         let addressRoutes = routes.grouped("addresses")
+        let manageRoute = routes.grouped("admin", "addresses")
 		
 		addressRoutes.group(":customerID"){ address in
 			address.get(use: getAllAddressByCustomerID)
 			address.post(use: createAddress)
 		}
+        
+        manageRoute.get(":id", use: getAddressByID)
 		
         addressRoutes.group(":customerID", ":id") { address in
 //            address.get(use: getAddressByID)
@@ -41,13 +44,13 @@ struct AddressController: RouteCollection {
         return addresses
     }
     
-//    @Sendable func getAddressByID(req: Request) async throws -> AddressDTO {
-//        guard let address = try await Address.find(req.parameters.get("id"), on: req.db) else {
-//            throw Abort(.notFound)
-//        }
-//        
-//        return address.toDTO()
-//    }
+    @Sendable func getAddressByID(req: Request) async throws -> AddressDTO {
+        guard let address = try await Address.find(req.parameters.get("id"), on: req.db) else {
+            throw Abort(.notFound)
+        }
+        
+        return address.toDTO()
+    }
     
     @Sendable func createAddress(req: Request) async throws -> AddressDTO {
         guard let customerID = req.parameters.get("customerID", as: UUID.self) else {
