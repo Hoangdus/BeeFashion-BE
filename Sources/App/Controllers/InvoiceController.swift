@@ -23,7 +23,8 @@ struct InvoiceController: RouteCollection {
         invoices.post(use: self.create)
         
         invoices.group(":customerID",":invoiceID") { invoice in
-            invoice.delete(use: self.delete)
+            invoice.delete(use: self.customerCancelInvoice)
+			invoice.patch(use: self.customerCompleteInvoice)
         }
         
         manageInvoice.group(":customerID",":invoiceID") { invoice in
@@ -180,36 +181,6 @@ struct InvoiceController: RouteCollection {
         let invoice = invoiceDTO.toModel()
         try await invoice.create(on: req.db)
         try await invoice.$invoiceItems.create(invoiceItems, on: req.db)
-        
-        return .ok
-    }
-    
-    @Sendable
-    func delete(req: Request) async throws -> HTTPStatus {
-        guard let customerID: UUID = req.parameters.get("customerID") else { throw Abort(.badRequest) }
-        guard let invoiceID: UUID = req.parameters.get("invoiceID") else { throw Abort(.badRequest) }
-        
-        guard let invoice = try await Invoice.query(on: req.db).with(\.$invoiceItems).filter(\.$id == invoiceID).filter(\.$customer.$id == customerID).first() else {
-            throw Abort(.notFound)
-        }
-        
-        if(invoice.status == InvoiceStatus.pending){
-            invoice.status = InvoiceStatus.cancelled
-            
-            //restore stock when cancel
-            for invoiceItem in invoice.invoiceItems{
-                guard let productDetail = try await ProductDetail.query(on: req.db).withDeleted().with(\.$sizes).filter(\.$product.$id == invoiceItem.$product.id).first() else { throw Abort(.notFound) }
-                let sizeIndex = productDetail.sizes.firstIndex{ $0.id == invoiceItem.$size.id }
-                var quantities = productDetail.quantities
-                quantities[sizeIndex!] = quantities[sizeIndex!] + invoiceItem.quantity
-                productDetail.quantities = quantities
-                try await productDetail.save(on: req.db)
-            }
-        }else if(invoice.status == InvoiceStatus.packing){
-            invoice.status = InvoiceStatus.pendingcancel
-        }
-        
-        try await invoice.save(on: req.db)
         
         return .ok
     }
