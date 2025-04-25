@@ -8,6 +8,12 @@
     width: 100%;
     height: 300px; /* Đảm bảo chiều cao */
   }
+
+  #paymentMethodChart {
+    max-height: 300px;
+    width: 100%;
+    height: 300px; /* Đảm bảo chiều cao cho biểu đồ tròn */
+  }
   
   .input-group {
     margin-bottom: 15px;
