@@ -24,20 +24,34 @@ $(document).ready(function () {
     $("#accountManagerTab").show();
   }
 
-  // Kiểm tra canvas
-  const ctx = document.getElementById("statusChart")?.getContext("2d");
-  if (!ctx) {
+  // Kiểm tra canvas cho biểu đồ trạng thái
+  const ctxStatus = document.getElementById("statusChart")?.getContext("2d");
+  if (!ctxStatus) {
     console.error("Canvas #statusChart không tìm thấy!");
     Swal.fire({
       icon: "error",
       title: "Lỗi",
-      text: "Không tìm thấy canvas biểu đồ!",
+      text: "Không tìm thấy canvas biểu đồ trạng thái!",
+    });
+    return;
+  }
+
+  // Kiểm tra canvas cho biểu đồ phương thức thanh toán
+  const ctxPayment = document
+    .getElementById("paymentMethodChart")
+    ?.getContext("2d");
+  if (!ctxPayment) {
+    console.error("Canvas #paymentMethodChart không tìm thấy!");
+    Swal.fire({
+      icon: "error",
+      title: "Lỗi",
+      text: "Không tìm thấy canvas biểu đồ phương thức thanh toán!",
     });
     return;
   }
 
   // Khởi tạo Chart.js
-  const statusChart = new Chart(ctx, {
+  const statusChart = new Chart(ctxStatus, {
     type: "bar",
     data: {
       labels: [
@@ -65,6 +79,46 @@ $(document).ready(function () {
           beginAtZero: true,
           ticks: {
             stepSize: 1,
+          },
+        },
+      },
+    },
+  });
+
+  // Khởi tạo Chart.js cho biểu đồ tròn phương thức thanh toán
+  const paymentMethodChart = new Chart(ctxPayment, {
+    type: "pie",
+    data: {
+      labels: ["Đã thanh toán (ZaloPay)", "Thanh toán khi nhận hàng (COD)"],
+      datasets: [
+        {
+          label: "Doanh thu",
+          data: [0, 0],
+          backgroundColor: [
+            "rgba(75, 192, 192, 0.5)", // Màu cho ZaloPay
+            "rgba(255, 99, 132, 0.5)", // Màu cho COD
+          ],
+          borderColor: ["rgba(75, 192, 192, 1)", "rgba(255, 99, 132, 1)"],
+          borderWidth: 1,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      plugins: {
+        legend: {
+          position: "top",
+        },
+        tooltip: {
+          callbacks: {
+            label: function (context) {
+              let label = context.label || "";
+              if (label) {
+                label += ": ";
+              }
+              label += context.raw.toLocaleString("vi-VN") + " VNĐ";
+              return label;
+            },
           },
         },
       },
@@ -117,21 +171,39 @@ $(document).ready(function () {
       const invoices = await fetchInvoices(fromDate, toDate);
       let totalRevenue = 0;
       let invoiceCount = 0;
+      let zalopayRevenue = 0;
+      let codRevenue = 0;
 
       invoices.forEach((invoice) => {
         if (invoice.status === "completed") {
           invoiceCount++;
+          let invoiceRevenue = 0;
           invoice.invoiceItemDTOs.forEach((item) => {
-            totalRevenue += item.quantity * (item.product.price || 0);
+            invoiceRevenue += item.quantity * (item.product.price || 0);
           });
+          totalRevenue += invoiceRevenue;
+
+          // Phân loại doanh thu theo phương thức thanh toán
+          if (invoice.paymentMethod?.toLowerCase() === "zalopay") {
+            zalopayRevenue += invoiceRevenue;
+          } else if (invoice.paymentMethod?.toLowerCase() === "cod") {
+            codRevenue += invoiceRevenue;
+          }
         }
       });
 
       document.getElementById("totalRevenue").textContent =
         totalRevenue.toLocaleString("vi-VN");
       document.getElementById("invoiceCount").textContent = invoiceCount;
+
+      paymentMethodChart.data.datasets[0].data = [zalopayRevenue, codRevenue];
+      paymentMethodChart.update();
     } catch (error) {
-      // Lỗi đã được xử lý trong fetchInvoices
+      // Lỗi đã được xử lý trong fetchInvoices// Đặt lại giá trị khi có lỗi
+      document.getElementById("totalRevenue").textContent = "0";
+      document.getElementById("invoiceCount").textContent = "0";
+      paymentMethodChart.data.datasets[0].data = [0, 0];
+      paymentMethodChart.update();
     }
   }
 
@@ -173,11 +245,14 @@ $(document).ready(function () {
       statusChart.update();
     } catch (error) {
       // Lỗi đã được xử lý trong fetchInvoices
+      // Đặt lại biểu đồ khi có lỗi
+      statusChart.data.datasets[0].data = [0, 0, 0, 0, 0, 0, 0];
+      statusChart.update();
     }
   }
 
-  // Hiển thị dữ liệu tất cả khoảng thời gian khi tải trang
-  updateRevenueStats(""); // Không truyền fromDate, toDate
+  // Hiển thị dữ liệu tất cả khoảng thời gian
+  updateRevenueStats("");
   updateStatusStats("");
 
   // Xử lý nút tìm kiếm doanh thu
