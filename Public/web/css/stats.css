@@ -1,0 +1,19 @@
+/* stats.css */
+.panel-body {
+    padding: 20px;
+  }
+  
+  #statusChart {
+    max-height: 300px;
+    width: 100%;
+    height: 300px; /* Đảm bảo chiều cao */
+  }
+  
+  .input-group {
+    margin-bottom: 15px;
+  }
+  
+  #revenueStats p {
+    font-size: 16px;
+    margin: 5px 0;
+  }
