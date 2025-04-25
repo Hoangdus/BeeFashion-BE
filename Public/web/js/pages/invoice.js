@@ -306,9 +306,18 @@ $(document).ready(function () {
           filteredStatusOptions = statusOptions.filter(
             (opt) => opt.value === "packing" || opt.value === "intransit"
           );
+        } else if (invoice.status === "pendingcancel") {
+          filteredStatusOptions = statusOptions.filter(
+            (opt) =>
+              opt.value === "pendingcancel" ||
+              opt.value === "cancelled" ||
+              opt.value === "packing"
+          );
         } else if (
           invoice.status === "intransit" ||
-          invoice.status === "cancelled"
+          invoice.status === "cancelled" ||
+          invoice.status === "completed" ||
+          invoice.status === "returned"
         ) {
           filteredStatusOptions = statusOptions.filter(
             (opt) => opt.value === invoice.status
