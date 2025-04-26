@@ -27,7 +27,7 @@ struct CreateInvoice: AsyncMigration {
 		try await database.schema("invoices")
 			.id()
 			.field("customer_id", .uuid, .required, .references("customers", "id"))
-			.field("address_id", .uuid, .required, .references("addresses", "id"))
+			.field("full_address", .string, .required)
 			.field("total", .int)
 			.field("paid_status", .bool)
 			.field("status", invoiceStatus, .required)

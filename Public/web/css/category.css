@@ -26,3 +26,7 @@
 .swal2-popup-small {
     font-size: 0.9em !important; /* Giảm kích thước chữ toàn bộ popup */
 }
+
+.title-detail {
+    color: #b23d45;
+}

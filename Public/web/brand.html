@@ -715,6 +715,56 @@
           </div>
         </div>
 
+        <!-- Modal xem chi tiết sản phẩm -->
+        <div
+          class="modal fade"
+          id="viewBrandDetailModal"
+          tabindex="-1"
+          aria-labelledby="viewBrandDetailModalLabel"
+          aria-hidden="true"
+        >
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="viewBrandDetailModalLabel">
+                  Chi tiết thương hiệu
+                </h5>
+                <button
+                  type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                ></button>
+              </div>
+              <div class="modal-body">
+                <div class="row">
+                  <p><strong>ID:</strong> <span id="viewBrandId"></span></p>
+                  <p>
+                    <strong>Tên sản phẩm:</strong>
+                    <span id="viewBrandName"></span>
+                  </p>
+                  <p>
+                    <strong>Trạng thái:</strong> <span id="viewStatus"></span>
+                  </p>
+                  <p>
+                    <strong>Ngày tạo:</strong>
+                    <span id="viewCreatedAt"></span>
+                  </p>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  data-bs-dismiss="modal"
+                >
+                  Đóng
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Footer Start -->
         <footer class="footer">
           <div class="container-fluid">

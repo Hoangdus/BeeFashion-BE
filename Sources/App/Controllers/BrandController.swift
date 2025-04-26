@@ -18,6 +18,7 @@ struct BrandController: RouteCollection {
 		manageBrands.get(use: self.getAll)
         manageBrands.post(use: self.create)
         manageBrands.group(":brandID") { brand in
+            brand.get(use: self.getByID)
 			brand.put(use: self.update)
 			brand.patch(use: self.restore)
             brand.delete(use: self.delete)
@@ -33,6 +34,13 @@ struct BrandController: RouteCollection {
 	func getAll(req: Request) async throws -> [BrandDTO] {
 		try await Brand.query(on: req.db).withDeleted().all().map{ $0.toDTO() }
 	}
+    
+    @Sendable
+    func getByID(req: Request) async throws -> BrandDTO {
+        guard let brandID = try await Brand.find(req.parameters.get("brandID"), on: req.db) else { throw Abort(.badRequest) }
+        
+        return brandID.toDTO()
+    }
 
     @Sendable
     func create(req: Request) async throws -> BrandDTO {

@@ -51,6 +51,22 @@ $(document).ready(function () {
     }
   }
 
+  async function fetchCategoryById(categoryId) {
+    try {
+      const response = await fetch(
+        `${BASE_URL}/admin/categories/${categoryId}`
+      );
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const category = await response.json();
+      return category;
+    } catch (error) {
+      console.error("Lỗi khi lấy danh mục:", error);
+      return "Không xác định";
+    }
+  }
+
   // Hiển thị modal khi nhấn nút "Thêm mới"
   $(document).on("click", "#addCategoryBtn", function () {
     console.log("Add button clicked!");
@@ -71,7 +87,7 @@ $(document).ready(function () {
     };
 
     try {
-      const response = await fetch(`${BASE_URL}/categories`, {
+      const response = await fetch(`${BASE_URL}/admin/categories`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -143,6 +159,30 @@ $(document).ready(function () {
     // Hiển thị modal
     $("#editCategoryModal").modal("show");
   });
+
+  // Thêm sự kiện cho nút Xem
+  async function showCategoryDetails(categoryId) {
+    const category = categories.find((c) => c.id === categoryId);
+    if (!category) {
+      Swal.fire({
+        icon: "error",
+        title: "Lỗi",
+        text: "Không tìm thấy sản phẩm!",
+      });
+      return;
+    }
+
+    const categoryInfo = await fetchCategoryById(categoryId);
+    console.log(`categoryInfo:`, categoryInfo);
+
+    $("#viewCategoryId").text(categoryInfo.id || "Không xác định");
+    $("#viewCategoryName").text(categoryInfo.name || "Không xác định");
+    $("#viewCreatedAt").text(
+      new Date(categoryInfo.createdAt).toLocaleDateString("vi-VN")
+    );
+    $("#viewStatus").text(categoryInfo.deletedAt ? "Ẩn" : "Hiển thị");
+    $("#viewCategoryDetailModal").modal("show");
+  }
 
   // Xử lý khi nhấn nút "Lưu thay đổi" trong modal sửa
   $("#saveEditCategoryBtn").on("click", async function () {
@@ -225,13 +265,19 @@ $(document).ready(function () {
                           <button class="btn btn-sm btn-primary me-1" title="Update">
                             <i class="mdi mdi-pencil"></i>
                           </button>
-                          <button class="btn btn-sm btn-success" title="View info">
+                          <button class="btn btn-sm btn-success me-1 view-category-btn" title="View info" data-id="${categoryId}">
                             <i class="mdi mdi-eye"></i>
                           </button>
                       </td>
                   </tr>
               `;
       tableBody.append(row);
+    });
+
+    // Thêm sự kiện cho nút View (ngoài vòng lặp forEach)
+    $(document).on("click", ".view-category-btn", function () {
+      const categoryId = $(this).data("id");
+      showCategoryDetails(categoryId);
     });
 
     // Khởi tạo tooltip

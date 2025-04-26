@@ -12,8 +12,19 @@ import FluentMongoDriver
 struct CustomerController: RouteCollection {
     func boot(routes: RoutesBuilder) throws {
         let customerRoutes = routes.grouped("customers")
-        customerRoutes.put(":id", use: updateCustomer)
+        let manageRoute = routes.grouped("admin", "customers")
         
+        customerRoutes.put(":id", use: updateCustomer)
+        manageRoute.get(":id", use: getByID)
+    }
+    
+    @Sendable
+    func getByID(req: Request) async throws -> CustomerDTO {
+        guard let customer = try await Customer.find(req.parameters.get("id"), on: req.db) else {
+            throw Abort(.notFound)
+        }
+        
+        return customer.toDTO()
     }
     
     @Sendable func updateCustomer(_ req: Request) async throws -> CustomerDTO {
