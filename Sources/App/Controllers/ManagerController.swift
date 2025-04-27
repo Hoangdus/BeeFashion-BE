@@ -18,6 +18,7 @@ struct ManagerController: RouteCollection {
         
         manageRoute.get(use: self.getAll)
         manageRoute.group(":id") { manager in
+            manager.get(use: getByID)
             manager.patch(use: self.restore)
             manager.delete(use: self.delete)
         }
@@ -32,6 +33,15 @@ struct ManagerController: RouteCollection {
     @Sendable
     func getAll(req: Request) async throws -> [ManagerDTO] {
         try await Manager.query(on: req.db).withDeleted().all().map { $0.toDTO() }
+    }
+    
+    @Sendable
+    func getByID(req: Request) async throws -> ManagerDTO {
+        guard let manager = try await Manager.find(req.parameters.get("id"), on: req.db) else {
+            throw Abort(.badRequest)
+        }
+        
+        return manager.toDTO()
     }
     
     @Sendable
@@ -61,7 +71,7 @@ struct ManagerController: RouteCollection {
         guard let manager = try await Manager.query(on: req.db).withDeleted().filter(\.$id == id).first() else {
             throw Abort(.notFound)
         }
-
+        
         try await manager.restore(on: req.db)
         return .noContent
     }
@@ -71,7 +81,7 @@ struct ManagerController: RouteCollection {
         guard let manager = try await Manager.find(req.parameters.get("id"), on: req.db) else {
             throw Abort(.notFound)
         }
-
+        
         try await manager.delete(on: req.db)
         return .noContent
     }
