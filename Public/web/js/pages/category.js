@@ -39,6 +39,7 @@ $(document).ready(function () {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       categories = await response.json();
+      categories.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
       console.log("Dữ liệu nhận được:", categories);
       updateTable();
     } catch (error) {
@@ -146,20 +147,6 @@ $(document).ready(function () {
       });
   }
 
-  // Thêm sự kiện cho nút Sửa
-  tableBody.on("click", ".btn-primary", function () {
-    const row = $(this).closest("tr");
-    const categoryId = row.find(".status-toggle").data("id");
-    const categoryName = row.find("td:eq(1)").text();
-
-    // Điền dữ liệu vào modal
-    $("#editCategoryId").val(categoryId);
-    $("#editCategoryName").val(categoryName);
-
-    // Hiển thị modal
-    $("#editCategoryModal").modal("show");
-  });
-
   // Thêm sự kiện cho nút Xem
   async function showCategoryDetails(categoryId) {
     const category = categories.find((c) => c.id === categoryId);
@@ -178,67 +165,12 @@ $(document).ready(function () {
     $("#viewCategoryId").text(categoryInfo.id || "Không xác định");
     $("#viewCategoryName").text(categoryInfo.name || "Không xác định");
     $("#viewCreatedAt").text(
-      new Date(categoryInfo.createdAt).toLocaleDateString("vi-VN")
+      new Date(categoryInfo.createdAt).toLocaleString("vi-VN") ||
+        "Không xác định"
     );
     $("#viewStatus").text(categoryInfo.deletedAt ? "Ẩn" : "Hiển thị");
     $("#viewCategoryDetailModal").modal("show");
   }
-
-  // Xử lý khi nhấn nút "Lưu thay đổi" trong modal sửa
-  $("#saveEditCategoryBtn").on("click", async function () {
-    const categoryId = $("#editCategoryId").val();
-    const categoryName = $("#editCategoryName").val().trim();
-
-    if (!categoryName) {
-      alert("Vui lòng nhập tên thể loại!");
-      return;
-    }
-
-    const categoryData = {
-      id: categoryId,
-      name: categoryName,
-    };
-
-    try {
-      const response = await fetch(
-        `${BASE_URL}/admin/categories/${categoryId}`,
-        {
-          method: "PUT", // Sử dụng PUT để cập nhật toàn bộ
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(categoryData),
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const updatedCategory = await response.json();
-      console.log("Cập nhật thành công:", updatedCategory);
-
-      // Đóng modal và làm mới bảng
-      $("#editCategoryModal").modal("hide");
-      $("#editCategoryForm")[0].reset();
-      await fetchCategories();
-
-      Swal.fire({
-        icon: "success",
-        title: "Thành công",
-        text: "Cập nhật thể loại thành công!",
-        timer: 1500,
-        showConfirmButton: false,
-      });
-    } catch (error) {
-      console.error("Lỗi khi cập nhật:", error);
-      Swal.fire({
-        icon: "error",
-        title: "Lỗi",
-        text: "Có lỗi xảy ra khi cập nhật thể loại: " + error.message,
-      });
-    }
-  });
 
   // Hàm cập nhật bảng
   function updateTable() {
@@ -262,12 +194,9 @@ $(document).ready(function () {
                         </div>
                       </td>
                       <td>
-                          <button class="btn btn-sm btn-primary me-1" title="Update">
-                            <i class="mdi mdi-pencil"></i>
-                          </button>
-                          <button class="btn btn-sm btn-success me-1 view-category-btn" title="View info" data-id="${categoryId}">
-                            <i class="mdi mdi-eye"></i>
-                          </button>
+                        <button class="btn btn-sm btn-success me-1 view-category-btn" title="View info" data-id="${categoryId}">
+                          <i class="mdi mdi-eye"></i>
+                        </button>
                       </td>
                   </tr>
               `;
@@ -302,17 +231,17 @@ $(document).ready(function () {
         if (
           !(
             await Swal.fire({
-              title: `Bạn có chắc muốn ${action} danh mục này?`, // Rút gọn title
+              title: `Bạn có chắc muốn ${action} danh mục này?`,
               icon: "warning",
               showCancelButton: true,
               confirmButtonText: "OK",
               cancelButtonText: "Hủy",
-              width: "350px", // Giảm chiều rộng (mặc định ~500px)
-              padding: "1em", // Giảm padding để nhỏ gọn
-              buttonsStyling: true, // Giữ kiểu nút mặc định
+              width: "350px",
+              padding: "1em",
+              buttonsStyling: true,
               customClass: {
-                title: "swal2-title-small", // Class tùy chỉnh cho title
-                popup: "swal2-popup-small", // Class tùy chỉnh cho popup
+                title: "swal2-title-small",
+                popup: "swal2-popup-small",
               },
             })
           ).isConfirmed

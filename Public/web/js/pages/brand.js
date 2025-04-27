@@ -2,7 +2,7 @@ $(document).ready(function () {
   const user = JSON.parse(
     localStorage.getItem("user") || sessionStorage.getItem("user")
   );
-  const managerRoleId = "9AC80862-F9B7-44FF-9DE7-4F02DF2F037A"; // ID của role Manager
+  const managerRoleId = "9AC80862-F9B7-44FF-9DE7-4F02DF2F037A";
 
   if (!user) {
     Swal.fire({
@@ -39,6 +39,7 @@ $(document).ready(function () {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       brands = await response.json();
+      brands.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
       console.log("Dữ liệu nhận được:", brands);
       updateTable();
     } catch (error) {
@@ -73,28 +74,6 @@ $(document).ready(function () {
       console.log("Add button clicked!");
       $("#addBrandModal").modal("show");
     });
-  });
-
-  // Preview ảnh khi chọn file
-  $("#brandImages").on("change", function (e) {
-    const files = e.target.files;
-    const previewContainer = $("#imagePreview");
-    previewContainer.empty();
-
-    if (files && files.length > 0) {
-      Array.from(files).forEach((file) => {
-        const reader = new FileReader();
-        reader.onload = function (event) {
-          const img = $(
-            '<img src="' +
-              event.target.result +
-              '" alt="Preview" style="width: 100px; height: 100px; object-fit: cover; margin: 5px;">'
-          );
-          previewContainer.append(img);
-        };
-        reader.readAsDataURL(file);
-      });
-    }
   });
 
   // Xử lý khi nhấn nút "Lưu" trong modal
@@ -134,61 +113,6 @@ $(document).ready(function () {
     } catch (error) {
       console.error("Lỗi khi thêm mới:", error);
       alert("Có lỗi xảy ra khi thêm thương hiệu: " + error.message);
-    }
-  });
-
-  // Handling when pressing "Update" button
-  $(document).on("click", ".edit-brand-btn", function () {
-    const brandId = $(this).data("id");
-    const brand = brands.find((b) => b.id === brandId);
-
-    if (!brand) return;
-
-    $("#editBrandId").val(brand.id);
-    $("#editBrandName").val(brand.name);
-
-    const previewContainer = $("#editImagePreview");
-    previewContainer.empty();
-
-    if (brand.image) {
-      const img = `<img src="${brand.image}" alt="Preview" style="width: 100px; height: 100px; object-fit: cover; margin: 5px;">`;
-      previewContainer.append(img);
-    }
-
-    $("#editBrandModal").modal("show");
-  });
-
-  $("#saveEditBrandBtn").on("click", async function () {
-    const brandId = $("#editBrandId").val();
-    const brandName = $("#editBrandName").val().trim();
-    const brandImage = $("#editBrandImage")[0].files[0];
-
-    if (!brandName) {
-      alert("Vui lòng nhập tên thương hiệu!");
-      return;
-    }
-
-    const formData = new FormData();
-    formData.append("name", brandName);
-    // if (brandImage) {
-    //   formData.append("image", brandImage);
-    // }
-
-    try {
-      const response = await fetch(`${BASE_URL}/admin/brands/${brandId}`, {
-        method: "PUT",
-        body: formData,
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      $("#editBrandModal").modal("hide");
-      await fetchBrands(); // Cập nhật danh sách
-    } catch (error) {
-      console.error("Lỗi khi cập nhật thương hiệu:", error);
-      alert("Có lỗi xảy ra: " + error.message);
     }
   });
 
@@ -260,15 +184,11 @@ $(document).ready(function () {
     paginatedBrands.forEach((brand, index) => {
       const isActive = !brand.deletedAt;
       const statusChecked = isActive ? "checked" : "";
-      const imageUrl = brand.image || "";
       const brandId = brand.id || startIndex + index + 1;
       const row = `
                     <tr>
                         <td class="id-column" data-bs-toggle="tooltip" data-bs-placement="top" title="${brandId}" data-id="${brandId}">${brandId}</td>
                         <td>${brand.name || "Không có tên"}</td>
-                        <td><img src="${imageUrl}" alt="${
-        brand.name || "Thương hiệu"
-      }" style="width: 50px; height: 50px; object-fit: cover;"></td>
                         <td>
                           <div class="form-check form-switch">
                               <input class="form-check-input status-toggle" type="checkbox" id="switch${brandId}" ${statusChecked} data-id="${brandId}">
@@ -276,14 +196,9 @@ $(document).ready(function () {
                           </div>
                         </td>
                         <td>
-                            <button class="btn btn-sm btn-primary edit-brand-btn" data-id="${
-                              brand.id
-                            }" title="Update">
-                              <i class="mdi mdi-pencil"></i>
-                            </button>
-                            <button class="btn btn-sm btn-success me-1 view-brand-btn" title="View info" data-id="${brandId}">
-                              <i class="mdi mdi-eye"></i>
-                            </button>
+                          <button class="btn btn-sm btn-success me-1 view-brand-btn" title="View info" data-id="${brandId}">
+                            <i class="mdi mdi-eye"></i>
+                          </button>
                         </td>
                     </tr>
                 `;

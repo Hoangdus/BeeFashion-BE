@@ -39,6 +39,7 @@ $(document).ready(function () {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       sizes = await response.json();
+      sizes.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
       console.log("Dữ liệu nhận được:", sizes);
       updateTable();
     } catch (error) {
@@ -164,77 +165,6 @@ $(document).ready(function () {
       });
   }
 
-  // Thêm sự kiện cho nút Sửa
-  tableBody.on("click", ".btn-primary", function () {
-    const row = $(this).closest("tr");
-    const sizeId = row.find(".status-toggle").data("id");
-    const sizeName = row.find("td:eq(1)").text();
-
-    // Điền dữ liệu vào modal
-    $("#editSizeId").val(sizeId);
-    $("#editSizeName").val(sizeName);
-
-    // Hiển thị modal
-    $("#editSizeModal").modal("show");
-  });
-
-  // Xử lý khi nhấn nút "Lưu thay đổi" trong modal sửa
-  $("#saveEditSizeBtn").on("click", async function () {
-    const sizeId = $("#editSizeId").val();
-    const sizeName = $("#editSizeName").val().trim();
-
-    if (!sizeName) {
-      Swal.fire({
-        icon: "warning",
-        title: "Cảnh báo",
-        text: "Vui lòng nhập tên kích thước!",
-      });
-      return;
-    }
-
-    const sizeData = {
-      id: sizeId,
-      name: sizeName,
-    };
-
-    try {
-      const response = await fetch(`${BASE_URL}/admin/sizes/${sizeId}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(sizeData),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const updatedSize = await response.json();
-      console.log("Cập nhật thành công:", updatedSize);
-
-      // Đóng modal và làm mới bảng
-      $("#editSizeModal").modal("hide");
-      $("#editSizeForm")[0].reset();
-      await fetchSizes();
-
-      Swal.fire({
-        icon: "success",
-        title: "Thành công",
-        text: "Cập nhật kích thước thành công!",
-        timer: 1500,
-        showConfirmButton: false,
-      });
-    } catch (error) {
-      console.error("Lỗi khi cập nhật:", error);
-      Swal.fire({
-        icon: "error",
-        title: "Lỗi",
-        text: "Có lỗi xảy ra khi cập nhật kích thước: " + error.message,
-      });
-    }
-  });
-
   // Hàm cập nhật bảng
   function updateTable() {
     tableBody.empty();
@@ -258,12 +188,9 @@ $(document).ready(function () {
                         </div>
                       </td>
                       <td>
-                          <button class="btn btn-sm btn-primary me-1" title="Update">
-                            <i class="mdi mdi-pencil"></i>
-                          </button>
-                          <button class="btn btn-sm btn-success me-1 view-size-btn" title="View info" data-id="${sizeId}">
-                            <i class="mdi mdi-eye"></i>
-                          </button>
+                        <button class="btn btn-sm btn-success me-1 view-size-btn" title="View info" data-id="${sizeId}">
+                          <i class="mdi mdi-eye"></i>
+                        </button>
                       </td>
                   </tr>
               `;

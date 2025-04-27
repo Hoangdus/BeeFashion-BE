@@ -2,10 +2,9 @@ $(document).ready(function () {
   const user = JSON.parse(
     localStorage.getItem("user") || sessionStorage.getItem("user")
   );
-  const adminRoleId = "748D8888-4088-440D-BA90-AFEA1D31B3E8"; // ID của Admin
-  const managerRoleId = "9AC80862-F9B7-44FF-9DE7-4F02DF2F037A"; // ID của Manager
+  const adminRoleId = "748D8888-4088-440D-BA90-AFEA1D31B3E8";
+  const managerRoleId = "9AC80862-F9B7-44FF-9DE7-4F02DF2F037A";
 
-  // Kiểm tra đăng nhập và quyền truy cập
   if (!user || user.role_id !== adminRoleId) {
     Swal.fire({
       icon: "warning",
@@ -78,6 +77,21 @@ $(document).ready(function () {
       console.error("Lỗi khi lấy danh sách roles:", error);
       roles = [];
       populateRoleSelect();
+    }
+  }
+
+  // Hàm lấy thông tin tài khoản theo ID từ API
+  async function fetchAccountById(accountId) {
+    try {
+      const response = await fetch(`${BASE_URL}/admin/managers/${accountId}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const account = await response.json();
+      return account;
+    } catch (error) {
+      console.error("Lỗi khi lấy thông tin tài khoản:", error);
+      return null;
     }
   }
 
@@ -218,16 +232,13 @@ $(document).ready(function () {
             <td>${account.email || "Chưa có email"}</td>
             <td><span class="${roleClass}">${roleText}</span></td>
             <td>
-                <div class="form-check form-switch">
-                    <input class="form-check-input status-toggle" type="checkbox" id="switch${accountId}" ${statusChecked} data-id="${accountId}">
-                    <label class="form-check-label" for="switch${accountId}"></label>
-                </div>
+              <div class="form-check form-switch">
+                <input class="form-check-input status-toggle" type="checkbox" id="switch${accountId}" ${statusChecked} data-id="${accountId}">
+                <label class="form-check-label" for="switch${accountId}"></label>
+              </div>
             </td>
             <td>
-              <button class="btn btn-sm btn-primary me-1 edit-account-btn" title="Update" data-id="${accountId}">
-                <i class="mdi mdi-pencil"></i>
-              </button>
-              <button class="btn btn-sm btn-success" title="View info">
+              <button class="btn btn-sm btn-success view-account-btn" title="View info" data-id="${accountId}">
                 <i class="mdi mdi-eye"></i>
               </button>
             </td>
@@ -247,12 +258,12 @@ $(document).ready(function () {
         copyToClipboard(idText, $(this));
       });
 
-    // Thêm sự kiện cho nút "Chỉnh sửa"
-    $(".edit-account-btn")
+    // Thêm sự kiện cho nút Xem
+    $(".view-account-btn")
       .off("click")
       .on("click", function () {
         const accountId = $(this).data("id");
-        window.location.href = `edit-account.html?id=${accountId}`;
+        showAccountDetails(accountId);
       });
 
     // Thêm sự kiện cho nút toggle trạng thái
@@ -310,6 +321,42 @@ $(document).ready(function () {
       } tài khoản`
     );
     updatePagination(filteredAccounts.length);
+  }
+
+  // Hàm hiển thị chi tiết tài khoản trong modal
+  async function showAccountDetails(accountId) {
+    const account = accounts.find((acc) => acc.id === accountId);
+    if (!account) {
+      Swal.fire({
+        icon: "error",
+        title: "Lỗi",
+        text: "Không tìm thấy tài khoản!",
+      });
+      return;
+    }
+
+    const accountInfo = await fetchAccountById(accountId);
+    if (!accountInfo) {
+      Swal.fire({
+        icon: "error",
+        title: "Lỗi",
+        text: "Không thể tải thông tin tài khoản!",
+      });
+      return;
+    }
+
+    // Điền dữ liệu vào modal
+    $("#viewAccountId").text(accountInfo.id || "Không xác định");
+    $("#viewAccountName").text(accountInfo.name || "Không xác định");
+    $("#viewAccountEmail").text(accountInfo.email || "Không xác định");
+    $("#viewAccountPhone").text(accountInfo.phone || "Không xác định");
+    $("#viewAccountRole").text(
+      accountInfo.role_id === adminRoleId ? "Admin" : "Manager"
+    );
+    $("#viewAccountStatus").text(accountInfo.deletedAt ? "Ẩn" : "Hiển thị");
+
+    // Hiển thị modal
+    $("#viewAccountDetailModal").modal("show");
   }
 
   // Hàm cập nhật pagination

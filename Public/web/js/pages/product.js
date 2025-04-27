@@ -40,6 +40,7 @@ $(document).ready(function () {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       products = await response.json();
+      products.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
       console.log("Dữ liệu nhận được:", products);
       updateTable();
     } catch (error) {
@@ -581,9 +582,6 @@ $(document).ready(function () {
                     </div>
                 </td>
                 <td>
-                  <button class="btn btn-sm btn-primary me-1 edit-product-btn" title="Update" data-id="${productId}">
-                    <i class="mdi mdi-pencil"></i>
-                  </button>
                   <button class="btn btn-sm btn-success me-1 view-product-btn" title="View info" data-id="${productId}">
                         <i class="mdi mdi-eye"></i>
                   </button>
@@ -614,14 +612,6 @@ $(document).ready(function () {
         copyToClipboard(idText, $(this));
       });
 
-    // Thêm sự kiện cho nút "Chỉnh sửa"
-    $(".edit-product-btn")
-      .off("click")
-      .on("click", function () {
-        const productId = $(this).data("id");
-        window.location.href = `edit-product.html?id=${productId}`;
-      });
-
     // Xử lý gạt nút trạng thái
     $(".status-toggle")
       .off("change")
@@ -640,7 +630,7 @@ $(document).ready(function () {
               cancelButtonText: "Hủy",
               width: "350px",
               padding: "1em",
-              buttonsStyling: true, 
+              buttonsStyling: true,
               customClass: {
                 title: "swal2-title-small",
                 popup: "swal2-popup-small",
