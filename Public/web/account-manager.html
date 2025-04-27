@@ -297,7 +297,7 @@
                   aria-expanded="false"
                 >
                   <span class="pro-user-name ms-1">
-                    Christian <i class="mdi mdi-chevron-down"></i>
+                    More <i class="mdi mdi-chevron-down"></i>
                   </span>
                 </a>
                 <div class="dropdown-menu dropdown-menu-end profile-dropdown">
@@ -349,18 +349,18 @@
             <div class="logo-box">
               <a class="logo logo-light" href="dashboard.html">
                 <span class="logo-sm">
-                  <img src="images/beefamily.png" alt="" height="22" />
+                  <img src="images/logobeefashion.jpg" alt="" height="95" />
                 </span>
                 <span class="logo-lg">
-                  <img src="images/beefamily.png" alt="" height="24" />
+                  <img src="images/logobeefashion.jpg" alt="" height="95" />
                 </span>
               </a>
               <a class="logo logo-dark" href="dashboard.html">
                 <span class="logo-sm">
-                  <img src="images/beefamily.png" alt="" height="22" />
+                  <img src="images/logobeefashion.jpg" alt="" height="95" />
                 </span>
                 <span class="logo-lg">
-                  <img src="images/beefamily.png" alt="" height="24" />
+                  <img src="images/logobeefashion.jpg" alt="" height="95" />
                 </span>
               </a>
             </div>
@@ -496,7 +496,7 @@
                   <li class="breadcrumb-item">
                     <a href="javascript: void(0);"></a>
                   </li>
-                  <li class="breadcrumb-item active"></li>
+                  <!-- <li class="breadcrumb-item active"></li> -->
                 </ol>
               </div>
             </div>
@@ -549,7 +549,7 @@
                   <li class="breadcrumb-item">
                     <a href="javascript: void(0);"></a>
                   </li>
-                  <li class="breadcrumb-item active"></li>
+                  <!-- <li class="breadcrumb-item active"></li> -->
                 </ol>
               </div>
             </div>
@@ -717,6 +717,68 @@
           </div>
         </div>
 
+        <!-- Modal xem chi tiết tài khoản -->
+        <div
+          class="modal fade"
+          id="viewAccountDetailModal"
+          tabindex="-1"
+          aria-labelledby="viewAccountDetailModalLabel"
+          aria-hidden="true"
+        >
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="viewAccountDetailModalLabel">
+                  Chi tiết tài khoản
+                </h5>
+                <button
+                  type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                ></button>
+              </div>
+              <div class="modal-body">
+                <div class="row">
+                  <div class="col-md-6">
+                    <p><strong>ID:</strong> <span id="viewAccountId"></span></p>
+                    <p>
+                      <strong>Tên:</strong> <span id="viewAccountName"></span>
+                    </p>
+                    <p>
+                      <strong>Email:</strong>
+                      <span id="viewAccountEmail"></span>
+                    </p>
+                  </div>
+                  <div class="col-md-6">
+                    <p>
+                      <strong>Số điện thoại:</strong>
+                      <span id="viewAccountPhone"></span>
+                    </p>
+                    <p>
+                      <strong>Vai trò:</strong>
+                      <span id="viewAccountRole"></span>
+                    </p>
+                    <p>
+                      <strong>Trạng thái:</strong>
+                      <span id="viewAccountStatus"></span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+              <div class="modal-footer">
+                <button
+                  type="button"
+                  class="btn btn-secondary"
+                  data-bs-dismiss="modal"
+                >
+                  Đóng
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Footer Start -->
         <footer class="footer">
           <div class="container-fluid">
@@ -727,7 +789,7 @@
                   document.write(new Date().getFullYear());
                 </script>
                 - Made with <span class="mdi mdi-heart text-danger"></span> by
-                <a href="#!" class="text-reset fw-semibold">Zoyothemes</a>
+                <a href="#!" class="text-reset fw-semibold">MD19-BeeFashion</a>
               </div>
             </div>
           </div>

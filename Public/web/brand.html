@@ -297,7 +297,7 @@
                   aria-expanded="false"
                 >
                   <span class="pro-user-name ms-1">
-                    Christian <i class="mdi mdi-chevron-down"></i>
+                    More <i class="mdi mdi-chevron-down"></i>
                   </span>
                 </a>
                 <div class="dropdown-menu dropdown-menu-end profile-dropdown">
@@ -349,18 +349,18 @@
             <div class="logo-box">
               <a class="logo logo-light" href="dashboard.html">
                 <span class="logo-sm">
-                  <img src="images/beefamily.png" alt="" height="22" />
+                  <img src="images/logobeefashion.jpg" alt="" height="95" />
                 </span>
                 <span class="logo-lg">
-                  <img src="images/beefamily.png" alt="" height="24" />
+                  <img src="images/logobeefashion.jpg" alt="" height="95" />
                 </span>
               </a>
               <a class="logo logo-dark" href="dashboard.html">
                 <span class="logo-sm">
-                  <img src="images/beefamily.png" alt="" height="22" />
+                  <img src="images/logobeefashion.jpg" alt="" height="95" />
                 </span>
                 <span class="logo-lg">
-                  <img src="images/beefamily.png" alt="" height="24" />
+                  <img src="images/logobeefashion.jpg" alt="" height="95" />
                 </span>
               </a>
             </div>
@@ -385,13 +385,6 @@
                   </ul>
                 </div>
               </li>
-
-              <!-- <li>
-                                <a href="landing.html" target="_blank">
-                                    <i data-feather="globe"></i>
-                                    <span> Landing </span>
-                                </a>
-                            </li> -->
 
               <li class="menu-title">Pages</li>
 
@@ -496,7 +489,7 @@
                   <li class="breadcrumb-item">
                     <a href="javascript: void(0);"></a>
                   </li>
-                  <li class="breadcrumb-item active"></li>
+                  <!-- <li class="breadcrumb-item active"></li> -->
                 </ol>
               </div>
             </div>
@@ -539,7 +532,6 @@
                             <tr>
                               <th scope="col" style="width: 100px">ID</th>
                               <th scope="col">Tên sản phẩm</th>
-                              <th scope="col">Ảnh</th>
                               <th scope="col">Trạng thái</th>
                               <th scope="col">Chức năng</th>
                             </tr>
@@ -646,76 +638,7 @@
           </div>
         </div>
 
-        <!-- Modal chỉnh sửa thương hiệu -->
-        <div
-          class="modal fade"
-          id="editBrandModal"
-          tabindex="-1"
-          aria-labelledby="editBrandModalLabel"
-          aria-hidden="true"
-        >
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="editBrandModalLabel">
-                  Chỉnh sửa thương hiệu
-                </h5>
-                <button
-                  type="button"
-                  class="btn-close"
-                  data-bs-dismiss="modal"
-                  aria-label="Close"
-                ></button>
-              </div>
-              <div class="modal-body">
-                <form id="editBrandForm">
-                  <input type="hidden" id="editBrandId" />
-                  <div class="mb-3">
-                    <label for="editBrandName" class="form-label"
-                      >Tên thương hiệu</label
-                    >
-                    <input
-                      type="text"
-                      class="form-control"
-                      id="editBrandName"
-                      required
-                    />
-                  </div>
-                  <div class="mb-3">
-                    <label for="editBrandImage" class="form-label"
-                      >Hình ảnh</label
-                    >
-                    <input
-                      type="file"
-                      class="form-control"
-                      id="editBrandImage"
-                      accept="image/*"
-                    />
-                    <div id="editImagePreview" class="mt-2"></div>
-                  </div>
-                </form>
-              </div>
-              <div class="modal-footer">
-                <button
-                  type="button"
-                  class="btn btn-secondary"
-                  data-bs-dismiss="modal"
-                >
-                  Hủy
-                </button>
-                <button
-                  type="button"
-                  class="btn btn-primary"
-                  id="saveEditBrandBtn"
-                >
-                  Lưu thay đổi
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Modal xem chi tiết sản phẩm -->
+        <!-- Modal xem chi tiết brand -->
         <div
           class="modal fade"
           id="viewBrandDetailModal"
@@ -775,7 +698,7 @@
                   document.write(new Date().getFullYear());
                 </script>
                 - Made with <span class="mdi mdi-heart text-danger"></span> by
-                <a href="#!" class="text-reset fw-semibold">Zoyothemes</a>
+                <a href="#!" class="text-reset fw-semibold">MD19-BeeFashion</a>
               </div>
             </div>
           </div>
