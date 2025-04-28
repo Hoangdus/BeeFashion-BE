@@ -16,6 +16,12 @@ struct CustomerController: RouteCollection {
         
         customerRoutes.put(":id", use: updateCustomer)
         manageRoute.get(":id", use: getByID)
+        manageRoute.get(use: getAll)
+    }
+    
+    @Sendable
+    func getAll(req: Request) async throws -> [CustomerDTO] {
+        try await Customer.query(on: req.db).all().map { $0.toDTO() }
     }
     
     @Sendable

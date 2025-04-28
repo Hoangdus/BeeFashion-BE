@@ -7,7 +7,7 @@
   /><!-- /Added by HTTrack -->
   <head>
     <meta charset="utf-8" />
-    <title>Account Information</title>
+    <title>Customer orders history</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
@@ -27,7 +27,7 @@
       id="app-style"
     />
 
-    <link href="css/account-infor.css" rel="stylesheet" />
+    <link href="css/customer-order-history.css" rel="stylesheet" />
 
     <!-- Icons -->
     <link href="css/icons.min.css" rel="stylesheet" type="text/css" />
@@ -386,13 +386,6 @@
                 </div>
               </li>
 
-              <!-- <li>
-                                <a href="landing.html" target="_blank">
-                                    <i data-feather="globe"></i>
-                                    <span> Landing </span>
-                                </a>
-                            </li> -->
-
               <li class="menu-title">Pages</li>
 
               <li>
@@ -490,7 +483,9 @@
               class="py-3 d-flex align-items-sm-center flex-sm-row flex-column"
             >
               <div class="flex-grow-1">
-                <h4 class="fs-18 fw-semibold m-0">Thông tin tài khoản</h4>
+                <h4 class="fs-18 fw-semibold m-0">
+                  Danh sách tài khoản - Lịch sử mua hàng
+                </h4>
               </div>
 
               <div class="text-end">
@@ -500,76 +495,6 @@
                   </li>
                   <!-- <li class="breadcrumb-item active"></li> -->
                 </ol>
-              </div>
-            </div>
-
-            <div class="row">
-              <div class="col-md-12">
-                <div class="card">
-                  <div class="card-body">
-                    <div class="panel-body">
-                      <!-- Code here -->
-                      <div class="row align-items-center">
-                        <!-- Cột bên trái -->
-                        <div class="col-md-6">
-                          <div class="d-flex align-items-center">
-                            <img
-                              src="images/beefamily.png"
-                              alt="User Avatar"
-                              class="rounded-circle me-3"
-                              style="
-                                width: 80px;
-                                height: 80px;
-                                object-fit: cover;
-                              "
-                            />
-                            <div class="user-info">
-                              <h5 class="fw-bold mb-1" id="userName">
-                                Your name
-                              </h5>
-                              <p class="mb-1 user-contact" id="userContact">
-                                <span id="userEmail">@gmail.com</span> |
-                                <span id="userPhone">000000000</span>
-                              </p>
-                              <p class="text-muted mb-0">
-                                Bạn đang đăng nhập với tư cách là:
-                                <span id="userRole" class="fw-semibold"
-                                  >Your role</span
-                                >
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-
-                        <!-- Cột bên phải -->
-                        <div class="col-md-6">
-                          <div class="d-flex flex-column gap-2">
-                            <div class="card p-2 text-center compact-card">
-                              <h6 class="fw-semibold mb-1">
-                                Số lượng sản phẩm đã thêm
-                              </h6>
-                              <p class="fs-16 fw-bold mb-0" id="productCount">
-                                0804
-                              </p>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="container-xxl">
-            <div
-              class="py-3 d-flex align-items-sm-center flex-sm-row flex-column"
-            >
-              <div class="flex-grow-1">
-                <h4 class="fs-18 fw-semibold m-0">
-                  Danh sách sản phẩm đã thêm
-                </h4>
               </div>
             </div>
 
@@ -595,27 +520,25 @@
                               <option value="100">100</option>
                               <option value="150">150</option>
                             </select>
-                            <span class="ms-2">sản phẩm/trang</span>
+                            <span class="ms-2">khách hàng/trang</span>
                           </div>
                         </div>
 
                         <!-- Table -->
                         <table
                           class="table table-hover table-bordered align-middle"
-                          id="productTable"
+                          id="customerTable"
                         >
                           <thead class="table-light">
                             <tr>
                               <th scope="col" style="width: 100px">ID</th>
-                              <th scope="col">Ảnh</th>
-                              <th scope="col">Tên sản phẩm</th>
-                              <th scope="col">Giá</th>
-                              <th scope="col">Trạng thái</th>
-                              <th scope="col">Ngày tạo</th>
+                              <th scope="col">Tên</th>
+                              <th scope="col">Email</th>
+                              <th scope="col">Số điện thoại</th>
                               <th scope="col">Chức năng</th>
                             </tr>
                           </thead>
-                          <tbody id="productTableBody">
+                          <tbody id="customerTableBody">
                             <!-- Dữ liệu sẽ được thêm bằng JavaScript -->
                           </tbody>
                         </table>
@@ -645,186 +568,6 @@
           <!-- container-fluid -->
         </div>
         <!-- content -->
-
-        <!-- Modal thêm mới Product -->
-        <div
-          class="modal fade"
-          id="addProductModal"
-          tabindex="-1"
-          aria-labelledby="addProductModalLabel"
-          aria-hidden="true"
-        >
-          <div class="modal-dialog">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="addProductModalLabel">
-                  Thêm mới sản phẩm
-                </h5>
-                <button
-                  type="button"
-                  class="btn-close"
-                  data-bs-dismiss="modal"
-                  aria-label="Close"
-                ></button>
-              </div>
-              <div class="modal-body">
-                <form id="addProductForm" enctype="multipart/form-data">
-                  <div class="mb-3">
-                    <label for="productName" class="form-label"
-                      >Tên sản phẩm</label
-                    >
-                    <input
-                      type="text"
-                      class="form-control"
-                      id="productName"
-                      name="name"
-                      placeholder="Nhập tên sản phẩm"
-                      required
-                    />
-                  </div>
-                  <div class="mb-3">
-                    <label for="categoryId" class="form-label">Danh mục</label>
-                    <select
-                      class="form-select"
-                      id="categoryId"
-                      name="categoryId"
-                      required
-                    >
-                      <option value="">Chọn danh mục</option>
-                    </select>
-                  </div>
-                  <div class="mb-3">
-                    <label for="brandId" class="form-label">Thương hiệu</label>
-                    <select
-                      class="form-select"
-                      id="brandId"
-                      name="brandId"
-                      required
-                    >
-                      <option value="">Chọn thương hiệu</option>
-                    </select>
-                  </div>
-                  <div class="mb-3">
-                    <label for="productImage" class="form-label"
-                      >Ảnh sản phẩm</label
-                    >
-                    <input
-                      type="file"
-                      class="form-control"
-                      id="productImage"
-                      name="image"
-                      accept="image/*"
-                      required
-                    />
-                  </div>
-                  <div id="imagePreview" class="d-flex flex-wrap gap-2"></div>
-                </form>
-              </div>
-              <div class="modal-footer">
-                <button
-                  type="button"
-                  class="btn btn-secondary"
-                  data-bs-dismiss="modal"
-                >
-                  Đóng
-                </button>
-                <button
-                  type="button"
-                  class="btn btn-primary"
-                  id="saveProductBtn"
-                >
-                  Lưu
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Modal xem chi tiết sản phẩm -->
-        <div
-          class="modal fade"
-          id="viewProductDetailModal"
-          tabindex="-1"
-          aria-labelledby="viewProductDetailModalLabel"
-          aria-hidden="true"
-        >
-          <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="viewProductDetailModalLabel">
-                  Chi tiết sản phẩm
-                </h5>
-                <button
-                  type="button"
-                  class="btn-close"
-                  data-bs-dismiss="modal"
-                  aria-label="Close"
-                ></button>
-              </div>
-              <div class="modal-body">
-                <div class="row">
-                  <div class="col-md-6">
-                    <h6 class="title-detail">Thông tin cơ bản</h6>
-                    <p><strong>ID:</strong> <span id="viewProductId"></span></p>
-                    <p>
-                      <strong>Tên sản phẩm:</strong>
-                      <span id="viewProductName"></span>
-                    </p>
-                    <p>
-                      <strong>Danh mục:</strong> <span id="viewCategory"></span>
-                    </p>
-                    <p>
-                      <strong>Thương hiệu:</strong> <span id="viewBrand"></span>
-                    </p>
-                    <p><strong>Giá:</strong> <span id="viewPrice"></span></p>
-                    <p>
-                      <strong>Trạng thái:</strong> <span id="viewStatus"></span>
-                    </p>
-                  </div>
-                  <div class="col-md-6">
-                    <h6>Ảnh sản phẩm</h6>
-                    <div
-                      id="viewProductImages"
-                      class="d-flex flex-wrap gap-2"
-                    ></div>
-                  </div>
-                </div>
-                <hr />
-                <h6 class="title-detail">Thông tin chi tiết</h6>
-                <p>
-                  <strong>Mô tả:</strong> <span id="viewDescription"></span>
-                </p>
-                <h6>Kích thước và số lượng</h6>
-                <table class="table table-bordered">
-                  <thead>
-                    <tr>
-                      <th>Kích thước</th>
-                      <th>Số lượng</th>
-                    </tr>
-                  </thead>
-                  <tbody id="viewSizesTable"></tbody>
-                </table>
-                <hr />
-                <h6 class="title-detail">Thông tin người tạo</h6>
-                <p>
-                  <strong>Người tạo:</strong> <span id="viewManager"></span>
-                </p>
-                <p>
-                  <strong>Ngày tạo:</strong> <span id="viewCreatedAt"></span>
-                </p>
-              </div>
-              <div class="modal-footer">
-                <button
-                  type="button"
-                  class="btn btn-secondary"
-                  data-bs-dismiss="modal"
-                >
-                  Đóng
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
 
         <!-- Footer Start -->
         <footer class="footer">
@@ -862,7 +605,7 @@
     <!-- App js-->
     <script src="js/app.js"></script>
     <script src="js/base-url.js"></script>
-    <script src="js/pages/account-infor.js"></script>
+    <script src="js/pages/customer-order-history.js"></script>
   </body>
 
   <!-- Mirrored from zoyothemes.com/tapeli/html/pages-invoice by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 16 Jul 2024 08:34:17 GMT -->
