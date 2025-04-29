@@ -178,6 +178,8 @@ struct InvoiceController: RouteCollection {
         }
         
         invoiceDTO.fullAddress = "\(address.detail) \(address.ward) \(address.district) \(address.province)"
+		invoiceDTO.recipientName = address.name
+		invoiceDTO.recipientPhoneNumber = address.phoneNumber
         let invoice = invoiceDTO.toModel()
         try await invoice.create(on: req.db)
         try await invoice.$invoiceItems.create(invoiceItems, on: req.db)

@@ -26,8 +26,14 @@ final class Invoice: Model, Content, @unchecked Sendable {
 	@Parent(key: "customer_id")
 	var customer: Customer
 	
-	@Field(key: "full_address")
-	var fullAddress: String
+	@Field(key: "recipient_address")
+	var recipientAddress: String
+	
+	@Field(key: "recipient_name")
+	var recipientName: String
+	
+	@Field(key: "recipient_phone_number")
+	var recipientPhoneNumber: String
 	
 	@Field(key: "total")
 	var total: Int?
@@ -54,10 +60,12 @@ final class Invoice: Model, Content, @unchecked Sendable {
 		
 	}
 	
-	init(id: UUID? = nil, customerID: Customer.IDValue, fullAddress: String, total: Int?, paidStatus: Bool, status: InvoiceStatus, paymentMethod: PaymentMethod, createdAt: Date? = nil, updatedAt: Date? = nil) {
+	init(id: UUID? = nil, customerID: Customer.IDValue, recipientAddress: String, recipientName: String, recipientPhoneNumber: String, total: Int? = nil, paidStatus: Bool, status: InvoiceStatus, paymentMethod: PaymentMethod, createdAt: Date? = nil, updatedAt: Date? = nil) {
 		self.id = id
 		self.$customer.id = customerID
-		self.fullAddress = fullAddress
+		self.recipientAddress = recipientAddress
+		self.recipientName = recipientName
+		self.recipientPhoneNumber = recipientPhoneNumber
 		self.total = total
 		self.paidStatus = paidStatus
 		self.status = status
@@ -67,6 +75,6 @@ final class Invoice: Model, Content, @unchecked Sendable {
 	}
 	
 	func toDTO() -> InvoiceDTO{
-		return InvoiceDTO(id: self.id, customerID: self.$customer.id, addressID: UUID(), fullAddress: self.fullAddress, total: self.total, paidStatus: self.paidStatus, invoiceItems: self.$invoiceItems.value ?? [], status: self.status, paymentMethod: self.paymentMethod, createdAt: self.createdAt)
+		return InvoiceDTO(id: self.id, customerID: self.$customer.id, addressID: UUID(), fullAddress: self.recipientAddress, recipientName: self.recipientName, recipientPhoneNumber: self.recipientPhoneNumber, total: self.total, paidStatus: self.paidStatus, invoiceItems: self.$invoiceItems.value ?? [], status: self.status, paymentMethod: self.paymentMethod, createdAt: self.createdAt)
 	}
 }
