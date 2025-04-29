@@ -27,6 +27,8 @@
       id="app-style"
     />
 
+    <link rel="stylesheet" href="dashboard.html" />
+
     <!-- Icons -->
     <link href="css/icons.min.css" rel="stylesheet" type="text/css" />
 
@@ -300,7 +302,7 @@
                   aria-expanded="false"
                 >
                   <span class="pro-user-name ms-1">
-                    Christian <i class="mdi mdi-chevron-down"></i>
+                    More <i class="mdi mdi-chevron-down"></i>
                   </span>
                 </a>
                 <div class="dropdown-menu dropdown-menu-end profile-dropdown">
@@ -380,21 +382,13 @@
                 <div class="collapse" id="sidebarDashboards">
                   <ul class="nav-second-level">
                     <li>
-                      <a class="tp-link" href="index.html">Analytical</a>
-                    </li>
-                    <li>
-                      <a class="tp-link" href="ecommerce.html">E-commerce</a>
+                      <a class="tp-link" href="dashboard.html"
+                        >Thông tin chung</a
+                      >
                     </li>
                   </ul>
                 </div>
               </li>
-
-              <!-- <li>
-                                <a href="landing.html" target="_blank">
-                                    <i data-feather="globe"></i>
-                                    <span> Landing </span>
-                                </a>
-                            </li> -->
 
               <li class="menu-title">Pages</li>
 
@@ -501,125 +495,100 @@
             <div class="row">
               <div class="col-md-12 col-xl-12">
                 <div class="row g-3">
+                  <!-- Doanh thu tháng hiện tại -->
                   <div class="col-md-6 col-xl-3">
                     <div class="card">
                       <div class="card-body">
                         <div class="d-flex align-items-center">
-                          <div class="fs-14 mb-1">Website Traffic</div>
+                          <div class="fs-14 mb-1">
+                            Doanh thu <span id="currentMonth"></span>
+                          </div>
                         </div>
-
                         <div class="d-flex align-items-baseline mb-2">
-                          <div class="fs-22 mb-0 me-2 fw-semibold text-black">
-                            91.6K
-                          </div>
-                          <div class="me-auto">
-                            <span
-                              class="text-primary d-inline-flex align-items-center"
-                            >
-                              15%
-                              <i
-                                data-feather="trending-up"
-                                class="ms-1"
-                                style="height: 22px; width: 22px"
-                              ></i>
-                            </span>
+                          <div
+                            class="fs-22 mb-0 me-2 fw-semibold text-black"
+                            id="monthlyRevenue"
+                          >
+                            0 VNĐ
                           </div>
                         </div>
-                        <div id="website-visitors" class="apex-charts"></div>
+                        <div class="text-muted fs-13">
+                          Tổng doanh thu từ các đơn hoàn thành
+                        </div>
                       </div>
                     </div>
                   </div>
 
+                  <!-- Số lượng đơn đang chờ duyệt -->
                   <div class="col-md-6 col-xl-3">
                     <div class="card">
                       <div class="card-body">
                         <div class="d-flex align-items-center">
-                          <div class="fs-14 mb-1">Conversion rate</div>
+                          <div class="fs-14 mb-1">Đơn đang chờ duyệt</div>
                         </div>
-
                         <div class="d-flex align-items-baseline mb-2">
-                          <div class="fs-22 mb-0 me-2 fw-semibold text-black">
-                            15%
-                          </div>
-                          <div class="me-auto">
-                            <span
-                              class="text-danger d-inline-flex align-items-center"
-                            >
-                              10%
-                              <i
-                                data-feather="trending-down"
-                                class="ms-1"
-                                style="height: 22px; width: 22px"
-                              ></i>
-                            </span>
+                          <div
+                            class="fs-22 mb-0 me-2 fw-semibold text-black"
+                            id="pendingOrders"
+                          >
+                            0
                           </div>
                         </div>
-                        <div id="conversion-visitors" class="apex-charts"></div>
+                        <div class="text-muted fs-13">
+                          Số đơn hàng đang chờ xử lý
+                        </div>
                       </div>
                     </div>
                   </div>
 
+                  <!-- Số lượng đơn hoàn thành -->
                   <div class="col-md-6 col-xl-3">
                     <div class="card">
                       <div class="card-body">
                         <div class="d-flex align-items-center">
-                          <div class="fs-14 mb-1">Session duration</div>
+                          <div class="fs-14 mb-1">Đơn hoàn thành</div>
                         </div>
-
                         <div class="d-flex align-items-baseline mb-2">
-                          <div class="fs-22 mb-0 me-2 fw-semibold text-black">
-                            90 Sec
-                          </div>
-                          <div class="me-auto">
-                            <span
-                              class="text-success d-inline-flex align-items-center"
-                            >
-                              25%
-                              <i
-                                data-feather="trending-up"
-                                class="ms-1"
-                                style="height: 22px; width: 22px"
-                              ></i>
-                            </span>
+                          <div
+                            class="fs-22 mb-0 me-2 fw-semibold text-black"
+                            id="completedOrders"
+                          >
+                            0
                           </div>
                         </div>
-                        <div id="session-visitors" class="apex-charts"></div>
+                        <div class="text-muted fs-13">
+                          Số đơn hàng đã giao thành công
+                        </div>
                       </div>
                     </div>
                   </div>
 
+                  <!-- Số lượng tài khoản người dùng -->
                   <div class="col-md-6 col-xl-3">
                     <div class="card">
                       <div class="card-body">
                         <div class="d-flex align-items-center">
-                          <div class="fs-14 mb-1">Active Users</div>
+                          <div class="fs-14 mb-1">Tài khoản người dùng</div>
                         </div>
-
                         <div class="d-flex align-items-baseline mb-2">
-                          <div class="fs-22 mb-0 me-2 fw-semibold text-black">
-                            2,986
-                          </div>
-                          <div class="me-auto">
-                            <span
-                              class="text-success d-inline-flex align-items-center"
-                            >
-                              4%
-                              <i
-                                data-feather="trending-up"
-                                class="ms-1"
-                                style="height: 22px; width: 22px"
-                              ></i>
-                            </span>
+                          <div
+                            class="fs-22 mb-0 me-2 fw-semibold text-black"
+                            id="userAccounts"
+                          >
+                            0
                           </div>
                         </div>
-                        <div id="active-users" class="apex-charts"></div>
+                        <div class="text-muted fs-13">
+                          Tổng số tài khoản đăng ký
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-              <!-- end sales -->
             </div>
+            <!-- end row -->
+
             <!-- end row -->
 
             <!-- Start Monthly Sales -->
@@ -1018,7 +987,7 @@
                   document.write(new Date().getFullYear());
                 </script>
                 - Made with <span class="mdi mdi-heart text-danger"></span> by
-                <a href="#!" class="text-reset fw-semibold">Zoyothemes</a>
+                <a href="#!" class="text-reset fw-semibold">MD19-BeeFashion</a>
               </div>
             </div>
           </div>
@@ -1039,6 +1008,7 @@
     <script src="libs/waypoints/lib/jquery.waypoints.min.js"></script>
     <script src="libs/jquery.counterup/jquery.counterup.min.js"></script>
     <script src="libs/feather-icons/feather.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
     <!-- Apexcharts JS -->
     <script src="libs/apexcharts/apexcharts.min.js"></script>
@@ -1051,6 +1021,7 @@
 
     <!-- App js-->
     <script src="js/app.js"></script>
+    <script src="js/base-url.js"></script>
     <script src="js/pages/dashboard.js"></script>
   </body>
 
