@@ -64,10 +64,16 @@ struct BrandController: RouteCollection {
 
 	@Sendable
 	func restore(req: Request) async throws -> HTTPStatus {
-		guard let brandID: UUID = req.parameters.get("brandID") else { throw Abort(.badRequest) }
-		
-		guard let brand = try await Brand.query(on: req.db).withDeleted().filter(\.$id == brandID).first() else {
+		let brandID: UUID? = req.parameters.get("brandID")
+		guard let brand = try await Brand.query(on: req.db).withDeleted().filter(\.$id == brandID!).first() else {
 			throw Abort(.notFound)
+		}
+		
+		let productsFromBrand: [Product]? = try await Product.query(on: req.db).withDeleted().filter(\.$brand.$id == brand.id!).all()
+		if (productsFromBrand != nil) {
+			for product in productsFromBrand!{
+				try await product.restore(on: req.db)
+			}
 		}
 
 		try await brand.restore(on: req.db)
@@ -76,10 +82,16 @@ struct BrandController: RouteCollection {
 	
     @Sendable
     func delete(req: Request) async throws -> HTTPStatus {
-        guard let brand = try await Brand.find(req.parameters.get("brandID"), on: req.db) else {
-            throw Abort(.notFound)
-        }
-
+		let brandID: UUID? = req.parameters.get("brandID")
+		guard let brand = try await Brand.query(on: req.db).with(\.$products).filter(\.$id == brandID!).first() else {
+			throw Abort(.notFound, reason: "brand not found")
+		}
+		
+		let productsFromBrand: [Product]? = brand.$products.value
+		if (productsFromBrand != nil) {
+			try await productsFromBrand!.delete(on: req.db)
+		}
+		
         try await brand.delete(on: req.db)
         return .noContent
     }

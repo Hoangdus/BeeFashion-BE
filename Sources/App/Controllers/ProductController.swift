@@ -104,7 +104,15 @@ struct ProductController: RouteCollection {
         let productDTO = try req.content.decode(ProductDTO.self)
 		let normalizedProductName = productDTO.name?.folding(options: .diacriticInsensitive, locale: .none).lowercased()
 		let product = productDTO.toModel(normalizedName: normalizedProductName!)
-        
+
+		guard let _ = try await Category.find(productDTO.categoryId, on: req.db) else {
+			throw Abort(.notFound, reason: "category not found")
+		}
+		
+		guard let _ = try await Brand.find(productDTO.brandID, on: req.db) else {
+			throw Abort(.notFound, reason: "brand not found")
+		}
+		
 		guard let manager = try await Manager.find(productDTO.managerID, on: req.db) else {
 			throw Abort(.notFound, reason: "manager not found")
 		}
