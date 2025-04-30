@@ -19,12 +19,14 @@ $(document).ready(function () {
     return;
   }
 
-  // Ẩn/hiện tab theo vai trò
   if (user.role_id === managerRoleId) {
     $("#accountManagerTab").hide();
     $("#statsTab").hide();
+    $("#logTab").hide();
   } else {
     $("#accountManagerTab").show();
+    $("#statsTab").hide();
+    $("#logTab").hide();
   }
 
   const tableBody = $("#customerTableBody");

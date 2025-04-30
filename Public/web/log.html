@@ -7,7 +7,7 @@
   /><!-- /Added by HTTrack -->
   <head>
     <meta charset="utf-8" />
-    <title>Customer orders history</title>
+    <title>Category</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
@@ -27,7 +27,7 @@
       id="app-style"
     />
 
-    <link href="css/customer-order-history.css" rel="stylesheet" />
+    <link href="css/log.css" rel="stylesheet" />
 
     <!-- Icons -->
     <link href="css/icons.min.css" rel="stylesheet" type="text/css" />
@@ -489,9 +489,7 @@
               class="py-3 d-flex align-items-sm-center flex-sm-row flex-column"
             >
               <div class="flex-grow-1">
-                <h4 class="fs-18 fw-semibold m-0">
-                  Danh sách tài khoản - Lịch sử mua hàng
-                </h4>
+                <h4 class="fs-18 fw-semibold m-0">Lịch sử hoạt động</h4>
               </div>
 
               <div class="text-end">
@@ -510,61 +508,6 @@
                   <div class="card-body">
                     <div class="panel-body">
                       <!-- Code here -->
-                      <div class="table-responsive">
-                        <!-- Phần chọn số lượng hiển thị -->
-                        <div
-                          class="d-flex justify-content-between align-items-center mb-3"
-                        >
-                          <div class="d-flex align-items-center">
-                            <label class="me-2">Hiển thị:</label>
-                            <select
-                              class="form-select d-inline-block w-auto"
-                              id="pageSizeSelect"
-                            >
-                              <option value="10">10</option>
-                              <option value="50">50</option>
-                              <option value="100">100</option>
-                              <option value="150">150</option>
-                            </select>
-                            <span class="ms-2">khách hàng/trang</span>
-                          </div>
-                        </div>
-
-                        <!-- Table -->
-                        <table
-                          class="table table-hover table-bordered align-middle"
-                          id="customerTable"
-                        >
-                          <thead class="table-light">
-                            <tr>
-                              <th scope="col" style="width: 100px">ID</th>
-                              <th scope="col">Tên</th>
-                              <th scope="col">Email</th>
-                              <th scope="col">Số điện thoại</th>
-                              <th scope="col">Chức năng</th>
-                            </tr>
-                          </thead>
-                          <tbody id="customerTableBody">
-                            <!-- Dữ liệu sẽ được thêm bằng JavaScript -->
-                          </tbody>
-                        </table>
-
-                        <!-- Pagination -->
-                        <div
-                          class="d-flex justify-content-between align-items-center mt-3"
-                        >
-                          <div>
-                            <p class="mb-0" id="pageInfo">
-                              Hiển thị 0 sản phẩm
-                            </p>
-                          </div>
-                          <nav>
-                            <ul class="pagination mb-0" id="pagination">
-                              <!-- Pagination sẽ được thêm bằng JavaScript -->
-                            </ul>
-                          </nav>
-                        </div>
-                      </div>
                     </div>
                   </div>
                 </div>
@@ -611,7 +554,7 @@
     <!-- App js-->
     <script src="js/app.js"></script>
     <script src="js/base-url.js"></script>
-    <script src="js/pages/customer-order-history.js"></script>
+    <script src="js/pages/log.js"></script>
   </body>
 
   <!-- Mirrored from zoyothemes.com/tapeli/html/pages-invoice by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 16 Jul 2024 08:34:17 GMT -->
