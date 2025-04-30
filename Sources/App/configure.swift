@@ -43,6 +43,7 @@ public func configure(_ app: Application) async throws {
     
     app.migrations.add(CreateInvoice())
     app.migrations.add(CreateInvoiceItem())
+    app.migrations.add(CreateLog())
     
     app.views.use(.leaf)
     

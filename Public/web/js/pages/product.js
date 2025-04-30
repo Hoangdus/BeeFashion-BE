@@ -21,8 +21,11 @@ $(document).ready(function () {
   if (user.role_id === managerRoleId) {
     $("#accountManagerTab").hide();
     $("#statsTab").hide();
+    $("#logTab").hide();
   } else {
     $("#accountManagerTab").show();
+    $("#statsTab").hide();
+    $("#logTab").hide();
   }
 
   const tableBody = $("#productTableBody");
@@ -75,12 +78,11 @@ $(document).ready(function () {
   // Hàm lấy danh sách brands từ API
   async function fetchBrands() {
     try {
-      const response = await fetch(`${BASE_URL}/admin/brands`);
+      const response = await fetch(`${BASE_URL}/brands`);
       if (!response.ok) throw new Error("Không thể lấy danh sách thương hiệu");
       const brands = await response.json();
-      const brandSelect = $("#detailBrandId");
-      brandSelect.empty();
-      brandSelect.append('<option value="">Chọn thương hiệu</option>');
+      const brandSelect = $("#brandId");
+      brandSelect.empty().append('<option value="">Chọn thương hiệu</option>');
       brands.forEach((brand) => {
         brandSelect.append(
           `<option value="${brand.id}">${brand.name}</option>`
@@ -93,7 +95,7 @@ $(document).ready(function () {
 
   async function fetchSizes() {
     try {
-      const response = await fetch(`${BASE_URL}/admin/sizes`);
+      const response = await fetch(`${BASE_URL}/sizes`);
       if (!response.ok) throw new Error("Không thể lấy danh sách kích thước");
       availableSizes = await response.json(); // Lưu vào availableSizes
       console.log("Sizes loaded:", availableSizes);
@@ -184,6 +186,7 @@ $(document).ready(function () {
   // Hiển thị modal và lấy danh mục khi nhấn nút "Thêm mới"
   $(document).on("click", "#addProductBtn", function () {
     fetchCategories();
+    fetchBrands();
     $("#addProductModal").modal("show");
   });
 
@@ -232,10 +235,9 @@ $(document).ready(function () {
   // Xử lý khi nhấn nút "Lưu" trong modal
   $("#saveProductBtn").on("click", async function () {
     const productName = $("#productName").val();
-    // const productPrice = parseFloat($("#productPrice").val());
     const categoryId = $("#categoryId").val();
+    const brandId = $("#brandId").val();
     const productImage = $("#productImage")[0].files[0];
-    // const brandId = $("#brandId").val();
     const managerId = user.id;
     // const normalizedName = "";
 
@@ -259,14 +261,15 @@ $(document).ready(function () {
       alert("Vui lòng chọn ảnh sản phẩm!");
       return;
     }
-    // if (!brandId) {
-    //   alert("Vui lòng chọn thương hiệu!");
-    //   return;
-    // }
+    if (!brandId) {
+      alert("Vui lòng chọn thương hiệu!");
+      return;
+    }
 
     const formData = new FormData();
     formData.append("name", productName);
     // formData.append("price", productPrice);
+    formData.append("brandID", brandId);
     formData.append("categoryId", categoryId);
     formData.append("image", productImage);
     formData.append("normalizedName", "");
@@ -294,8 +297,7 @@ $(document).ready(function () {
       });
 
       $("#productId").val(productId);
-      // $("#detailBrandId").val(brandId);
-      fetchBrands();
+      $("#addProductDetailForm").data("brandId", brandId);
       fetchSizes();
       $("#sizesTableBody").empty();
       // $("#sizesTableBody").append(populateSizeRow());
@@ -312,7 +314,7 @@ $(document).ready(function () {
 
   $("#saveProductDetailBtn").on("click", async function () {
     const productId = $("#productId").val();
-    const brandId = $("#detailBrandId").val();
+    const brandId = $("#addProductDetailForm").data("brandId");
     const price = parseInt($("#productPrice").val());
     const description = $("#description").val().trim();
     // const color = $("#color").val().trim();
@@ -337,14 +339,6 @@ $(document).ready(function () {
         icon: "error",
         title: "Lỗi",
         text: "ID sản phẩm không hợp lệ!",
-      });
-      return;
-    }
-    if (!brandId) {
-      Swal.fire({
-        icon: "warning",
-        title: "Lỗi",
-        text: "Vui lòng chọn thương hiệu!",
       });
       return;
     }
@@ -377,10 +371,8 @@ $(document).ready(function () {
     formData.append("productId", productId);
     formData.append("brandId", brandId);
     formData.append("price", price);
-    // formData.append("quantities", JSON.stringify(quantities));
     formData.append("description", description);
     formData.append("color", "");
-    // formData.append("sizeIds", JSON.stringify(sizeIds));
     sizeIds.forEach((id, index) => {
       formData.append(`sizeIds[${index}]`, id);
     });

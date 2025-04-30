@@ -24,8 +24,11 @@ $(document).ready(function () {
   if (user.role_id === managerRoleId) {
     $("#accountManagerTab").hide();
     $("#statsTab").hide();
+    $("#logTab").hide();
   } else {
     $("#accountManagerTab").show();
+    $("#statsTab").hide();
+    $("#logTab").hide();
   }
 
   // Hàm định dạng giá tiền (tham khảo từ product.js)
