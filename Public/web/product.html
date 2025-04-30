@@ -461,6 +461,13 @@
                   <span> Thống kê </span>
                 </a>
               </li>
+
+              <li id="logTab">
+                <a class="tp-link" href="log.html">
+                  <i data-feather="clock"></i>
+                  <span> Lịch sử hoạt động </span>
+                </a>
+              </li>
             </ul>
           </div>
           <!-- End Sidebar -->
@@ -618,6 +625,17 @@
                     </select>
                   </div>
                   <div class="mb-3">
+                    <label for="brandId" class="form-label">Thương hiệu</label>
+                    <select
+                      class="form-select"
+                      id="brandId"
+                      name="brandId"
+                      required
+                    >
+                      <option value="">Chọn thương hiệu</option>
+                    </select>
+                  </div>
+                  <div class="mb-3">
                     <label for="productImage" class="form-label"
                       >Ảnh sản phẩm</label
                     >
@@ -677,19 +695,6 @@
               <div class="modal-body">
                 <form id="addProductDetailForm" enctype="multipart/form-data">
                   <input type="hidden" id="productId" name="productId" />
-                  <div class="mb-3">
-                    <label for="detailBrandId" class="form-label"
-                      >Thương hiệu</label
-                    >
-                    <select
-                      class="form-select"
-                      id="detailBrandId"
-                      name="brandId"
-                      required
-                    >
-                      <option value="">Chọn thương hiệu</option>
-                    </select>
-                  </div>
                   <div class="mb-3">
                     <label for="productPrice" class="form-label">Giá</label>
                     <input
