@@ -23,8 +23,8 @@ $(document).ready(function () {
     $("#logTab").hide();
   } else {
     $("#accountManagerTab").show();
-    $("#statsTab").hide();
-    $("#logTab").hide();
+    $("#statsTab").show();
+    $("#logTab").show();
   }
 
   const tableBody = $("#categoryTableBody");
@@ -104,6 +104,7 @@ $(document).ready(function () {
       }
 
       const newCategory = await response.json();
+      await createLog(null, "add", `Thêm mới thể loại: ${newCategory.name}`);
       console.log("Thêm mới thành công:", newCategory);
 
       // Đóng modal và làm mới bảng
@@ -258,11 +259,16 @@ $(document).ready(function () {
           const response = await fetch(url, { method });
           if (!response.ok)
             throw new Error(`HTTP error! status: ${response.status}`);
-          console.log(
-            `Cập nhật trạng thái ${categoryId} thành công: ${
-              isChecked ? "hiện" : "ẩn"
-            }`
+
+          const category = categories.find((cate) => cate.id === categoryId);
+          const categoryName = category?.name || categoryId;
+
+          await createLog(
+            null,
+            "changeStatus",
+            `Thay đổi trạng thái thể loại ${categoryName} thành: ${action}`
           );
+
           await fetchCategories();
         } catch (error) {
           console.error("Lỗi khi cập nhật trạng thái:", error);

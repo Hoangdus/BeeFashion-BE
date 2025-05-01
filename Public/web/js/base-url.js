@@ -10,4 +10,4 @@ const getBaseUrl = () => {
   }
 };
 
-const BASE_URL = getBaseUrl();
+window.BASE_URL = getBaseUrl();

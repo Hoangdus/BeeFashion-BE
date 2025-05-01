@@ -507,7 +507,364 @@
                 <div class="card">
                   <div class="card-body">
                     <div class="panel-body">
-                      <!-- Code here -->
+                      <!-- code here -->
+                      <div class="table-responsive">
+                        <!-- Tabs Navigation -->
+                        <ul
+                          class="nav nav-tabs mb-3"
+                          id="logTabs"
+                          role="tablist"
+                        >
+                          <li class="nav-item" role="presentation">
+                            <button
+                              class="nav-link active"
+                              id="all-logs-tab"
+                              data-bs-toggle="tab"
+                              data-bs-target="#all-logs"
+                              type="button"
+                              role="tab"
+                              aria-controls="all-logs"
+                              aria-selected="true"
+                            >
+                              Tất cả
+                            </button>
+                          </li>
+                          <li class="nav-item" role="presentation">
+                            <button
+                              class="nav-link"
+                              id="add-logs-tab"
+                              data-bs-toggle="tab"
+                              data-bs-target="#add-logs"
+                              type="button"
+                              role="tab"
+                              aria-controls="add-logs"
+                              aria-selected="false"
+                            >
+                              Thêm
+                            </button>
+                          </li>
+                          <li class="nav-item" role="presentation">
+                            <button
+                              class="nav-link"
+                              id="change-status-logs-tab"
+                              data-bs-toggle="tab"
+                              data-bs-target="#change-status-logs"
+                              type="button"
+                              role="tab"
+                              aria-controls="change-status-logs"
+                              aria-selected="false"
+                            >
+                              Thay đổi trạng thái
+                            </button>
+                          </li>
+                          <li class="nav-item" role="presentation">
+                            <button
+                              class="nav-link"
+                              id="approval-logs-tab"
+                              data-bs-toggle="tab"
+                              data-bs-target="#approval-logs"
+                              type="button"
+                              role="tab"
+                              aria-controls="approval-logs"
+                              aria-selected="false"
+                            >
+                              Duyệt
+                            </button>
+                          </li>
+                          <li class="nav-item" role="presentation">
+                            <button
+                              class="nav-link"
+                              id="other-logs-tab"
+                              data-bs-toggle="tab"
+                              data-bs-target="#other-logs"
+                              type="button"
+                              role="tab"
+                              aria-controls="other-logs"
+                              aria-selected="false"
+                            >
+                              Khác
+                            </button>
+                          </li>
+                        </ul>
+
+                        <!-- Tab Content -->
+                        <div class="tab-content" id="logTabsContent">
+                          <!-- All Logs Tab -->
+                          <div
+                            class="tab-pane fade show active"
+                            id="all-logs"
+                            role="tabpanel"
+                            aria-labelledby="all-logs-tab"
+                          >
+                            <div
+                              class="d-flex justify-content-between align-items-center mb-3"
+                            >
+                              <div class="d-flex align-items-center">
+                                <label class="me-2">Hiển thị:</label>
+                                <select
+                                  class="form-select d-inline-block w-auto"
+                                  id="pageSizeSelectAll"
+                                >
+                                  <option value="10">10</option>
+                                  <option value="50">50</option>
+                                  <option value="100">100</option>
+                                  <option value="150">150</option>
+                                </select>
+                                <span class="ms-2">log/trang</span>
+                              </div>
+                            </div>
+                            <table
+                              class="table table-hover table-bordered align-middle"
+                              id="logTableAll"
+                            >
+                              <thead class="table-light">
+                                <tr>
+                                  <th>Người thực hiện</th>
+                                  <th>Loại hành động</th>
+                                  <th>Hành động</th>
+                                  <th>Thời gian</th>
+                                </tr>
+                              </thead>
+                              <tbody id="logTableBodyAll"></tbody>
+                            </table>
+                            <div
+                              class="d-flex justify-content-between align-items-center mt-3"
+                            >
+                              <div>
+                                <p class="mb-0" id="pageInfoAll">
+                                  Hiển thị 0 log
+                                </p>
+                              </div>
+                              <nav>
+                                <ul
+                                  class="pagination mb-0"
+                                  id="paginationAll"
+                                ></ul>
+                              </nav>
+                            </div>
+                          </div>
+
+                          <!-- Add Logs Tab -->
+                          <div
+                            class="tab-pane fade"
+                            id="add-logs"
+                            role="tabpanel"
+                            aria-labelledby="add-logs-tab"
+                          >
+                            <div
+                              class="d-flex justify-content-between align-items-center mb-3"
+                            >
+                              <div class="d-flex align-items-center">
+                                <label class="me-2">Hiển thị:</label>
+                                <select
+                                  class="form-select d-inline-block w-auto"
+                                  id="pageSizeSelectAdd"
+                                >
+                                  <option value="10">10</option>
+                                  <option value="50">50</option>
+                                  <option value="100">100</option>
+                                  <option value="150">150</option>
+                                </select>
+                                <span class="ms-2">log/trang</span>
+                              </div>
+                            </div>
+                            <table
+                              class="table table-hover table-bordered align-middle"
+                              id="logTableAdd"
+                            >
+                              <thead class="table-light">
+                                <tr>
+                                  <th>Người thực hiện</th>
+                                  <th>Loại hành động</th>
+                                  <th>Hành động</th>
+                                  <th>Thời gian</th>
+                                </tr>
+                              </thead>
+                              <tbody id="logTableBodyAdd"></tbody>
+                            </table>
+                            <div
+                              class="d-flex justify-content-between align-items-center mt-3"
+                            >
+                              <div>
+                                <p class="mb-0" id="pageInfoAdd">
+                                  Hiển thị 0 log
+                                </p>
+                              </div>
+                              <nav>
+                                <ul
+                                  class="pagination mb-0"
+                                  id="paginationAdd"
+                                ></ul>
+                              </nav>
+                            </div>
+                          </div>
+
+                          <!-- Change Status Logs Tab -->
+                          <div
+                            class="tab-pane fade"
+                            id="change-status-logs"
+                            role="tabpanel"
+                            aria-labelledby="change-status-logs-tab"
+                          >
+                            <div
+                              class="d-flex justify-content-between align-items-center mb-3"
+                            >
+                              <div class="d-flex align-items-center">
+                                <label class="me-2">Hiển thị:</label>
+                                <select
+                                  class="form-select d-inline-block w-auto"
+                                  id="pageSizeSelectChangeStatus"
+                                >
+                                  <option value="10">10</option>
+                                  <option value="50">50</option>
+                                  <option value="100">100</option>
+                                  <option value="150">150</option>
+                                </select>
+                                <span class="ms-2">log/trang</span>
+                              </div>
+                            </div>
+                            <table
+                              class="table table-hover table-bordered align-middle"
+                              id="logTableChangeStatus"
+                            >
+                              <thead class="table-light">
+                                <tr>
+                                  <th>Người thực hiện</th>
+                                  <th>Loại hành động</th>
+                                  <th>Hành động</th>
+                                  <th>Thời gian</th>
+                                </tr>
+                              </thead>
+                              <tbody id="logTableBodyChangeStatus"></tbody>
+                            </table>
+                            <div
+                              class="d-flex justify-content-between align-items-center mt-3"
+                            >
+                              <div>
+                                <p class="mb-0" id="pageInfoChangeStatus">
+                                  Hiển thị 0 log
+                                </p>
+                              </div>
+                              <nav>
+                                <ul
+                                  class="pagination mb-0"
+                                  id="paginationChangeStatus"
+                                ></ul>
+                              </nav>
+                            </div>
+                          </div>
+
+                          <!-- Approval Logs Tab -->
+                          <div
+                            class="tab-pane fade"
+                            id="approval-logs"
+                            role="tabpanel"
+                            aria-labelledby="approval-logs-tab"
+                          >
+                            <div
+                              class="d-flex justify-content-between align-items-center mb-3"
+                            >
+                              <div class="d-flex align-items-center">
+                                <label class="me-2">Hiển thị:</label>
+                                <select
+                                  class="form-select d-inline-block w-auto"
+                                  id="pageSizeSelectApproval"
+                                >
+                                  <option value="10">10</option>
+                                  <option value="50">50</option>
+                                  <option value="100">100</option>
+                                  <option value="150">150</option>
+                                </select>
+                                <span class="ms-2">log/trang</span>
+                              </div>
+                            </div>
+                            <table
+                              class="table table-hover table-bordered align-middle"
+                              id="logTableApproval"
+                            >
+                              <thead class="table-light">
+                                <tr>
+                                  <th>Người thực hiện</th>
+                                  <th>Loại hành động</th>
+                                  <th>Hành động</th>
+                                  <th>Thời gian</th>
+                                </tr>
+                              </thead>
+                              <tbody id="logTableBodyApproval"></tbody>
+                            </table>
+                            <div
+                              class="d-flex justify-content-between align-items-center mt-3"
+                            >
+                              <div>
+                                <p class="mb-0" id="pageInfoApproval">
+                                  Hiển thị 0 log
+                                </p>
+                              </div>
+                              <nav>
+                                <ul
+                                  class="pagination mb-0"
+                                  id="paginationApproval"
+                                ></ul>
+                              </nav>
+                            </div>
+                          </div>
+
+                          <!-- Other Logs Tab -->
+                          <div
+                            class="tab-pane fade"
+                            id="other-logs"
+                            role="tabpanel"
+                            aria-labelledby="other-logs-tab"
+                          >
+                            <div
+                              class="d-flex justify-content-between align-items-center mb-3"
+                            >
+                              <div class="d-flex align-items-center">
+                                <label class="me-2">Hiển thị:</label>
+                                <select
+                                  class="form-select d-inline-block w-auto"
+                                  id="pageSizeSelectOther"
+                                >
+                                  <option value="10">10</option>
+                                  <option value="50">50</option>
+                                  <option value="100">100</option>
+                                  <option value="150">150</option>
+                                </select>
+                                <span class="ms-2">log/trang</span>
+                              </div>
+                            </div>
+                            <table
+                              class="table table-hover table-bordered align-middle"
+                              id="logTableOther"
+                            >
+                              <thead class="table-light">
+                                <tr>
+                                  <th>Người thực hiện</th>
+                                  <th>Loại hành động</th>
+                                  <th>Hành động</th>
+                                  <th>Thời gian</th>
+                                </tr>
+                              </thead>
+                              <tbody id="logTableBodyOther"></tbody>
+                            </table>
+                            <div
+                              class="d-flex justify-content-between align-items-center mt-3"
+                            >
+                              <div>
+                                <p class="mb-0" id="pageInfoOther">
+                                  Hiển thị 0 log
+                                </p>
+                              </div>
+                              <nav>
+                                <ul
+                                  class="pagination mb-0"
+                                  id="paginationOther"
+                                ></ul>
+                              </nav>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </div>

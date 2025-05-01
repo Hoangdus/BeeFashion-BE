@@ -23,8 +23,8 @@ $(document).ready(function () {
     $("#logTab").hide();
   } else {
     $("#accountManagerTab").show();
-    $("#statsTab").hide();
-    $("#logTab").hide();
+    $("#statsTab").show();
+    $("#logTab").show();
   }
 
   const tableBody = $("#brandTableBody");
@@ -105,14 +105,12 @@ $(document).ready(function () {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const newBrand = await response.json();
-      console.log("Thêm mới thành công:", newBrand);
+      await createLog(null, "add", `Thêm mới thương hiệu: ${brandData.name}`);
 
-      // Đóng modal và làm mới bảng
       $("#addBrandModal").modal("hide");
-      $("#addBrandForm")[0].reset(); // Reset form
-      $("#imagePreview").empty(); // Xóa preview ảnh
-      await fetchBrands(); // Làm mới danh sách brands
+      $("#addBrandForm")[0].reset();
+      $("#imagePreview").empty();
+      await fetchBrands();
     } catch (error) {
       console.error("Lỗi khi thêm mới:", error);
       alert("Có lỗi xảy ra khi thêm thương hiệu: " + error.message);
@@ -236,17 +234,17 @@ $(document).ready(function () {
         if (
           !(
             await Swal.fire({
-              title: `Bạn có chắc muốn ${action} Brand này?`, // Rút gọn title
+              title: `Bạn có chắc muốn ${action} Brand này?`,
               icon: "warning",
               showCancelButton: true,
               confirmButtonText: "OK",
               cancelButtonText: "Hủy",
-              width: "350px", // Giảm chiều rộng (mặc định ~500px)
-              padding: "1em", // Giảm padding để nhỏ gọn
-              buttonsStyling: true, // Giữ kiểu nút mặc định
+              width: "350px",
+              padding: "1em",
+              buttonsStyling: true,
               customClass: {
-                title: "swal2-title-small", // Class tùy chỉnh cho title
-                popup: "swal2-popup-small", // Class tùy chỉnh cho popup
+                title: "swal2-title-small",
+                popup: "swal2-popup-small",
               },
             })
           ).isConfirmed
@@ -265,6 +263,16 @@ $(document).ready(function () {
               isChecked ? "hiện" : "ẩn"
             }`
           );
+
+          const brand = brands.find((br) => br.id === brandId);
+          const brandName = brand?.name || brandId;
+
+          await createLog(
+            null,
+            "changeStatus",
+            `Thay đổi trạng thái thương hiệu ${brandName} thành: ${action}`
+          );
+
           await fetchBrands(); // Làm mới bảng
         } catch (error) {
           console.error("Lỗi khi cập nhật trạng thái:", error);

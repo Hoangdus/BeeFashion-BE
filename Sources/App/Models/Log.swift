@@ -9,6 +9,10 @@ import Vapor
 import Fluent
 import struct Foundation.UUID
 
+enum ContentType: String, Codable {
+    case add, changeStatus, approval, other
+}
+
 final class Log: Model, @unchecked Sendable {
     static let schema = "logs"
     
@@ -17,6 +21,9 @@ final class Log: Model, @unchecked Sendable {
     
     @Field(key: "name")
     var name: String
+    
+    @Field(key: "content_type")
+    var contentType: ContentType
     
     @Field(key: "content")
     var content: String
@@ -31,9 +38,10 @@ final class Log: Model, @unchecked Sendable {
         
     }
     
-    init(id: UUID? = nil, name: String, content: String, createdAt: Date? = nil, updatedAt: Date? = nil) {
+    init(id: UUID? = nil, name: String, contentType: ContentType, content: String, createdAt: Date? = nil, updatedAt: Date? = nil) {
         self.id = id
         self.name = name
+        self.contentType = contentType
         self.content = content
         self.createdAt = createdAt
         self.updatedAt = updatedAt
@@ -43,6 +51,7 @@ final class Log: Model, @unchecked Sendable {
         .init(
             id: self.id,
             name: self.name,
+            contentType: self.contentType,
             content: self.content,
             createdAt: self.createdAt
         )

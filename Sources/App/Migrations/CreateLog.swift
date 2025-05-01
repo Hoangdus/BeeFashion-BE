@@ -12,6 +12,7 @@ struct CreateLog: Migration {
         return database.schema("logs")
             .id()
             .field("name", .string, .required)
+            .field("content_type", .string)
             .field("content", .string, .required)
             .field("created_at", .datetime)
             .field("updated_at", .datetime)

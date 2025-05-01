@@ -24,8 +24,8 @@ $(document).ready(function () {
     $("#logTab").hide();
   } else {
     $("#accountManagerTab").show();
-    $("#statsTab").hide();
-    $("#logTab").hide();
+    $("#statsTab").show();
+    $("#logTab").show();
   }
 
   const tableBody = $("#productTableBody");
@@ -400,6 +400,12 @@ $(document).ready(function () {
       }
       console.log("Thêm chi tiết sản phẩm thành công");
 
+      await createLog(
+        null,
+        "add",
+        `Thêm sản phẩm mới: ${$("#productName").val()}`
+      );
+
       // Đóng cả hai modal
       $("#addProductDetailModal").modal("hide");
       $("#addProductModal").modal("hide");
@@ -639,11 +645,16 @@ $(document).ready(function () {
           const response = await fetch(url, { method });
           if (!response.ok)
             throw new Error(`HTTP error! status: ${response.status}`);
-          console.log(
-            `Cập nhật trạng thái ${productId} thành công: ${
-              isChecked ? "hiện" : "ẩn"
-            }`
+
+          const product = products.find((pro) => pro.id === productId);
+          const productName = product?.name || productId;
+
+          await createLog(
+            null,
+            "changeStatus",
+            `Thay đổi trạng thái sản phẩm ${productName} thành: ${action}`
           );
+
           await fetchProducts();
         } catch (error) {
           console.error("Lỗi khi cập nhật trạng thái:", error);

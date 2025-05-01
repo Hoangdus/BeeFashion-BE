@@ -34,8 +34,8 @@ $(document).ready(function () {
     $("#logTab").hide();
   } else {
     $("#accountManagerTab").show();
-    $("#statsTab").hide();
-    $("#logTab").hide();
+    $("#statsTab").show();
+    $("#logTab").show();
   }
 
   const tableBody = $("#accountTableBody");
@@ -172,8 +172,6 @@ $(document).ready(function () {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          // Add authorization header if needed
-          // 'Authorization': 'Bearer ' + user.token
         },
         body: JSON.stringify(formData),
       });
@@ -196,6 +194,19 @@ $(document).ready(function () {
         timer: 2000,
         showConfirmButton: false,
       });
+
+      let roleName = "";
+      if (formData.role === adminRoleId) {
+        roleName = "Admin";
+      } else if (formData.role === managerRoleId) {
+        roleName = "Manager";
+      }
+
+      await createLog(
+        null,
+        "add",
+        `Thêm tài khoản ${formData.name} với role ${roleName}`
+      );
 
       // Refresh account table
       await fetchAccounts();
@@ -274,23 +285,23 @@ $(document).ready(function () {
       .off("change")
       .on("change", async function () {
         const accountId = $(this).data("id");
-        const isChecked = $(this).is(":checked"); // True nếu bật, false nếu tắt
+        const isChecked = $(this).is(":checked");
         const action = isChecked ? "hiện" : "ẩn";
 
         if (
           !(
             await Swal.fire({
-              title: `Bạn có chắc muốn ${action} tài khoản này?`, // Rút gọn title
+              title: `Bạn có chắc muốn ${action} tài khoản này?`,
               icon: "warning",
               showCancelButton: true,
               confirmButtonText: "OK",
               cancelButtonText: "Hủy",
-              width: "350px", // Giảm chiều rộng (mặc định ~500px)
-              padding: "1em", // Giảm padding để nhỏ gọn
-              buttonsStyling: true, // Giữ kiểu nút mặc định
+              width: "350px",
+              padding: "1em",
+              buttonsStyling: true,
               customClass: {
-                title: "swal2-title-small", // Class tùy chỉnh cho title
-                popup: "swal2-popup-small", // Class tùy chỉnh cho popup
+                title: "swal2-title-small",
+                popup: "swal2-popup-small",
               },
             })
           ).isConfirmed
@@ -304,10 +315,14 @@ $(document).ready(function () {
           const response = await fetch(url, { method });
           if (!response.ok)
             throw new Error(`HTTP error! status: ${response.status}`);
-          console.log(
-            `Cập nhật trạng thái ${accountId} thành công: ${
-              isChecked ? "hiện" : "ẩn"
-            }`
+
+          const account = accounts.find((acc) => acc.id === accountId);
+          const accountName = account?.name || accountId;
+
+          await createLog(
+            null,
+            "changeStatus",
+            `Thay đổi trạng thái tài khoản ${accountName} thành: ${action}`
           );
           await fetchAccounts(); // Làm mới bảng
         } catch (error) {
