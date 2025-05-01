@@ -24,8 +24,8 @@ $(document).ready(function () {
     $("#logTab").hide();
   } else {
     $("#accountManagerTab").show();
-    $("#statsTab").hide();
-    $("#logTab").hide();
+    $("#statsTab").show();
+    $("#logTab").show();
   }
 
   // Danh sách trạng thái
@@ -71,7 +71,6 @@ $(document).ready(function () {
       console.log("Đang lấy dữ liệu đơn hàng...");
       const filter = new InvoiceFilter(); // Mặc định: fromDate="", toDate=""
       const queryParams = filter.toQueryParams();
-      //   console.log(queryParams);
       const response = await fetch(`${BASE_URL}/admin/invoices?${queryParams}`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -108,27 +107,6 @@ $(document).ready(function () {
       return { fullName: "Không xác định", phone: "Không xác định" };
     }
   }
-
-  //   // Hàm lấy thông tin địa chỉ từ API
-  //   async function fetchAddress(addressId) {
-  //     try {
-  //       const response = await fetch(`${BASE_URL}/admin/addresses/${addressId}`);
-  //       if (!response.ok) {
-  //         throw new Error(`HTTP error! status: ${response.status}`);
-  //       }
-  //       const address = await response.json();
-  //       return {
-  //         detail: address.detail || "Không xác định",
-  //         ward: address.ward || "Không xác định",
-  //         district: address.district || "Không xác định",
-  //         province: address.province || "Không xác định",
-  //       };
-  //       //   return address.addressDetail || "Không xác định";
-  //     } catch (error) {
-  //       console.error("Lỗi khi lấy thông tin địa chỉ:", error);
-  //       return addressId || "Không xác định"; // Hiển thị addressID nếu API không tồn tại
-  //     }
-  //   }
 
   // Hàm định dạng giá tiền
   function formatPrice(price) {
@@ -185,6 +163,16 @@ $(document).ready(function () {
         );
       }
 
+      // Ghi log
+      const statusText = statusOptions.find(
+        (opt) => opt.value === newStatus
+      ).text;
+      await createLog(
+        null,
+        "changeStatus",
+        `Cập nhật trạng thái đơn hàng "${invoiceId}" thành "${statusText}"`
+      );
+
       Swal.fire({
         icon: "success",
         title: "Thành công",
@@ -232,9 +220,6 @@ $(document).ready(function () {
     $("#viewCustomerName").text(customerInfo.fullName);
     $("#viewPhone").text(customerInfo.phone);
     $("#viewAddressDetail").text(invoice.fullAddress || "Không xác định");
-    // $("#viewWard").text(addressInfo.ward);
-    // $("#viewDistrict").text(addressInfo.district);
-    // $("#viewProvince").text(addressInfo.province);
     $("#viewTotal").text(formatPrice(invoice.total));
     $("#viewPaymentMethod").text(paymentMethod);
     $("#viewStatus").text(statusText);

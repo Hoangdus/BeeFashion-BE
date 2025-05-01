@@ -27,8 +27,8 @@ $(document).ready(function () {
     $("#logTab").hide();
   } else {
     $("#accountManagerTab").show();
-    $("#statsTab").hide();
-    $("#logTab").hide();
+    $("#statsTab").show();
+    $("#logTab").show();
   }
 
   // Hàm định dạng giá tiền (tham khảo từ product.js)
@@ -342,9 +342,6 @@ $(document).ready(function () {
             "Không xác định"
           }</td>
           <td>
-            <button class="btn btn-sm btn-primary me-1 edit-product-btn" title="Update" data-id="${productId}">
-              <i class="mdi mdi-pencil"></i>
-            </button>
             <button class="btn btn-sm btn-success me-1 view-product-btn" title="View info" data-id="${productId}">
               <i class="mdi mdi-eye"></i>
             </button>
