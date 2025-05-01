@@ -70,13 +70,6 @@ struct CategoryController: RouteCollection {
 		guard let category = try await Category.query(on: req.db).withDeleted().filter(\.$id == categoryID!).first() else {
 			throw Abort(.notFound)
 		}
-		
-		let productsInCategory: [Product]? = try await Product.query(on: req.db).withDeleted().filter(\.$category.$id == category.id!).all()
-		if (productsInCategory != nil) {
-			for product in productsInCategory!{
-				try await product.restore(on: req.db)
-			}
-		}
 
 		try await category.restore(on: req.db)
 		return .noContent

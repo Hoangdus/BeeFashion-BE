@@ -68,13 +68,6 @@ struct BrandController: RouteCollection {
 		guard let brand = try await Brand.query(on: req.db).withDeleted().filter(\.$id == brandID!).first() else {
 			throw Abort(.notFound)
 		}
-		
-		let productsFromBrand: [Product]? = try await Product.query(on: req.db).withDeleted().filter(\.$brand.$id == brand.id!).all()
-		if (productsFromBrand != nil) {
-			for product in productsFromBrand!{
-				try await product.restore(on: req.db)
-			}
-		}
 
 		try await brand.restore(on: req.db)
 		return .noContent
