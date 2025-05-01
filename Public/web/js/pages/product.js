@@ -521,11 +521,28 @@ $(document).ready(function () {
     return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " VNĐ";
   }
 
-  // Hàm sao chép vào clipboard
-  function copyToClipboard(text, element) {
-    navigator.clipboard
-      .writeText(text)
-      .then(() => {
+  // Hàm khởi tạo Clipboard.js
+  function initializeClipboard() {
+    new ClipboardJS(".id-column", {
+      text: function (trigger) {
+        const idText = $(trigger).data("id");
+        if (!idText) {
+          console.error("Không có ID để sao chép");
+          Swal.fire({
+            icon: "error",
+            title: "Lỗi",
+            text: "Không có ID để sao chép",
+            timer: 1500,
+            showConfirmButton: false,
+          });
+          return "";
+        }
+        return idText.toString(); // Đảm bảo là chuỗi
+      },
+    })
+      .on("success", function (e) {
+        // Hiển thị phản hồi "Đã sao chép!"
+        const element = $(e.trigger);
         const feedback = $('<span class="copy-feedback">Đã sao chép!</span>');
         element.append(feedback);
         feedback.css({
@@ -542,9 +559,17 @@ $(document).ready(function () {
             });
           }, 1000);
         });
+        e.clearSelection(); // Xóa vùng chọn
       })
-      .catch((err) => {
-        console.error("Lỗi khi sao chép:", err);
+      .on("error", function (e) {
+        console.error("Lỗi khi sao chép:", e);
+        Swal.fire({
+          icon: "error",
+          title: "Lỗi",
+          text: "Không thể sao chép nội dung",
+          timer: 1500,
+          showConfirmButton: false,
+        });
       });
   }
 
@@ -601,14 +626,9 @@ $(document).ready(function () {
     // Khởi tạo tooltip
     $('[data-bs-toggle="tooltip"]').tooltip();
 
-    // Thêm sự kiện click để copy ID
-    $(".id-column")
-      .off("click")
-      .on("click", function () {
-        // .off() để tránh trùng lặp sự kiện
-        const idText = $(this).data("id"); // Lấy ID từ data-id
-        copyToClipboard(idText, $(this));
-      });
+    $(".id-column").off("click");
+
+    initializeClipboard();
 
     // Xử lý gạt nút trạng thái
     $(".status-toggle")
