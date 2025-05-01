@@ -11,6 +11,7 @@ import Vapor
 struct LogDTO: Content, @unchecked Sendable {
     var id: UUID?
     var name: String
+    var contentType: ContentType
     var content: String
     var createdAt: Date?
     
@@ -18,6 +19,7 @@ struct LogDTO: Content, @unchecked Sendable {
         return Log(
             id: self.id,
             name: self.name,
+            contentType: self.contentType,
             content: self.content,
             createdAt: self.createdAt
         )

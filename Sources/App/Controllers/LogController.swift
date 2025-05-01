@@ -19,9 +19,16 @@ struct LogController: RouteCollection {
     }
     
     @Sendable
-    func getAllLogs(req: Request) async throws -> [LogDTO] {
-        try await Log.query(on: req.db).all().map { $0.toDTO() }
-    }
+        func getAllLogs(req: Request) async throws -> [LogDTO] {
+            var query = Log.query(on: req.db)
+            
+            if let contentType: String = try? req.query.get(String.self, at: "contentType"),
+               let validContentType = ContentType(rawValue: contentType) {
+                query = query.filter(\.$contentType == validContentType)
+            }
+            
+            return try await query.all().map { $0.toDTO() }
+        }
     
     @Sendable
     func create(req: Request) async throws -> LogDTO {
