@@ -193,7 +193,7 @@ $(document).ready(function () {
       ).text;
       await createLog(
         null,
-        "changeStatus",
+        "approval",
         `Cập nhật trạng thái đơn hàng "${invoiceId}" thành "${statusText}"`
       );
 
