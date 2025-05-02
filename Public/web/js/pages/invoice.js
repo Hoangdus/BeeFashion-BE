@@ -91,17 +91,17 @@ $(document).ready(function () {
   }
 
   // Hàm lấy thông tin khách hàng từ API
-  async function fetchCustomerInfo(customerId) {
+  async function fetchCustomerInfo(customerId, invoiceId) {
     try {
-      const response = await fetch(`${BASE_URL}/admin/customers/${customerId}`);
+      const response = await fetch(
+        `${BASE_URL}/admin/invoices/${customerId}/${invoiceId}`
+      );
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const customer = await response.json();
-      return {
-        fullName: customer.fullName || "Không xác định",
-        phone: customer.phone || "Không xác định",
-      };
+      console.log(customer);
+      return customer;
     } catch (error) {
       console.error("Lỗi khi lấy thông tin khách hàng:", error);
       return { fullName: "Không xác định", phone: "Không xác định" };
@@ -230,7 +230,10 @@ $(document).ready(function () {
       return;
     }
 
-    const customerInfo = await fetchCustomerInfo(invoice.customerID);
+    const customerInfo = await fetchCustomerInfo(
+      invoice.customerID,
+      invoice.id
+    );
 
     const paymentMethod =
       invoice.paymentMethod === "cod"
@@ -241,8 +244,8 @@ $(document).ready(function () {
       invoice.status;
 
     $("#viewInvoiceId").text(invoice.id || "Không xác định");
-    $("#viewCustomerName").text(customerInfo.fullName);
-    $("#viewPhone").text(customerInfo.phone);
+    $("#viewCustomerName").text(customerInfo.recipientName);
+    $("#viewPhone").text(customerInfo.recipientPhoneNumber);
     $("#viewAddressDetail").text(invoice.fullAddress || "Không xác định");
     $("#viewTotal").text(formatPrice(invoice.total));
     $("#viewPaymentMethod").text(paymentMethod);
@@ -296,7 +299,10 @@ $(document).ready(function () {
           (sum, item) => sum + (item.quantity || 0),
           0
         );
-        const customerInfo = await fetchCustomerInfo(invoice.customerID);
+        const customerInfo = await fetchCustomerInfo(
+          invoice.customerID,
+          invoice.id
+        );
         const paymentMethod =
           invoice.paymentMethod === "cod"
             ? "Thanh toán khi nhận hàng"
@@ -350,7 +356,7 @@ $(document).ready(function () {
         const row = `
           <tr>
             <td class="id-column" data-bs-toggle="tooltip" data-bs-placement="top" title="${invoiceId}" data-id="${invoiceId}">${invoiceId}</td>
-            <td>${customerInfo.fullName}</td>
+            <td>${customerInfo.recipientName}</td>
             <td>${totalQuantity}</td>
             <td>${formatPrice(invoice.total)}</td>
             <td>${paymentMethod}</td>
