@@ -29,6 +29,7 @@ struct InvoiceController: RouteCollection {
         
         manageInvoice.group(":customerID",":invoiceID") { invoice in
             invoice.patch(use: self.updateStatus)
+            invoice.get(use: self.getInvoiceByCustomerID)
         }
         
         manageInvoice.get(use: self.getAll)
@@ -185,6 +186,18 @@ struct InvoiceController: RouteCollection {
         try await invoice.$invoiceItems.create(invoiceItems, on: req.db)
         
         return .ok
+    }
+    
+    @Sendable
+    func getInvoiceByCustomerID(req: Request) async throws -> InvoiceDTO {
+        guard let customerID: UUID = req.parameters.get("customerID") else { throw Abort(.badRequest) }
+        guard let invoiceID: UUID = req.parameters.get("invoiceID") else { throw Abort(.badRequest) }
+        
+        guard let invoice = try await Invoice.query(on: req.db).with(\.$invoiceItems).filter(\.$id == invoiceID).filter(\.$customer.$id == customerID).first() else {
+            throw Abort(.notFound, reason: "invoice not found")
+        }
+        
+        return invoice.toDTO()
     }
     
     @Sendable
