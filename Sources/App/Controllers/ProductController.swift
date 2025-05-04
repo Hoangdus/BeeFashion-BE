@@ -61,7 +61,7 @@ struct ProductController: RouteCollection {
         let customer = try await Customer.find(req.parameters.get("customerId"), on: req.db)
         let products = try await Product.query(on: req.db).with(\.$productDetail).all()
         var productDTOs: [ProductDTO] = []
-        
+		
         // add child properties to parent
         for product in products{
             let productDetail = product.productDetail
@@ -76,6 +76,7 @@ struct ProductController: RouteCollection {
             }
         }
         
+		try await sendNotification(title: "test", body: "test", imageURL: "", req: req, targetToken: Environment.get("TEST_NOTIFICATION_TARGET_TOKEN") ?? "")
         return productDTOs
     }
     

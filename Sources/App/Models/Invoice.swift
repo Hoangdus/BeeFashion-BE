@@ -50,6 +50,9 @@ final class Invoice: Model, Content, @unchecked Sendable {
 	@Enum(key: "payment_method")
 	var paymentMethod: PaymentMethod
 	
+	@Field(key: "target_device_token")
+	var targetDeviceToken: String
+	
 	@Timestamp(key: "created_at", on: .create)
 	var createdAt: Date?
 	
@@ -60,7 +63,7 @@ final class Invoice: Model, Content, @unchecked Sendable {
 		
 	}
 	
-	init(id: UUID? = nil, customerID: Customer.IDValue, recipientAddress: String, recipientName: String, recipientPhoneNumber: String, total: Int? = nil, paidStatus: Bool, status: InvoiceStatus, paymentMethod: PaymentMethod, createdAt: Date? = nil, updatedAt: Date? = nil) {
+	init(id: UUID? = nil, customerID: Customer.IDValue, recipientAddress: String, recipientName: String, recipientPhoneNumber: String, total: Int? = nil, paidStatus: Bool, status: InvoiceStatus, paymentMethod: PaymentMethod, notificationToken: String, createdAt: Date? = nil, updatedAt: Date? = nil) {
 		self.id = id
 		self.$customer.id = customerID
 		self.recipientAddress = recipientAddress
@@ -70,11 +73,12 @@ final class Invoice: Model, Content, @unchecked Sendable {
 		self.paidStatus = paidStatus
 		self.status = status
 		self.paymentMethod = paymentMethod
+		self.targetDeviceToken = notificationToken
 		self.createdAt = createdAt
 		self.updatedAt = updatedAt
 	}
 	
 	func toDTO() -> InvoiceDTO{
-		return InvoiceDTO(id: self.id, customerID: self.$customer.id, addressID: UUID(), fullAddress: self.recipientAddress, recipientName: self.recipientName, recipientPhoneNumber: self.recipientPhoneNumber, total: self.total, paidStatus: self.paidStatus, invoiceItems: self.$invoiceItems.value ?? [], status: self.status, paymentMethod: self.paymentMethod, createdAt: self.createdAt)
+		return InvoiceDTO(id: self.id, customerID: self.$customer.id, addressID: UUID(), fullAddress: self.recipientAddress, recipientName: self.recipientName, recipientPhoneNumber: self.recipientPhoneNumber, total: self.total, paidStatus: self.paidStatus, invoiceItems: self.$invoiceItems.value ?? [], status: self.status, paymentMethod: self.paymentMethod, targetDeviceToken: self.targetDeviceToken, createdAt: self.createdAt)
 	}
 }

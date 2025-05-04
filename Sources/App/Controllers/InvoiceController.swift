@@ -284,6 +284,7 @@ struct InvoiceController: RouteCollection {
             }
         }
         
+		try await sendNotification(title: "Trạng thái đơn hàng", body: "Đơn hàng của bạn đang được giao", imageURL: "", req: req, targetToken: invoice.targetDeviceToken)
         invoice.status = newStatus
         try await invoice.save(on: req.db)
         
