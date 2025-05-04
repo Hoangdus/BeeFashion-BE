@@ -104,7 +104,6 @@ $(document).ready(function () {
       return customer;
     } catch (error) {
       console.error("Lỗi khi lấy thông tin khách hàng:", error);
-      return { fullName: "Không xác định", phone: "Không xác định" };
     }
   }
 
