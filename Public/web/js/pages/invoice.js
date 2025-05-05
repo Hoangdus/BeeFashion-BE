@@ -548,6 +548,17 @@ $(document).ready(function () {
         "paginationApproved",
         "pageSizeSelectApproved"
       );
+    } else if (targetTab === "completed-orders-tab") {
+      filteredData = filteredData.filter(
+        (invoice) => invoice.status === "completed"
+      );
+      await updateTable(
+        filteredData,
+        "invoiceTableBodyCompleted",
+        "pageInfoCompleted",
+        "paginationCompleted",
+        "pageSizeSelectCompleted"
+      );
     } else if (targetTab === "unpaid-orders-tab") {
       filteredData = filteredData.filter((invoice) => !invoice.paidStatus);
       await updateTable(
@@ -578,7 +589,7 @@ $(document).ready(function () {
 
   // Xử lý nút "Thêm mới"
   $(
-    "#addInvoiceBtnAll, #addInvoiceBtnPendingApproval, #addInvoiceBtnApproved, #addInvoiceBtnUnpaid, #addInvoiceBtnPaid"
+    "#addInvoiceBtnAll, #addInvoiceBtnPendingApproval, #addInvoiceBtnApproved, #addInvoiceBtnUnpaid, #addInvoiceBtnPaid, #addInvoiceBtnCompleted"
   ).on("click", function () {
     Swal.fire({
       icon: "info",
@@ -593,6 +604,7 @@ $(document).ready(function () {
   handleTabChange("all-orders-tab");
   handleTabChange("pending-approval-orders-tab");
   handleTabChange("approved-orders-tab");
+  handleTabChange("completed-orders-tab");
   handleTabChange("unpaid-orders-tab");
   handleTabChange("paid-orders-tab");
 });

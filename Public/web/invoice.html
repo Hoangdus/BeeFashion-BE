@@ -559,6 +559,20 @@
                           <li class="nav-item" role="presentation">
                             <button
                               class="nav-link"
+                              id="completed-orders-tab"
+                              data-bs-toggle="tab"
+                              data-bs-target="#completed-orders"
+                              type="button"
+                              role="tab"
+                              aria-controls="completed-orders"
+                              aria-selected="false"
+                            >
+                              Đơn hàng hoàn thành
+                            </button>
+                          </li>
+                          <li class="nav-item" role="presentation">
+                            <button
+                              class="nav-link"
                               id="unpaid-orders-tab"
                               data-bs-toggle="tab"
                               data-bs-target="#unpaid-orders"
@@ -777,6 +791,70 @@
                                 <ul
                                   class="pagination mb-0"
                                   id="paginationApproved"
+                                ></ul>
+                              </nav>
+                            </div>
+                          </div>
+
+                          <!-- Tab Đơn hàng hoàn thành mới -->
+                          <div
+                            class="tab-pane fade"
+                            id="completed-orders"
+                            role="tabpanel"
+                            aria-labelledby="completed-orders-tab"
+                          >
+                            <div
+                              class="d-flex justify-content-between align-items-center mb-3"
+                            >
+                              <div class="d-flex align-items-center">
+                                <label class="me-2">Hiển thị:</label>
+                                <select
+                                  class="form-select d-inline-block w-auto"
+                                  id="pageSizeSelectCompleted"
+                                >
+                                  <option value="10">10</option>
+                                  <option value="50">50</option>
+                                  <option value="100">100</option>
+                                  <option value="150">150</option>
+                                </select>
+                                <span class="ms-2">đơn hàng/trang</span>
+                              </div>
+                              <button
+                                class="btn btn-primary"
+                                id="addInvoiceBtnCompleted"
+                              >
+                                Thêm mới
+                              </button>
+                            </div>
+                            <table
+                              class="table table-hover table-bordered align-middle"
+                              id="invoiceTableCompleted"
+                            >
+                              <thead class="table-light">
+                                <tr>
+                                  <th scope="col" style="width: 100px">ID</th>
+                                  <th scope="col">Tên người đặt</th>
+                                  <th scope="col">Số lượng sản phẩm</th>
+                                  <th scope="col">Tổng tiền</th>
+                                  <th scope="col">Phương thức thanh toán</th>
+                                  <th scope="col">Trạng thái</th>
+                                  <th scope="col">Chi tiết đơn hàng</th>
+                                </tr>
+                              </thead>
+                              <tbody id="invoiceTableBodyCompleted"></tbody>
+                            </table>
+                            <div
+                              class="d-flex justify-content-between align-items-center mt-3"
+                            >
+                              <div>
+                                <p class="mb-0" id="pageInfoCompleted">
+                                  Hiển thị 0 đơn hàng
+                                </p>
+                              </div>
+                              <nav>
+                                <ul
+                                  class="pagination mb-0"
+                                  id="paginationCompleted"
                                 ></ul>
                               </nav>
                             </div>
