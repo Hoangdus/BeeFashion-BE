@@ -26,6 +26,6 @@ struct InvoiceDTO: Content {
 	var createdAt: Date?
 	
 	func toModel() -> Invoice {
-		return Invoice(id: self.id, customerID: self.customerID, recipientAddress: self.fullAddress!, recipientName: self.recipientName!, recipientPhoneNumber: self.recipientPhoneNumber!, total: self.total, paidStatus: self.paidStatus, status: self.status ?? .pending, paymentMethod: self.paymentMethod, notificationToken: self.targetDeviceToken)
+		return Invoice(id: self.id, customerID: self.customerID, recipientAddress: self.fullAddress!, recipientName: self.recipientName!, recipientPhoneNumber: self.recipientPhoneNumber!, total: self.total, paidStatus: self.paidStatus, status: self.status ?? .pending, paymentMethod: self.paymentMethod, targetDeviceToken: self.targetDeviceToken)
 	}
 }

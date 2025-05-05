@@ -134,6 +134,7 @@ struct InvoiceController: RouteCollection {
             
             var invoiceDTO = invoice.toDTO()
             invoiceDTO.invoiceItems = nil
+			invoiceDTO.targetDeviceToken = ""
             invoiceDTO.invoiceItemDTOs = invoiceItemDTOs
             invoiceDTOs.append(invoiceDTO)
         }

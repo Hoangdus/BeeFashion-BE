@@ -63,7 +63,7 @@ final class Invoice: Model, Content, @unchecked Sendable {
 		
 	}
 	
-	init(id: UUID? = nil, customerID: Customer.IDValue, recipientAddress: String, recipientName: String, recipientPhoneNumber: String, total: Int? = nil, paidStatus: Bool, status: InvoiceStatus, paymentMethod: PaymentMethod, notificationToken: String, createdAt: Date? = nil, updatedAt: Date? = nil) {
+	init(id: UUID? = nil, customerID: Customer.IDValue, recipientAddress: String, recipientName: String, recipientPhoneNumber: String, total: Int? = nil, paidStatus: Bool, status: InvoiceStatus, paymentMethod: PaymentMethod, targetDeviceToken: String, createdAt: Date? = nil, updatedAt: Date? = nil) {
 		self.id = id
 		self.$customer.id = customerID
 		self.recipientAddress = recipientAddress
@@ -73,7 +73,7 @@ final class Invoice: Model, Content, @unchecked Sendable {
 		self.paidStatus = paidStatus
 		self.status = status
 		self.paymentMethod = paymentMethod
-		self.targetDeviceToken = notificationToken
+		self.targetDeviceToken = targetDeviceToken
 		self.createdAt = createdAt
 		self.updatedAt = updatedAt
 	}
