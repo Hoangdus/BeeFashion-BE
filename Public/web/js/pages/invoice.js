@@ -21,8 +21,11 @@ $(document).ready(function () {
   if (user.role_id === managerRoleId) {
     $("#accountManagerTab").hide();
     $("#statsTab").hide();
+    $("#logTab").hide();
   } else {
     $("#accountManagerTab").show();
+    $("#statsTab").show();
+    $("#logTab").show();
   }
 
   // Danh sách trạng thái
@@ -68,7 +71,6 @@ $(document).ready(function () {
       console.log("Đang lấy dữ liệu đơn hàng...");
       const filter = new InvoiceFilter(); // Mặc định: fromDate="", toDate=""
       const queryParams = filter.toQueryParams();
-      //   console.log(queryParams);
       const response = await fetch(`${BASE_URL}/admin/invoices?${queryParams}`);
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -89,43 +91,21 @@ $(document).ready(function () {
   }
 
   // Hàm lấy thông tin khách hàng từ API
-  async function fetchCustomerInfo(customerId) {
+  async function fetchCustomerInfo(customerId, invoiceId) {
     try {
-      const response = await fetch(`${BASE_URL}/admin/customers/${customerId}`);
+      const response = await fetch(
+        `${BASE_URL}/admin/invoices/${customerId}/${invoiceId}`
+      );
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
       const customer = await response.json();
-      return {
-        fullName: customer.fullName || "Không xác định",
-        phone: customer.phone || "Không xác định",
-      };
+      console.log(customer);
+      return customer;
     } catch (error) {
       console.error("Lỗi khi lấy thông tin khách hàng:", error);
-      return { fullName: "Không xác định", phone: "Không xác định" };
     }
   }
-
-  //   // Hàm lấy thông tin địa chỉ từ API
-  //   async function fetchAddress(addressId) {
-  //     try {
-  //       const response = await fetch(`${BASE_URL}/admin/addresses/${addressId}`);
-  //       if (!response.ok) {
-  //         throw new Error(`HTTP error! status: ${response.status}`);
-  //       }
-  //       const address = await response.json();
-  //       return {
-  //         detail: address.detail || "Không xác định",
-  //         ward: address.ward || "Không xác định",
-  //         district: address.district || "Không xác định",
-  //         province: address.province || "Không xác định",
-  //       };
-  //       //   return address.addressDetail || "Không xác định";
-  //     } catch (error) {
-  //       console.error("Lỗi khi lấy thông tin địa chỉ:", error);
-  //       return addressId || "Không xác định"; // Hiển thị addressID nếu API không tồn tại
-  //     }
-  //   }
 
   // Hàm định dạng giá tiền
   function formatPrice(price) {
@@ -133,15 +113,31 @@ $(document).ready(function () {
     return price.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") + " VNĐ";
   }
 
-  // Hàm sao chép vào clipboard
-  function copyToClipboard(text, element) {
-    navigator.clipboard
-      .writeText(text)
-      .then(() => {
+  // Hàm khởi tạo Clipboard.js
+  function initializeClipboard() {
+    new ClipboardJS(".id-column", {
+      text: function (trigger) {
+        const idText = $(trigger).data("id");
+        if (!idText) {
+          console.error("Không có ID để sao chép");
+          Swal.fire({
+            icon: "error",
+            title: "Lỗi",
+            text: "Không có ID để sao chép",
+            timer: 1500,
+            showConfirmButton: false,
+          });
+          return "";
+        }
+        return idText.toString(); // Đảm bảo là chuỗi
+      },
+    })
+      .on("success", function (e) {
+        // Hiển thị phản hồi "Đã sao chép!"
+        const element = $(e.trigger);
         const feedback = $('<span class="copy-feedback">Đã sao chép!</span>');
         element.append(feedback);
         feedback.css({
-          position: "absolute",
           top: element.position().top - 20,
           left:
             element.position().left +
@@ -155,9 +151,17 @@ $(document).ready(function () {
             });
           }, 1000);
         });
+        e.clearSelection(); // Xóa vùng chọn
       })
-      .catch((err) => {
-        console.error("Lỗi khi sao chép:", err);
+      .on("error", function (e) {
+        console.error("Lỗi khi sao chép:", e);
+        Swal.fire({
+          icon: "error",
+          title: "Lỗi",
+          text: "Không thể sao chép nội dung",
+          timer: 1500,
+          showConfirmButton: false,
+        });
       });
   }
 
@@ -181,6 +185,16 @@ $(document).ready(function () {
           errorData.message || `HTTP error! status: ${response.status}`
         );
       }
+
+      // Ghi log
+      const statusText = statusOptions.find(
+        (opt) => opt.value === newStatus
+      ).text;
+      await createLog(
+        null,
+        "approval",
+        `Cập nhật trạng thái đơn hàng "${invoiceId}" thành "${statusText}"`
+      );
 
       Swal.fire({
         icon: "success",
@@ -215,7 +229,10 @@ $(document).ready(function () {
       return;
     }
 
-    const customerInfo = await fetchCustomerInfo(invoice.customerID);
+    const customerInfo = await fetchCustomerInfo(
+      invoice.customerID,
+      invoice.id
+    );
 
     const paymentMethod =
       invoice.paymentMethod === "cod"
@@ -226,12 +243,9 @@ $(document).ready(function () {
       invoice.status;
 
     $("#viewInvoiceId").text(invoice.id || "Không xác định");
-    $("#viewCustomerName").text(customerInfo.fullName);
-    $("#viewPhone").text(customerInfo.phone);
+    $("#viewCustomerName").text(customerInfo.recipientName);
+    $("#viewPhone").text(customerInfo.recipientPhoneNumber);
     $("#viewAddressDetail").text(invoice.fullAddress || "Không xác định");
-    // $("#viewWard").text(addressInfo.ward);
-    // $("#viewDistrict").text(addressInfo.district);
-    // $("#viewProvince").text(addressInfo.province);
     $("#viewTotal").text(formatPrice(invoice.total));
     $("#viewPaymentMethod").text(paymentMethod);
     $("#viewStatus").text(statusText);
@@ -284,7 +298,10 @@ $(document).ready(function () {
           (sum, item) => sum + (item.quantity || 0),
           0
         );
-        const customerInfo = await fetchCustomerInfo(invoice.customerID);
+        const customerInfo = await fetchCustomerInfo(
+          invoice.customerID,
+          invoice.id
+        );
         const paymentMethod =
           invoice.paymentMethod === "cod"
             ? "Thanh toán khi nhận hàng"
@@ -338,7 +355,7 @@ $(document).ready(function () {
         const row = `
           <tr>
             <td class="id-column" data-bs-toggle="tooltip" data-bs-placement="top" title="${invoiceId}" data-id="${invoiceId}">${invoiceId}</td>
-            <td>${customerInfo.fullName}</td>
+            <td>${customerInfo.recipientName}</td>
             <td>${totalQuantity}</td>
             <td>${formatPrice(invoice.total)}</td>
             <td>${paymentMethod}</td>
@@ -363,13 +380,9 @@ $(document).ready(function () {
     // Khởi tạo tooltip
     $('[data-bs-toggle="tooltip"]').tooltip();
 
-    // Sự kiện sao chép ID
-    $(".id-column")
-      .off("click")
-      .on("click", function () {
-        const idText = $(this).data("id");
-        copyToClipboard(idText, $(this));
-      });
+    $(".id-column").off("click");
+
+    initializeClipboard();
 
     // Sự kiện thay đổi trạng thái
     $(".status-select")
@@ -535,6 +548,17 @@ $(document).ready(function () {
         "paginationApproved",
         "pageSizeSelectApproved"
       );
+    } else if (targetTab === "completed-orders-tab") {
+      filteredData = filteredData.filter(
+        (invoice) => invoice.status === "completed"
+      );
+      await updateTable(
+        filteredData,
+        "invoiceTableBodyCompleted",
+        "pageInfoCompleted",
+        "paginationCompleted",
+        "pageSizeSelectCompleted"
+      );
     } else if (targetTab === "unpaid-orders-tab") {
       filteredData = filteredData.filter((invoice) => !invoice.paidStatus);
       await updateTable(
@@ -565,7 +589,7 @@ $(document).ready(function () {
 
   // Xử lý nút "Thêm mới"
   $(
-    "#addInvoiceBtnAll, #addInvoiceBtnPendingApproval, #addInvoiceBtnApproved, #addInvoiceBtnUnpaid, #addInvoiceBtnPaid"
+    "#addInvoiceBtnAll, #addInvoiceBtnPendingApproval, #addInvoiceBtnApproved, #addInvoiceBtnUnpaid, #addInvoiceBtnPaid, #addInvoiceBtnCompleted"
   ).on("click", function () {
     Swal.fire({
       icon: "info",
@@ -580,6 +604,7 @@ $(document).ready(function () {
   handleTabChange("all-orders-tab");
   handleTabChange("pending-approval-orders-tab");
   handleTabChange("approved-orders-tab");
+  handleTabChange("completed-orders-tab");
   handleTabChange("unpaid-orders-tab");
   handleTabChange("paid-orders-tab");
 });

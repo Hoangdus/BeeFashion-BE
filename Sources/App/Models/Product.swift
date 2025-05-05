@@ -29,6 +29,9 @@ final class Product: Model, @unchecked Sendable{
     
     @Parent(key: "category_id")
     var category: Category
+	
+	@Parent(key: "brand_id")
+	var brand: Brand
     
 	@Parent(key: "manager_id")
 	var manager: Manager
@@ -49,12 +52,13 @@ final class Product: Model, @unchecked Sendable{
 		
 	}
 	
-	init(id: UUID? = nil, name: String, normalizedName: String, image: String, categoryID: Category.IDValue, managerID: Manager.IDValue, createdAt: Date? = nil, updatedAt: Date? = nil, deletedAt: Date? = nil) {
+	init(id: UUID? = nil, name: String, normalizedName: String, image: String, categoryID: Category.IDValue, brandID: Brand.IDValue, managerID: Manager.IDValue, createdAt: Date? = nil, updatedAt: Date? = nil, deletedAt: Date? = nil) {
 		self.id = id
 		self.name = name
 		self.normalizedName = normalizedName
 		self.image = image
 		self.$category.id = categoryID
+		self.$brand.id = brandID
 		self.$manager.id = managerID
 		self.createdAt = createdAt
 		self.updatedAt = updatedAt
@@ -62,6 +66,6 @@ final class Product: Model, @unchecked Sendable{
 	}
     
     func toDTO() -> ProductDTO{
-		return ProductDTO(id: self.id, name: self.name, image: self.image, categoryId: self.$category.id, deletedAt: self.deletedAt, createdAt: self.createdAt)
+		return ProductDTO(id: self.id, name: self.name, image: self.image, categoryId: self.$category.id, brandID: self.$brand.id, deletedAt: self.deletedAt, createdAt: self.createdAt)
     }
 }

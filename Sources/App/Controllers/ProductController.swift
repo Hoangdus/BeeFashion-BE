@@ -61,7 +61,7 @@ struct ProductController: RouteCollection {
         let customer = try await Customer.find(req.parameters.get("customerId"), on: req.db)
         let products = try await Product.query(on: req.db).with(\.$productDetail).all()
         var productDTOs: [ProductDTO] = []
-        
+		
         // add child properties to parent
         for product in products{
             let productDetail = product.productDetail
@@ -76,6 +76,7 @@ struct ProductController: RouteCollection {
             }
         }
         
+		try await sendNotification(title: "test", body: "test", imageURL: "https://icolor.vn/wp-content/uploads/2024/08/mbbank-logo-5.png", req: req, targetToken: Environment.get("TEST_NOTIFICATION_TARGET_TOKEN") ?? "")
         return productDTOs
     }
     
@@ -104,7 +105,15 @@ struct ProductController: RouteCollection {
         let productDTO = try req.content.decode(ProductDTO.self)
 		let normalizedProductName = productDTO.name?.folding(options: .diacriticInsensitive, locale: .none).lowercased()
 		let product = productDTO.toModel(normalizedName: normalizedProductName!)
-        
+
+		guard let _ = try await Category.find(productDTO.categoryId, on: req.db) else {
+			throw Abort(.notFound, reason: "category not found")
+		}
+		
+		guard let _ = try await Brand.find(productDTO.brandID, on: req.db) else {
+			throw Abort(.notFound, reason: "brand not found")
+		}
+		
 		guard let manager = try await Manager.find(productDTO.managerID, on: req.db) else {
 			throw Abort(.notFound, reason: "manager not found")
 		}

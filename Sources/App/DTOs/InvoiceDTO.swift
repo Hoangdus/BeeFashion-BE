@@ -13,6 +13,8 @@ struct InvoiceDTO: Content {
 	var customerID: UUID
 	var addressID: UUID
 	var fullAddress: String?
+	var recipientName: String?
+	var recipientPhoneNumber: String?
 	var total: Int?
 	var paidStatus: Bool = false
 //	var products: [ProductDTO]?
@@ -20,9 +22,10 @@ struct InvoiceDTO: Content {
 	var invoiceItems: [InvoiceItem]? //send
 	var status: InvoiceStatus?
 	var paymentMethod: PaymentMethod
+	var targetDeviceToken: String
 	var createdAt: Date?
 	
 	func toModel() -> Invoice {
-		return Invoice(customerID: self.customerID, fullAddress: self.fullAddress!, total: self.total, paidStatus: self.paidStatus, status: self.status ?? .pending, paymentMethod: self.paymentMethod)
+		return Invoice(id: self.id, customerID: self.customerID, recipientAddress: self.fullAddress!, recipientName: self.recipientName!, recipientPhoneNumber: self.recipientPhoneNumber!, total: self.total, paidStatus: self.paidStatus, status: self.status ?? .pending, paymentMethod: self.paymentMethod, targetDeviceToken: self.targetDeviceToken)
 	}
 }

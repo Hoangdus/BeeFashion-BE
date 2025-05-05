@@ -20,8 +20,11 @@ $(document).ready(function () {
   if (user.role_id === managerRoleId) {
     $("#accountManagerTab").hide();
     $("#statsTab").hide();
+    $("#logTab").hide();
   } else {
     $("#accountManagerTab").show();
+    $("#statsTab").show();
+    $("#logTab").show();
   }
 
   const tableBody = $("#categoryTableBody");
@@ -101,6 +104,7 @@ $(document).ready(function () {
       }
 
       const newCategory = await response.json();
+      await createLog(null, "add", `Thêm mới thể loại: ${newCategory.name}`);
       console.log("Thêm mới thành công:", newCategory);
 
       // Đóng modal và làm mới bảng
@@ -120,11 +124,28 @@ $(document).ready(function () {
     updateTable();
   });
 
-  // Hàm sao chép vào clipboard
-  function copyToClipboard(text, element) {
-    navigator.clipboard
-      .writeText(text)
-      .then(() => {
+  // Hàm khởi tạo Clipboard.js
+  function initializeClipboard() {
+    new ClipboardJS(".id-column", {
+      text: function (trigger) {
+        const idText = $(trigger).data("id");
+        if (!idText) {
+          console.error("Không có ID để sao chép");
+          Swal.fire({
+            icon: "error",
+            title: "Lỗi",
+            text: "Không có ID để sao chép",
+            timer: 1500,
+            showConfirmButton: false,
+          });
+          return "";
+        }
+        return idText.toString(); // Đảm bảo là chuỗi
+      },
+    })
+      .on("success", function (e) {
+        // Hiển thị phản hồi "Đã sao chép!"
+        const element = $(e.trigger);
         const feedback = $('<span class="copy-feedback">Đã sao chép!</span>');
         element.append(feedback);
         feedback.css({
@@ -141,9 +162,17 @@ $(document).ready(function () {
             });
           }, 1000);
         });
+        e.clearSelection(); // Xóa vùng chọn
       })
-      .catch((err) => {
-        console.error("Lỗi khi sao chép:", err);
+      .on("error", function (e) {
+        console.error("Lỗi khi sao chép:", e);
+        Swal.fire({
+          icon: "error",
+          title: "Lỗi",
+          text: "Không thể sao chép nội dung",
+          timer: 1500,
+          showConfirmButton: false,
+        });
       });
   }
 
@@ -212,14 +241,9 @@ $(document).ready(function () {
     // Khởi tạo tooltip
     $('[data-bs-toggle="tooltip"]').tooltip();
 
-    // Thêm sự kiện click để copy ID
-    $(".id-column")
-      .off("click")
-      .on("click", function () {
-        // .off() để tránh trùng lặp sự kiện
-        const idText = $(this).data("id"); // Lấy ID từ data-id
-        copyToClipboard(idText, $(this));
-      });
+    $(".id-column").off("click");
+
+    initializeClipboard();
 
     $(".status-toggle")
       .off("change")
@@ -255,11 +279,16 @@ $(document).ready(function () {
           const response = await fetch(url, { method });
           if (!response.ok)
             throw new Error(`HTTP error! status: ${response.status}`);
-          console.log(
-            `Cập nhật trạng thái ${categoryId} thành công: ${
-              isChecked ? "hiện" : "ẩn"
-            }`
+
+          const category = categories.find((cate) => cate.id === categoryId);
+          const categoryName = category?.name || categoryId;
+
+          await createLog(
+            null,
+            "changeStatus",
+            `Thay đổi trạng thái thể loại ${categoryName} thành: ${action}`
           );
+
           await fetchCategories();
         } catch (error) {
           console.error("Lỗi khi cập nhật trạng thái:", error);

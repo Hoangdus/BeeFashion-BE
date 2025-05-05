@@ -18,6 +18,9 @@ final class Category: Model, @unchecked Sendable{
     @Field(key: "name")
     var name: String
     
+	@Children(for: \.$category)
+	var products: [Product]
+	
 	@Timestamp(key: "created_at", on: .create)
 	var createdAt: Date?
 	

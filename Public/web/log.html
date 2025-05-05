@@ -7,7 +7,7 @@
   /><!-- /Added by HTTrack -->
   <head>
     <meta charset="utf-8" />
-    <title>Invoice</title>
+    <title>Category</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta
       name="description"
@@ -27,7 +27,7 @@
       id="app-style"
     />
 
-    <link href="css/invoice.css" rel="stylesheet" />
+    <link href="css/log.css" rel="stylesheet" />
 
     <!-- Icons -->
     <link href="css/icons.min.css" rel="stylesheet" type="text/css" />
@@ -489,7 +489,7 @@
               class="py-3 d-flex align-items-sm-center flex-sm-row flex-column"
             >
               <div class="flex-grow-1">
-                <h4 class="fs-18 fw-semibold m-0">Invoice</h4>
+                <h4 class="fs-18 fw-semibold m-0">Lịch sử hoạt động</h4>
               </div>
 
               <div class="text-end">
@@ -507,107 +507,94 @@
                 <div class="card">
                   <div class="card-body">
                     <div class="panel-body">
+                      <!-- code here -->
                       <div class="table-responsive">
                         <!-- Tabs Navigation -->
                         <ul
                           class="nav nav-tabs mb-3"
-                          id="invoiceTabs"
+                          id="logTabs"
                           role="tablist"
                         >
                           <li class="nav-item" role="presentation">
                             <button
                               class="nav-link active"
-                              id="all-orders-tab"
+                              id="all-logs-tab"
                               data-bs-toggle="tab"
-                              data-bs-target="#all-orders"
+                              data-bs-target="#all-logs"
                               type="button"
                               role="tab"
-                              aria-controls="all-orders"
+                              aria-controls="all-logs"
                               aria-selected="true"
                             >
-                              Tất cả đơn hàng
+                              Tất cả
                             </button>
                           </li>
                           <li class="nav-item" role="presentation">
                             <button
                               class="nav-link"
-                              id="pending-approval-orders-tab"
+                              id="add-logs-tab"
                               data-bs-toggle="tab"
-                              data-bs-target="#pending-approval-orders"
+                              data-bs-target="#add-logs"
                               type="button"
                               role="tab"
-                              aria-controls="pending-approval-orders"
+                              aria-controls="add-logs"
                               aria-selected="false"
                             >
-                              Đơn hàng chờ duyệt
+                              Thêm
                             </button>
                           </li>
                           <li class="nav-item" role="presentation">
                             <button
                               class="nav-link"
-                              id="approved-orders-tab"
+                              id="change-status-logs-tab"
                               data-bs-toggle="tab"
-                              data-bs-target="#approved-orders"
+                              data-bs-target="#change-status-logs"
                               type="button"
                               role="tab"
-                              aria-controls="approved-orders"
+                              aria-controls="change-status-logs"
                               aria-selected="false"
                             >
-                              Đơn hàng đã duyệt
+                              Thay đổi trạng thái
                             </button>
                           </li>
                           <li class="nav-item" role="presentation">
                             <button
                               class="nav-link"
-                              id="completed-orders-tab"
+                              id="approval-logs-tab"
                               data-bs-toggle="tab"
-                              data-bs-target="#completed-orders"
+                              data-bs-target="#approval-logs"
                               type="button"
                               role="tab"
-                              aria-controls="completed-orders"
+                              aria-controls="approval-logs"
                               aria-selected="false"
                             >
-                              Đơn hàng hoàn thành
+                              Duyệt
                             </button>
                           </li>
                           <li class="nav-item" role="presentation">
                             <button
                               class="nav-link"
-                              id="unpaid-orders-tab"
+                              id="other-logs-tab"
                               data-bs-toggle="tab"
-                              data-bs-target="#unpaid-orders"
+                              data-bs-target="#other-logs"
                               type="button"
                               role="tab"
-                              aria-controls="unpaid-orders"
+                              aria-controls="other-logs"
                               aria-selected="false"
                             >
-                              Chưa thanh toán
-                            </button>
-                          </li>
-                          <li class="nav-item" role="presentation">
-                            <button
-                              class="nav-link"
-                              id="paid-orders-tab"
-                              data-bs-toggle="tab"
-                              data-bs-target="#paid-orders"
-                              type="button"
-                              role="tab"
-                              aria-controls="paid-orders"
-                              aria-selected="false"
-                            >
-                              Đã thanh toán
+                              Khác
                             </button>
                           </li>
                         </ul>
 
                         <!-- Tab Content -->
-                        <div class="tab-content" id="invoiceTabsContent">
-                          <!-- All Orders Tab -->
+                        <div class="tab-content" id="logTabsContent">
+                          <!-- All Logs Tab -->
                           <div
                             class="tab-pane fade show active"
-                            id="all-orders"
+                            id="all-logs"
                             role="tabpanel"
-                            aria-labelledby="all-orders-tab"
+                            aria-labelledby="all-logs-tab"
                           >
                             <div
                               class="d-flex justify-content-between align-items-center mb-3"
@@ -623,38 +610,29 @@
                                   <option value="100">100</option>
                                   <option value="150">150</option>
                                 </select>
-                                <span class="ms-2">đơn hàng/trang</span>
+                                <span class="ms-2">log/trang</span>
                               </div>
-                              <button
-                                class="btn btn-primary"
-                                id="addInvoiceBtnAll"
-                              >
-                                Thêm mới
-                              </button>
                             </div>
                             <table
                               class="table table-hover table-bordered align-middle"
-                              id="invoiceTableAll"
+                              id="logTableAll"
                             >
                               <thead class="table-light">
                                 <tr>
-                                  <th scope="col" style="width: 100px">ID</th>
-                                  <th scope="col">Tên người đặt</th>
-                                  <th scope="col">Số lượng sản phẩm</th>
-                                  <th scope="col">Tổng tiền</th>
-                                  <th scope="col">Phương thức thanh toán</th>
-                                  <th scope="col">Trạng thái</th>
-                                  <th scope="col">Chi tiết đơn hàng</th>
+                                  <th>Người thực hiện</th>
+                                  <th>Loại hành động</th>
+                                  <th>Hành động</th>
+                                  <th>Thời gian</th>
                                 </tr>
                               </thead>
-                              <tbody id="invoiceTableBodyAll"></tbody>
+                              <tbody id="logTableBodyAll"></tbody>
                             </table>
                             <div
                               class="d-flex justify-content-between align-items-center mt-3"
                             >
                               <div>
                                 <p class="mb-0" id="pageInfoAll">
-                                  Hiển thị 0 đơn hàng
+                                  Hiển thị 0 log
                                 </p>
                               </div>
                               <nav>
@@ -666,12 +644,12 @@
                             </div>
                           </div>
 
-                          <!-- Pending Approval Orders Tab -->
+                          <!-- Add Logs Tab -->
                           <div
                             class="tab-pane fade"
-                            id="pending-approval-orders"
+                            id="add-logs"
                             role="tabpanel"
-                            aria-labelledby="pending-approval-orders-tab"
+                            aria-labelledby="add-logs-tab"
                           >
                             <div
                               class="d-flex justify-content-between align-items-center mb-3"
@@ -680,64 +658,53 @@
                                 <label class="me-2">Hiển thị:</label>
                                 <select
                                   class="form-select d-inline-block w-auto"
-                                  id="pageSizeSelectPendingApproval"
+                                  id="pageSizeSelectAdd"
                                 >
                                   <option value="10">10</option>
                                   <option value="50">50</option>
                                   <option value="100">100</option>
                                   <option value="150">150</option>
                                 </select>
-                                <span class="ms-2">đơn hàng/trang</span>
+                                <span class="ms-2">log/trang</span>
                               </div>
-                              <button
-                                class="btn btn-primary"
-                                id="addInvoiceBtnPendingApproval"
-                              >
-                                Thêm mới
-                              </button>
                             </div>
                             <table
                               class="table table-hover table-bordered align-middle"
-                              id="invoiceTablePendingApproval"
+                              id="logTableAdd"
                             >
                               <thead class="table-light">
                                 <tr>
-                                  <th scope="col" style="width: 100px">ID</th>
-                                  <th scope="col">Tên người đặt</th>
-                                  <th scope="col">Số lượng sản phẩm</th>
-                                  <th scope="col">Tổng tiền</th>
-                                  <th scope="col">Phương thức thanh toán</th>
-                                  <th scope="col">Trạng thái</th>
-                                  <th scope="col">Chi tiết đơn hàng</th>
+                                  <th>Người thực hiện</th>
+                                  <th>Loại hành động</th>
+                                  <th>Hành động</th>
+                                  <th>Thời gian</th>
                                 </tr>
                               </thead>
-                              <tbody
-                                id="invoiceTableBodyPendingApproval"
-                              ></tbody>
+                              <tbody id="logTableBodyAdd"></tbody>
                             </table>
                             <div
                               class="d-flex justify-content-between align-items-center mt-3"
                             >
                               <div>
-                                <p class="mb-0" id="pageInfoPendingApproval">
-                                  Hiển thị 0 đơn hàng
+                                <p class="mb-0" id="pageInfoAdd">
+                                  Hiển thị 0 log
                                 </p>
                               </div>
                               <nav>
                                 <ul
                                   class="pagination mb-0"
-                                  id="paginationPendingApproval"
+                                  id="paginationAdd"
                                 ></ul>
                               </nav>
                             </div>
                           </div>
 
-                          <!-- Approved Orders Tab -->
+                          <!-- Change Status Logs Tab -->
                           <div
                             class="tab-pane fade"
-                            id="approved-orders"
+                            id="change-status-logs"
                             role="tabpanel"
-                            aria-labelledby="approved-orders-tab"
+                            aria-labelledby="change-status-logs-tab"
                           >
                             <div
                               class="d-flex justify-content-between align-items-center mb-3"
@@ -746,62 +713,53 @@
                                 <label class="me-2">Hiển thị:</label>
                                 <select
                                   class="form-select d-inline-block w-auto"
-                                  id="pageSizeSelectApproved"
+                                  id="pageSizeSelectChangeStatus"
                                 >
                                   <option value="10">10</option>
                                   <option value="50">50</option>
                                   <option value="100">100</option>
                                   <option value="150">150</option>
                                 </select>
-                                <span class="ms-2">đơn hàng/trang</span>
+                                <span class="ms-2">log/trang</span>
                               </div>
-                              <button
-                                class="btn btn-primary"
-                                id="addInvoiceBtnApproved"
-                              >
-                                Thêm mới
-                              </button>
                             </div>
                             <table
                               class="table table-hover table-bordered align-middle"
-                              id="invoiceTableApproved"
+                              id="logTableChangeStatus"
                             >
                               <thead class="table-light">
                                 <tr>
-                                  <th scope="col" style="width: 100px">ID</th>
-                                  <th scope="col">Tên người đặt</th>
-                                  <th scope="col">Số lượng sản phẩm</th>
-                                  <th scope="col">Tổng tiền</th>
-                                  <th scope="col">Phương thức thanh toán</th>
-                                  <th scope="col">Trạng thái</th>
-                                  <th scope="col">Chi tiết đơn hàng</th>
+                                  <th>Người thực hiện</th>
+                                  <th>Loại hành động</th>
+                                  <th>Hành động</th>
+                                  <th>Thời gian</th>
                                 </tr>
                               </thead>
-                              <tbody id="invoiceTableBodyApproved"></tbody>
+                              <tbody id="logTableBodyChangeStatus"></tbody>
                             </table>
                             <div
                               class="d-flex justify-content-between align-items-center mt-3"
                             >
                               <div>
-                                <p class="mb-0" id="pageInfoApproved">
-                                  Hiển thị 0 đơn hàng
+                                <p class="mb-0" id="pageInfoChangeStatus">
+                                  Hiển thị 0 log
                                 </p>
                               </div>
                               <nav>
                                 <ul
                                   class="pagination mb-0"
-                                  id="paginationApproved"
+                                  id="paginationChangeStatus"
                                 ></ul>
                               </nav>
                             </div>
                           </div>
 
-                          <!-- Tab Đơn hàng hoàn thành mới -->
+                          <!-- Approval Logs Tab -->
                           <div
                             class="tab-pane fade"
-                            id="completed-orders"
+                            id="approval-logs"
                             role="tabpanel"
-                            aria-labelledby="completed-orders-tab"
+                            aria-labelledby="approval-logs-tab"
                           >
                             <div
                               class="d-flex justify-content-between align-items-center mb-3"
@@ -810,62 +768,53 @@
                                 <label class="me-2">Hiển thị:</label>
                                 <select
                                   class="form-select d-inline-block w-auto"
-                                  id="pageSizeSelectCompleted"
+                                  id="pageSizeSelectApproval"
                                 >
                                   <option value="10">10</option>
                                   <option value="50">50</option>
                                   <option value="100">100</option>
                                   <option value="150">150</option>
                                 </select>
-                                <span class="ms-2">đơn hàng/trang</span>
+                                <span class="ms-2">log/trang</span>
                               </div>
-                              <button
-                                class="btn btn-primary"
-                                id="addInvoiceBtnCompleted"
-                              >
-                                Thêm mới
-                              </button>
                             </div>
                             <table
                               class="table table-hover table-bordered align-middle"
-                              id="invoiceTableCompleted"
+                              id="logTableApproval"
                             >
                               <thead class="table-light">
                                 <tr>
-                                  <th scope="col" style="width: 100px">ID</th>
-                                  <th scope="col">Tên người đặt</th>
-                                  <th scope="col">Số lượng sản phẩm</th>
-                                  <th scope="col">Tổng tiền</th>
-                                  <th scope="col">Phương thức thanh toán</th>
-                                  <th scope="col">Trạng thái</th>
-                                  <th scope="col">Chi tiết đơn hàng</th>
+                                  <th>Người thực hiện</th>
+                                  <th>Loại hành động</th>
+                                  <th>Hành động</th>
+                                  <th>Thời gian</th>
                                 </tr>
                               </thead>
-                              <tbody id="invoiceTableBodyCompleted"></tbody>
+                              <tbody id="logTableBodyApproval"></tbody>
                             </table>
                             <div
                               class="d-flex justify-content-between align-items-center mt-3"
                             >
                               <div>
-                                <p class="mb-0" id="pageInfoCompleted">
-                                  Hiển thị 0 đơn hàng
+                                <p class="mb-0" id="pageInfoApproval">
+                                  Hiển thị 0 log
                                 </p>
                               </div>
                               <nav>
                                 <ul
                                   class="pagination mb-0"
-                                  id="paginationCompleted"
+                                  id="paginationApproval"
                                 ></ul>
                               </nav>
                             </div>
                           </div>
 
-                          <!-- Unpaid Orders Tab -->
+                          <!-- Other Logs Tab -->
                           <div
                             class="tab-pane fade"
-                            id="unpaid-orders"
+                            id="other-logs"
                             role="tabpanel"
-                            aria-labelledby="unpaid-orders-tab"
+                            aria-labelledby="other-logs-tab"
                           >
                             <div
                               class="d-flex justify-content-between align-items-center mb-3"
@@ -874,115 +823,42 @@
                                 <label class="me-2">Hiển thị:</label>
                                 <select
                                   class="form-select d-inline-block w-auto"
-                                  id="pageSizeSelectUnpaid"
+                                  id="pageSizeSelectOther"
                                 >
                                   <option value="10">10</option>
                                   <option value="50">50</option>
                                   <option value="100">100</option>
                                   <option value="150">150</option>
                                 </select>
-                                <span class="ms-2">đơn hàng/trang</span>
+                                <span class="ms-2">log/trang</span>
                               </div>
-                              <button
-                                class="btn btn-primary"
-                                id="addInvoiceBtnUnpaid"
-                              >
-                                Thêm mới
-                              </button>
                             </div>
                             <table
                               class="table table-hover table-bordered align-middle"
-                              id="invoiceTableUnpaid"
+                              id="logTableOther"
                             >
                               <thead class="table-light">
                                 <tr>
-                                  <th scope="col" style="width: 100px">ID</th>
-                                  <th scope="col">Tên người đặt</th>
-                                  <th scope="col">Số lượng sản phẩm</th>
-                                  <th scope="col">Tổng tiền</th>
-                                  <th scope="col">Phương thức thanh toán</th>
-                                  <th scope="col">Trạng thái</th>
-                                  <th scope="col">Chi tiết đơn hàng</th>
+                                  <th>Người thực hiện</th>
+                                  <th>Loại hành động</th>
+                                  <th>Hành động</th>
+                                  <th>Thời gian</th>
                                 </tr>
                               </thead>
-                              <tbody id="invoiceTableBodyUnpaid"></tbody>
+                              <tbody id="logTableBodyOther"></tbody>
                             </table>
                             <div
                               class="d-flex justify-content-between align-items-center mt-3"
                             >
                               <div>
-                                <p class="mb-0" id="pageInfoUnpaid">
-                                  Hiển thị 0 đơn hàng
+                                <p class="mb-0" id="pageInfoOther">
+                                  Hiển thị 0 log
                                 </p>
                               </div>
                               <nav>
                                 <ul
                                   class="pagination mb-0"
-                                  id="paginationUnpaid"
-                                ></ul>
-                              </nav>
-                            </div>
-                          </div>
-
-                          <!-- Paid Orders Tab -->
-                          <div
-                            class="tab-pane fade"
-                            id="paid-orders"
-                            role="tabpanel"
-                            aria-labelledby="paid-orders-tab"
-                          >
-                            <div
-                              class="d-flex justify-content-between align-items-center mb-3"
-                            >
-                              <div class="d-flex align-items-center">
-                                <label class="me-2">Hiển thị:</label>
-                                <select
-                                  class="form-select d-inline-block w-auto"
-                                  id="pageSizeSelectPaid"
-                                >
-                                  <option value="10">10</option>
-                                  <option value="50">50</option>
-                                  <option value="100">100</option>
-                                  <option value="150">150</option>
-                                </select>
-                                <span class="ms-2">đơn hàng/trang</span>
-                              </div>
-                              <button
-                                class="btn btn-primary"
-                                id="addInvoiceBtnPaid"
-                              >
-                                Thêm mới
-                              </button>
-                            </div>
-                            <table
-                              class="table table-hover table-bordered align-middle"
-                              id="invoiceTablePaid"
-                            >
-                              <thead class="table-light">
-                                <tr>
-                                  <th scope="col" style="width: 100px">ID</th>
-                                  <th scope="col">Tên người đặt</th>
-                                  <th scope="col">Số lượng sản phẩm</th>
-                                  <th scope="col">Tổng tiền</th>
-                                  <th scope="col">Phương thức thanh toán</th>
-                                  <th scope="col">Trạng thái</th>
-                                  <th scope="col">Chi tiết đơn hàng</th>
-                                </tr>
-                              </thead>
-                              <tbody id="invoiceTableBodyPaid"></tbody>
-                            </table>
-                            <div
-                              class="d-flex justify-content-between align-items-center mt-3"
-                            >
-                              <div>
-                                <p class="mb-0" id="pageInfoPaid">
-                                  Hiển thị 0 đơn hàng
-                                </p>
-                              </div>
-                              <nav>
-                                <ul
-                                  class="pagination mb-0"
-                                  id="paginationPaid"
+                                  id="paginationOther"
                                 ></ul>
                               </nav>
                             </div>
@@ -1015,90 +891,6 @@
           </div>
         </footer>
         <!-- end Footer -->
-
-        <!-- Modal chi tiết đơn hàng -->
-        <div
-          class="modal fade"
-          id="viewInvoiceDetailModal"
-          tabindex="-1"
-          aria-labelledby="viewInvoiceDetailModalLabel"
-          aria-hidden="true"
-        >
-          <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-              <div class="modal-header">
-                <h5 class="modal-title" id="viewInvoiceDetailModalLabel">
-                  Chi tiết đơn hàng
-                </h5>
-                <button
-                  type="button"
-                  class="btn-close"
-                  data-bs-dismiss="modal"
-                  aria-label="Close"
-                ></button>
-              </div>
-              <div class="modal-body">
-                <div class="row">
-                  <div class="col-md-6">
-                    <p>
-                      <strong>ID đơn hàng:</strong>
-                      <span id="viewInvoiceId"></span>
-                    </p>
-                    <p>
-                      <strong>Khách hàng:</strong>
-                      <span id="viewCustomerName"></span>
-                    </p>
-                    <p>
-                      <strong>Số điện thoại:</strong>
-                      <span id="viewPhone"></span>
-                    </p>
-                    <p>
-                      <strong>Địa chỉ chi tiết:</strong>
-                      <span id="viewAddressDetail"></span>
-                    </p>
-                  </div>
-                  <div class="col-md-6">
-                    <p>
-                      <strong>Tổng tiền:</strong> <span id="viewTotal"></span>
-                    </p>
-                    <p>
-                      <strong>Phương thức thanh toán:</strong>
-                      <span id="viewPaymentMethod"></span>
-                    </p>
-                    <p>
-                      <strong>Trạng thái:</strong> <span id="viewStatus"></span>
-                    </p>
-                    <p>
-                      <strong>Ngày tạo:</strong>
-                      <span id="viewCreatedAt"></span>
-                    </p>
-                  </div>
-                </div>
-                <h6 class="mt-3">Sản phẩm trong đơn hàng</h6>
-                <table class="table table-bordered">
-                  <thead>
-                    <tr>
-                      <th>Tên sản phẩm</th>
-                      <th>Kích thước</th>
-                      <th>Số lượng</th>
-                      <th>Giá/ 1 sản phẩm</th>
-                    </tr>
-                  </thead>
-                  <tbody id="viewInvoiceItems"></tbody>
-                </table>
-              </div>
-              <div class="modal-footer">
-                <button
-                  type="button"
-                  class="btn btn-secondary"
-                  data-bs-dismiss="modal"
-                >
-                  Đóng
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
       <!-- ============================================================== -->
       <!-- End Page content -->
@@ -1116,14 +908,10 @@
     <script src="libs/feather-icons/feather.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
-    <!-- copy to clipboard -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/clipboard.js/2.0.10/clipboard.min.js"></script>
-
     <!-- App js-->
     <script src="js/app.js"></script>
     <script src="js/base-url.js"></script>
-    <script src="js/logService.js"></script>
-    <script src="js/pages/invoice.js"></script>
+    <script src="js/pages/log.js"></script>
   </body>
 
   <!-- Mirrored from zoyothemes.com/tapeli/html/pages-invoice by HTTrack Website Copier/3.x [XR&CO'2014], Tue, 16 Jul 2024 08:34:17 GMT -->

@@ -20,8 +20,11 @@ $(document).ready(function () {
   if (user.role_id === managerRoleId) {
     $("#accountManagerTab").hide();
     $("#statsTab").hide();
+    $("#logTab").hide();
   } else {
     $("#accountManagerTab").show();
+    $("#statsTab").show();
+    $("#logTab").show();
   }
 
   // Kiểm tra canvas cho biểu đồ trạng thái

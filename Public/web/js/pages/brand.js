@@ -20,8 +20,11 @@ $(document).ready(function () {
   if (user.role_id === managerRoleId) {
     $("#accountManagerTab").hide();
     $("#statsTab").hide();
+    $("#logTab").hide();
   } else {
     $("#accountManagerTab").show();
+    $("#statsTab").show();
+    $("#logTab").show();
   }
 
   const tableBody = $("#brandTableBody");
@@ -102,14 +105,12 @@ $(document).ready(function () {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const newBrand = await response.json();
-      console.log("Thêm mới thành công:", newBrand);
+      await createLog(null, "add", `Thêm mới thương hiệu: ${brandData.name}`);
 
-      // Đóng modal và làm mới bảng
       $("#addBrandModal").modal("hide");
-      $("#addBrandForm")[0].reset(); // Reset form
-      $("#imagePreview").empty(); // Xóa preview ảnh
-      await fetchBrands(); // Làm mới danh sách brands
+      $("#addBrandForm")[0].reset();
+      $("#imagePreview").empty();
+      await fetchBrands();
     } catch (error) {
       console.error("Lỗi khi thêm mới:", error);
       alert("Có lỗi xảy ra khi thêm thương hiệu: " + error.message);
@@ -146,11 +147,28 @@ $(document).ready(function () {
     updateTable();
   });
 
-  // Hàm sao chép vào clipboard
-  function copyToClipboard(text, element) {
-    navigator.clipboard
-      .writeText(text)
-      .then(() => {
+  // Hàm khởi tạo Clipboard.js
+  function initializeClipboard() {
+    new ClipboardJS(".id-column", {
+      text: function (trigger) {
+        const idText = $(trigger).data("id");
+        if (!idText) {
+          console.error("Không có ID để sao chép");
+          Swal.fire({
+            icon: "error",
+            title: "Lỗi",
+            text: "Không có ID để sao chép",
+            timer: 1500,
+            showConfirmButton: false,
+          });
+          return "";
+        }
+        return idText.toString(); // Đảm bảo là chuỗi
+      },
+    })
+      .on("success", function (e) {
+        // Hiển thị phản hồi "Đã sao chép!"
+        const element = $(e.trigger);
         const feedback = $('<span class="copy-feedback">Đã sao chép!</span>');
         element.append(feedback);
         feedback.css({
@@ -167,9 +185,17 @@ $(document).ready(function () {
             });
           }, 1000);
         });
+        e.clearSelection(); // Xóa vùng chọn
       })
-      .catch((err) => {
-        console.error("Lỗi khi sao chép:", err);
+      .on("error", function (e) {
+        console.error("Lỗi khi sao chép:", e);
+        Swal.fire({
+          icon: "error",
+          title: "Lỗi",
+          text: "Không thể sao chép nội dung",
+          timer: 1500,
+          showConfirmButton: false,
+        });
       });
   }
 
@@ -213,14 +239,9 @@ $(document).ready(function () {
     // Khởi tạo tooltip
     $('[data-bs-toggle="tooltip"]').tooltip();
 
-    // Thêm sự kiện click để copy ID
-    $(".id-column")
-      .off("click")
-      .on("click", function () {
-        // .off() để tránh trùng lặp sự kiện
-        const idText = $(this).data("id"); // Lấy ID từ data-id
-        copyToClipboard(idText, $(this));
-      });
+    $(".id-column").off("click");
+
+    initializeClipboard();
 
     // Xử lý gạt nút trạng thái
     $(".status-toggle")
@@ -233,17 +254,17 @@ $(document).ready(function () {
         if (
           !(
             await Swal.fire({
-              title: `Bạn có chắc muốn ${action} Brand này?`, // Rút gọn title
+              title: `Bạn có chắc muốn ${action} Brand này?`,
               icon: "warning",
               showCancelButton: true,
               confirmButtonText: "OK",
               cancelButtonText: "Hủy",
-              width: "350px", // Giảm chiều rộng (mặc định ~500px)
-              padding: "1em", // Giảm padding để nhỏ gọn
-              buttonsStyling: true, // Giữ kiểu nút mặc định
+              width: "350px",
+              padding: "1em",
+              buttonsStyling: true,
               customClass: {
-                title: "swal2-title-small", // Class tùy chỉnh cho title
-                popup: "swal2-popup-small", // Class tùy chỉnh cho popup
+                title: "swal2-title-small",
+                popup: "swal2-popup-small",
               },
             })
           ).isConfirmed
@@ -262,6 +283,16 @@ $(document).ready(function () {
               isChecked ? "hiện" : "ẩn"
             }`
           );
+
+          const brand = brands.find((br) => br.id === brandId);
+          const brandName = brand?.name || brandId;
+
+          await createLog(
+            null,
+            "changeStatus",
+            `Thay đổi trạng thái thương hiệu ${brandName} thành: ${action}`
+          );
+
           await fetchBrands(); // Làm mới bảng
         } catch (error) {
           console.error("Lỗi khi cập nhật trạng thái:", error);

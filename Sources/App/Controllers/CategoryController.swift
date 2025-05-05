@@ -66,8 +66,8 @@ struct CategoryController: RouteCollection {
 	
 	@Sendable
 	func restore(req: Request) async throws -> HTTPStatus {
-		guard let categoryID: UUID = req.parameters.get("categoryID") else { throw Abort(.badRequest) }
-		guard let category = try await Category.query(on: req.db).withDeleted().filter(\.$id == categoryID).first() else {
+		let categoryID: UUID? = req.parameters.get("categoryID")
+		guard let category = try await Category.query(on: req.db).withDeleted().filter(\.$id == categoryID!).first() else {
 			throw Abort(.notFound)
 		}
 
@@ -77,10 +77,16 @@ struct CategoryController: RouteCollection {
 	
     @Sendable
     func delete(req: Request) async throws -> HTTPStatus {
-        guard let category = try await Category.find(req.parameters.get("categoryID"), on: req.db) else {
+		let categoryID: UUID? = req.parameters.get("categoryID")
+		guard let category = try await Category.query(on: req.db).with(\.$products).filter(\.$id == categoryID!).first() else {
             throw Abort(.notFound)
         }
-
+		
+		let productsInCategory: [Product]? = category.$products.value
+		if (productsInCategory != nil) {
+			try await productsInCategory!.delete(on: req.db)
+		}
+		
         try await category.delete(on: req.db)
         return .noContent
     }

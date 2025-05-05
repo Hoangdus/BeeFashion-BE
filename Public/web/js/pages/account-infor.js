@@ -24,8 +24,11 @@ $(document).ready(function () {
   if (user.role_id === managerRoleId) {
     $("#accountManagerTab").hide();
     $("#statsTab").hide();
+    $("#logTab").hide();
   } else {
     $("#accountManagerTab").show();
+    $("#statsTab").show();
+    $("#logTab").show();
   }
 
   // Hàm định dạng giá tiền (tham khảo từ product.js)
@@ -281,11 +284,27 @@ $(document).ready(function () {
     $("#viewProductDetailModal").modal("show");
   }
 
-  // Hàm sao chép vào clipboard
-  function copyToClipboard(text, element) {
-    navigator.clipboard
-      .writeText(text)
-      .then(() => {
+  function initializeClipboard() {
+    new ClipboardJS(".id-column", {
+      text: function (trigger) {
+        const idText = $(trigger).data("id");
+        if (!idText) {
+          console.error("Không có ID để sao chép");
+          Swal.fire({
+            icon: "error",
+            title: "Lỗi",
+            text: "Không có ID để sao chép",
+            timer: 1500,
+            showConfirmButton: false,
+          });
+          return "";
+        }
+        return idText.toString(); // Đảm bảo là chuỗi
+      },
+    })
+      .on("success", function (e) {
+        // Hiển thị phản hồi "Đã sao chép!"
+        const element = $(e.trigger);
         const feedback = $('<span class="copy-feedback">Đã sao chép!</span>');
         element.append(feedback);
         feedback.css({
@@ -302,9 +321,17 @@ $(document).ready(function () {
             });
           }, 1000);
         });
+        e.clearSelection(); // Xóa vùng chọn
       })
-      .catch((err) => {
-        console.error("Lỗi khi sao chép:", err);
+      .on("error", function (e) {
+        console.error("Lỗi khi sao chép:", e);
+        Swal.fire({
+          icon: "error",
+          title: "Lỗi",
+          text: "Không thể sao chép nội dung",
+          timer: 1500,
+          showConfirmButton: false,
+        });
       });
   }
 
@@ -339,9 +366,6 @@ $(document).ready(function () {
             "Không xác định"
           }</td>
           <td>
-            <button class="btn btn-sm btn-primary me-1 edit-product-btn" title="Update" data-id="${productId}">
-              <i class="mdi mdi-pencil"></i>
-            </button>
             <button class="btn btn-sm btn-success me-1 view-product-btn" title="View info" data-id="${productId}">
               <i class="mdi mdi-eye"></i>
             </button>
@@ -360,13 +384,9 @@ $(document).ready(function () {
     // Khởi tạo tooltip
     $('[data-bs-toggle="tooltip"]').tooltip();
 
-    // Thêm sự kiện click để copy ID
-    $(".id-column")
-      .off("click")
-      .on("click", function () {
-        const idText = $(this).data("id");
-        copyToClipboard(idText, $(this));
-      });
+    $(".id-column").off("click");
+
+    initializeClipboard();
 
     // Thêm sự kiện cho nút "Chỉnh sửa"
     $(".edit-product-btn")
