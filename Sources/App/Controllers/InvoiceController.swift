@@ -285,7 +285,12 @@ struct InvoiceController: RouteCollection {
             }
         }
         
-		try await sendNotification(title: "Trạng thái đơn hàng", body: "Đơn hàng của bạn đang được giao", imageURL: "", req: req, targetToken: invoice.targetDeviceToken)
+		if (invoice.status == .pending){
+			try await sendNotification(title: "Trạng thái đơn hàng", body: "Đơn hàng \(invoice.id!.uuidString.prefix(6)) của bạn đang được đóng gói", imageURL: "", req: req, targetToken: invoice.targetDeviceToken)
+		}else if(invoice.status == .intransit){
+			try await sendNotification(title: "Trạng thái đơn hàng", body: "Đơn hàng \(invoice.id!.uuidString.prefix(6)) của bạn đang được giao", imageURL: "", req: req, targetToken: invoice.targetDeviceToken)
+		}
+
         invoice.status = newStatus
         try await invoice.save(on: req.db)
         
