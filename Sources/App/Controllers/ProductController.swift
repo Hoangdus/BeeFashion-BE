@@ -76,7 +76,7 @@ struct ProductController: RouteCollection {
             }
         }
         
-		try await sendNotification(title: "test", body: "test", imageURL: "https://icolor.vn/wp-content/uploads/2024/08/mbbank-logo-5.png", req: req, targetToken: Environment.get("TEST_NOTIFICATION_TARGET_TOKEN") ?? "")
+//		try await sendNotification(title: "test", body: "test", imageURL: "https://icolor.vn/wp-content/uploads/2024/08/mbbank-logo-5.png", req: req, targetToken: Environment.get("TEST_NOTIFICATION_TARGET_TOKEN") ?? "")
         return productDTOs
     }
     
